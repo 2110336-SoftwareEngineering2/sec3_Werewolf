@@ -8,6 +8,7 @@ RUN npm install --only=development
 
 COPY . .
 
+RUN npm install rimraf
 RUN npm run build
 
 FROM node:14.15.4-alpine AS production
