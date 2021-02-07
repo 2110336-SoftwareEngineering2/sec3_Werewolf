@@ -1,3 +1,7 @@
 maid-care-service-frontend/node_modules
 maid-care-service-backend/node_modules
+maid-care-service-backend/dist/
+
+maid-care-service-frontend/.env
+maid-care-service-backend/.env
 
