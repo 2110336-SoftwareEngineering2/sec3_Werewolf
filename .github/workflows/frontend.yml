@@ -79,7 +79,7 @@ jobs:
         uses: nwtgck/actions-netlify@v1.1.11
         with:
           # Publish directory
-          publish-dir: './build/'
+          publish-dir: './maid-care-service-frontend/build/'
 
           # Custom deploy message for Netlify
           deploy-message: ${{ github.event.head_commit.message }}
