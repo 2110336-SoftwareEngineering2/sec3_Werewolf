@@ -18,7 +18,6 @@ export class AuthService {
   
   async sendEmailVerification(email: string): Promise<boolean> {   
     var emailToken = 12345678;
-
     if(emailToken){
         let transporter = nodemailer.createTransport({
             service: 'Gmail',
@@ -31,7 +30,6 @@ export class AuthService {
 				rejectUnauthorized:false
 			}
         });
-    
         let mailOptions = {
           from: '"Company" <' + config.mail.user + '>', 
           to: email, // list of receivers (separated by ,)
@@ -40,7 +38,6 @@ export class AuthService {
           html: 'Hi! <br><br> Thanks for your registration<br><br>'+
           '<p>' + emailToken + '</p>'
         };
-    
         var sent = await new Promise<boolean>(async function(resolve, reject) {
           return await transporter.sendMail(mailOptions, async (error, info) => {
               if (error) {      
@@ -51,7 +48,6 @@ export class AuthService {
               resolve(true);
           });    
         })
-
         return sent;
     } else {
       return false;

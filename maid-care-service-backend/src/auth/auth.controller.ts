@@ -14,15 +14,7 @@ export class AuthController {
   
   @Get('send-verification/:email')
   public async sendEmailVerification(@Param() params): Promise<boolean> {
-    try {
-      var isEmailSent = await this.authService.sendEmailVerification(params.email);
-      if(isEmailSent){
-        return true;
-      } else {
-        return false;
-      }
-    } catch(error) {
-      return false;
-    }
+    var isEmailSent = await this.authService.sendEmailVerification(params.email);
+    return isEmailSent;
   }
 }
