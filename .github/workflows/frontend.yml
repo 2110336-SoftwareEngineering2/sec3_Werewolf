@@ -85,7 +85,7 @@ jobs:
           npm run build
       
       - name: Install Netlify
-        run: npm install netlify-cli -g
+        run: sudo npm install netlify-cli -g
         
       - name: Netlify Actions
         # You may pin to the exact commit or the version.
