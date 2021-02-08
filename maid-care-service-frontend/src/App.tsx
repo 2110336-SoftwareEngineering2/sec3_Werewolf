@@ -17,7 +17,7 @@ export const App = () => {
 						<Text>
 							Edit <Code fontSize="xl">src/App.tsx</Code> and save to reload.
 						</Text>
-						<Text>Test Mobx Counter</Text>
+						<Text>Test Mobx Counter
 						<Stack direction="row" spacing={4} align="center">
 							<Button onClick={() => counter.increaseCount()} colorScheme="teal" variant="solid">
 								+
