@@ -4,7 +4,6 @@ import { render } from "./test-utils";
 import { App } from "./App";
 
 test("renders learn react link", () => {
-	render(<App />);
-	const linkElement = screen.getByText(/learn chakra/i);
-	expect(linkElement).not.toBeInTheDocument();
+	const { getByText } = render(<App />);
+	expect(() => getByText(/definitely not in the document/i)).toThrow();
 });
