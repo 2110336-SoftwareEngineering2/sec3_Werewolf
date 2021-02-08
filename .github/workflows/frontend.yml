@@ -87,7 +87,7 @@ jobs:
           # Production branch
           production-branch: frontend
         env:
-          NETLIFY_SITE_ID: ${{ secret.NETLIFY_SITE_ID }}
-          NETLIFY_AUTH_TOKEN: ${{ secret.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
 
         
