@@ -6,6 +6,9 @@ import CounterView, { Counter } from "./components/Counter";
 
 export const App = () => {
 	const [counter, setCounter] = useState<Counter>(new Counter());
+	const;
+	as;
+	dlfsdldklfjhsdkdfj;
 
 	return (
 		<ChakraProvider theme={theme}>
@@ -17,7 +20,7 @@ export const App = () => {
 						<Text>
 							Edit <Code fontSize="xl">src/App.tsx</Code> and save to reload.
 						</Text>
-						<Text>Test Mobx Counter
+						<Text>Test Mobx Counter</Text>
 						<Stack direction="row" spacing={4} align="center">
 							<Button onClick={() => counter.increaseCount()} colorScheme="teal" variant="solid">
 								+
