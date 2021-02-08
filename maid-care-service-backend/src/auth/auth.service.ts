@@ -16,7 +16,7 @@ export class AuthService {
     return null;
   }
   
-  async sendEmailVerification(email: string): Promise<boolean> {   
+  async sendEmailVerification(email: string): Promise<boolean> {
     var emailToken = 12345678;
     if(emailToken){
         let transporter = nodemailer.createTransport({
@@ -31,10 +31,10 @@ export class AuthService {
 			}
         });
         let mailOptions = {
-          from: '"Company" <' + config.mail.user + '>', 
-          to: email, // list of receivers (separated by ,)
-          subject: 'Verify Email', 
-          text: 'Verify Email', 
+          from: '"Werewolf" <' + config.mail.user + '>', 
+          to: email,
+          subject: 'Email Verification', 
+          text: 'Email Verification', 
           html: 'Hi! <br><br> Thanks for your registration<br><br>'+
           '<p>' + emailToken + '</p>'
         };
