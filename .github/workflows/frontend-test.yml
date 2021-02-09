@@ -54,7 +54,6 @@ jobs:
           description: "Congrat! Your PR passed the test"
           color: 0x28a745
           username: Werewolf GitHub Actions
-          avatar_url: ${{ secrets.AVATAR_URL }}
       
       - uses: sarisia/actions-status-discord@v1
         if: failure()
@@ -64,4 +63,3 @@ jobs:
           description: "Sorry, but your is shit!"
           color: 0xd73a49
           username: Werewolf GitHub Actions
-          avatar_url: ${{ secrets.AVATAR_URL }}
