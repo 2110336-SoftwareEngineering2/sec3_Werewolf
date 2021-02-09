@@ -1,9 +1,13 @@
 import { Injectable } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
 
 export type User = any;
 
+const saltRounds = 10;
+
 @Injectable()
 export class UsersService {
+
   private readonly users = [
     {
       userId: 1,
@@ -16,6 +20,12 @@ export class UsersService {
       password: 'guess',
     },
   ];
+  async onModuleInit() {
+	for (const user of this.users) {
+	  // hash password
+	  user.password = await bcrypt.hash(user.password, saltRounds);
+	}
+  }
 
   async findOne(email: string): Promise<User | undefined> {
     return this.users.find(user => user.email === email);
