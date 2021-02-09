@@ -4,6 +4,8 @@ on:
 
   push:
     branches: [ frontend ]
+    paths: 
+      - 'maid-care-service-frontend/**'
 
   workflow_dispatch:
 
