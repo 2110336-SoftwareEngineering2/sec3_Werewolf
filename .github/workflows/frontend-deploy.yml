@@ -21,6 +21,16 @@ jobs:
 
     steps:
       
+      - uses: sarisia/actions-status-discord@v1
+        if: success()
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          noprefix: true
+          title: "Merge!!"
+          description: "Deploying Website"
+          color: 0x6f42c1
+          username: Werewolf GitHub Actions
+
       - name: Checkout 
         uses: actions/checkout@v2
       
@@ -50,3 +60,19 @@ jobs:
         env:
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          
+      - uses: sarisia/actions-status-discord@v1
+        if: success()
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          title: "Deploy on Netlify"
+          color: 0x28a745
+          username: Werewolf GitHub Actions
+      
+      - uses: sarisia/actions-status-discord@v1
+        if: failure()
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          title: "Deploy on Netlify"
+          color: 0xd73a49
+          username: Werewolf GitHub Actions
