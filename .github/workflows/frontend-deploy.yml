@@ -1,0 +1,46 @@
+name: Frontend Automate Deploy
+
+on:
+
+  push:
+    branches: [ frontend ]
+
+  workflow_dispatch:
+
+jobs:
+
+  deploy:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      
+      - name: Checkout 
+        uses: actions/checkout@v2
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v2.1.4
+        with: 
+          node-version: 14.x
+            
+      - name: Build the site
+        run: |
+          npm install --production
+          npm fund
+          npm run build
+      
+      - name: Install Netlify
+        run: sudo npm install netlify-cli -g
+        
+      - name: Netlify Actions
+        uses: nwtgck/actions-netlify@v1.1.11
+        with:
+
+          publish-dir: './maid-care-service-frontend/build/'
+
+          deploy-message: ${{ github.event.head_commit.message }}
+
+          production-branch: frontend
+        env:
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
