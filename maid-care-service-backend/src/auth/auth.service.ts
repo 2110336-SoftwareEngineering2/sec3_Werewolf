@@ -13,13 +13,14 @@ export class AuthService {
 	if (!user) return null
 	var isValidPass = await bcrypt.compare(pass, user.password);
 	if (isValidPass) {
-	  var { password, ...result } = user;
+	  var result = { email: user.email }
       return result;
 	}
     return null;
   }
   
   async sendEmailVerification(email: string): Promise<boolean> {
+	// TODO generate random token and save it
     var emailToken = 12345678;
     if(emailToken){
         let transporter = nodemailer.createTransport({
