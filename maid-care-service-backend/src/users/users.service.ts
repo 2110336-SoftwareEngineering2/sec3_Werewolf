@@ -8,7 +8,7 @@ const saltRounds = 10;
 
 @Injectable()
 export class UsersService {
-	
+
   constructor(
     @Inject('USER_MODEL')
     private userModel: Model<User>,

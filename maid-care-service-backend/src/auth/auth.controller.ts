@@ -9,7 +9,7 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Request() req) {
-	return req.user;
+    return req.user;
   }
   
   @Get('send-verification/:email')

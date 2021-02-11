@@ -10,49 +10,49 @@ export class AuthService {
 
   async validateUser(email: string, pass: string): Promise<any> {
     var user = await this.usersService.findOne(email);
-	if (!user) return null
-	var isValidPass = await bcrypt.compare(pass, user.password);
-	if (isValidPass) {
-	  var result = { email: user.email }
+    if (!user) return null
+    var isValidPass = await bcrypt.compare(pass, user.password);
+    if (isValidPass) {
+      var result = { email: user.email }
       return result;
-	}
+    }
     return null;
   }
-  
+
   async sendEmailVerification(email: string): Promise<boolean> {
-	// TODO generate random token and save it
+    // TODO generate random token and save it
     var emailToken = 12345678;
     if(emailToken){
-        let transporter = nodemailer.createTransport({
-            service: 'Gmail',
-            secure: config.mail.secure, // true for 465, false for other ports
-            auth: {
-                user: config.mail.user,
-                pass: config.mail.pass
-            },
-			tls: {
-				rejectUnauthorized:false
-			}
-        });
-        let mailOptions = {
-          from: '"Werewolf" <' + config.mail.user + '>', 
-          to: email,
-          subject: 'Email Verification', 
-          text: 'Email Verification', 
-          html: 'Hi! <br><br> Thanks for your registration<br><br>'+
-          '<p>' + emailToken + '</p>'
-        };
-        var sent = await new Promise<boolean>(async function(resolve, reject) {
-          return await transporter.sendMail(mailOptions, async (error, info) => {
-              if (error) {      
-                console.log('Message sent: %s', error);
-                return reject(false);
-              }
-              console.log('Message sent: %s', info.messageId);
-              resolve(true);
-          });    
-        })
-        return sent;
+      let transporter = nodemailer.createTransport({
+        service: 'Gmail',
+        secure: config.mail.secure, // true for 465, false for other ports
+        auth: {
+          user: config.mail.user,
+          pass: config.mail.pass
+        },
+        tls: {
+          rejectUnauthorized:false
+        }
+      });
+      let mailOptions = {
+        from: '"Werewolf" <' + config.mail.user + '>', 
+        to: email,
+        subject: 'Email Verification', 
+        text: 'Email Verification', 
+        html: 'Hi! <br><br> Thanks for your registration<br><br>'+
+        '<p>' + emailToken + '</p>'
+      };
+      var sent = await new Promise<boolean>(async function(resolve, reject) {
+        return await transporter.sendMail(mailOptions, async (error, info) => {
+          if (error) {      
+            console.log('Message sent: %s', error);
+            return reject(false);
+          }
+          console.log('Message sent: %s', info.messageId);
+          resolve(true);
+        });    
+      })
+      return sent;
     } else {
       return false;
     }
