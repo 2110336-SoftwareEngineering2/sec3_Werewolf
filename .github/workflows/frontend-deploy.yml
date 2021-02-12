@@ -41,12 +41,12 @@ jobs:
             
       - name: Build the site
         run: |
-          npm install --production
+          npm install --production 
           npm fund
           npm run build
       
       - name: Install Netlify
-        run: sudo npm install netlify-cli -g
+        run: sudo npm install -g netlify-cli --unsafe-perm=true
         
       - name: Netlify Actions
         uses: nwtgck/actions-netlify@v1.1.11
