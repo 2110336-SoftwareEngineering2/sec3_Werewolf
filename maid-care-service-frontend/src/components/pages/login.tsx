@@ -23,7 +23,7 @@ export const LogIn = () => {
   return (
     <Flex bg="brandGreen" align="center" justify="center" minH="100vh">
       <FlexBox>
-        <VStack spacing="10px">
+        <VStack spacing="20x">
           <Box fontSize="3xl" mb="30px">
             Grab
             <br />
