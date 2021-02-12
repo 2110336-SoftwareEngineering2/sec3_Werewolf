@@ -1,0 +1,10 @@
+.formField{
+    border-radius: 4px;
+    border-color: "#E2E8F0";
+}
+
+.button{
+    color: white;
+    width: 103px;
+    height: 48px;
+}

@@ -33,21 +33,21 @@ export const LogIn = () => {
           <VStack spacing="20px">
           <FormControl id="email">
             <FormLabel mb="0">Email address</FormLabel>
-            <Input borderRadius="4px" type="email" placeholder="email address" borderColor="#E2E8F0"/>
+            <Input type="email" placeholder="email address" className="formField"/>
           </FormControl>
 
           <FormControl id="password" width={{sm:"270px",md:"368px"}}>
             <FormLabel mb="0">Password</FormLabel>
             <InputGroup>
-            <Input borderRadius="4px" type={showPW? "text":"password"} placeholder="password" borderColor="#E2E8F0"/>
+            <Input type={showPW? "text":"password"} placeholder="password" className="formField"/>
             <InputRightElement width="4rem">
-              <Link color="gray.500" onClick={() => {setShowPW(!showPW)}} >{showPW? "hide":"show"}</Link>
+              <Link color="gray.500" fontWeight="700" onClick={() => {setShowPW(!showPW)}} >{showPW? "hide":"show"}</Link>
             </InputRightElement>
             </InputGroup>
           </FormControl>
           </VStack>
           <Center>
-            <Button mt="25px" bg="buttonGreen" color="white" width="103px" height="48px" boxShadow="xl" mb="10px">
+            <Button boxShadow="xl" className="button" mt="25px" mb="10px" bg="buttonGreen">
               Log In
             </Button>
           </Center>
