@@ -13,7 +13,7 @@ export class AuthService {
     if (!user) return null
     var isValidPass = await bcrypt.compare(pass, user.password);
     if (isValidPass) {
-      var result = { email: user.email }
+      var result = { firstname: user.firstname, lastname: user.lastname, role: user.role }
       return result;
     }
     return null;

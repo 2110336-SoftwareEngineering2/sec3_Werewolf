@@ -2,7 +2,7 @@ import { Controller, Body, Get, Post, Param } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
 import { Login } from './interfaces/login.interface';
-import { CreateUserDto } from '../users/dto/create-user.dto';
+import { UserDto } from '../users/dto/user.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -24,7 +24,7 @@ export class AuthController {
   }
 
   @Post('create-user')
-  async createUser(@Body() createUserDto: CreateUserDto): Promise<boolean> {
+  async createUser(@Body() createUserDto: UserDto): Promise<boolean> {
     return await this.userService.createNewUser(createUserDto);
   }
 }
