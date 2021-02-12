@@ -1,9 +1,9 @@
-import React, { useState } from "react";
-import { ChakraProvider, Box, Text, VStack, Code, Grid,Button, Stack } from "@chakra-ui/react";
+import React from "react";
+import { ChakraProvider} from "@chakra-ui/react";
 import {Switch, Route} from "react-router-dom";
 import theme from "./theme.js"
 
-import {LogIn} from './components/pages/login.js';
+import {LogIn} from './components/pages/login';
 
 export const App = () => {
 	return (

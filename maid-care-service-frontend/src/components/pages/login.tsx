@@ -14,6 +14,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 
+import FlexBox from "../shared/FlexBox";
 
 export const LogIn = () => {
   
@@ -21,17 +22,8 @@ export const LogIn = () => {
 
   return (
     <Flex bg="brandGreen" align="center" justify="center" minH="100vh">
-      <Flex
-        py="30px"
-        px={{base:"30px",md:"50px"}}
-        bg="boxWhite"
-        borderRadius="24px"
-        boxShadow="0px 4px 20px rgba(0, 0, 0, 0.25)"
-        align="center"
-        justify="center"
-      >
+      <FlexBox>
         <VStack spacing="10px">
-
           <Box fontSize="3xl" mb="30px">
             Grab
             <br />
@@ -64,7 +56,7 @@ export const LogIn = () => {
             <Link color="#38A169">Create Account Here</Link>
           </Text>
         </VStack>
-      </Flex>
+      </FlexBox>
     </Flex>
   );
 };
