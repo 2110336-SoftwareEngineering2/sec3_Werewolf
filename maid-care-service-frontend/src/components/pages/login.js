@@ -20,11 +20,11 @@ export const LogIn = () => {
   const [showPW,setShowPW] = useState(false)
 
   return (
-    <Flex bg="#48BB78" align="center" justify="center" minH="100vh">
+    <Flex bg="brandGreen" align="center" justify="center" minH="100vh">
       <Flex
-        py="20px"
-        px={{base:"30px",md:"55px"}}
-        bg="#F7FAFC"
+        py="30px"
+        px={{base:"30px",md:"50px"}}
+        bg="boxWhite"
         borderRadius="24px"
         boxShadow="0px 4px 20px rgba(0, 0, 0, 0.25)"
         align="center"
@@ -32,35 +32,35 @@ export const LogIn = () => {
       >
         <VStack spacing="10px">
 
-          <Box fontSize="xl" marginBottom="40px">
+          <Box fontSize="3xl" mb="30px">
             Grab
             <br />
             Maidcare
           </Box>
-
+          
+          <VStack spacing="20px">
           <FormControl id="email">
-            <FormLabel>Email address</FormLabel>
-            <Input type="email" placeholder="email address"/>
+            <FormLabel mb="0">Email address</FormLabel>
+            <Input borderRadius="4px" type="email" placeholder="email address" borderColor="#E2E8F0"/>
           </FormControl>
 
-          <FormControl id="password" width={{sm:"270px",md:"370px"}}>
-            <FormLabel>Password</FormLabel>
+          <FormControl id="password" width={{sm:"270px",md:"368px"}}>
+            <FormLabel mb="0">Password</FormLabel>
             <InputGroup>
-            <Input type={showPW? "text":"password"} placeholder="password"/>
+            <Input borderRadius="4px" type={showPW? "text":"password"} placeholder="password" borderColor="#E2E8F0"/>
             <InputRightElement width="4rem">
               <Link color="gray.500" onClick={() => {setShowPW(!showPW)}} >{showPW? "hide":"show"}</Link>
             </InputRightElement>
             </InputGroup>
           </FormControl>
-
-          <Box height="20px" />
+          </VStack>
           <Center>
-            <Button bg="#38A169" color="white" width="103px" height="48px" boxShadow="xl" mb="10px">
+            <Button mt="25px" bg="buttonGreen" color="white" width="103px" height="48px" boxShadow="xl" mb="10px">
               Log In
             </Button>
           </Center>
           <Link fontSize={{base:"sm",md:"md"}}>Forgot password</Link>
-          <Text fontSize={{base:"sm",md:"md"}} mb="5vh">Want to be maid? {" "}
+          <Text fontSize={{base:"sm",md:"md"}} mb="60px">Want to be maid? {" "}
             <Link color="#38A169">Create Account Here</Link>
           </Text>
         </VStack>
