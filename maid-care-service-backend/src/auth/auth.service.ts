@@ -1,28 +1,30 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { UsersService } from '../users/users.service';
-import * as bcrypt from 'bcrypt';
+import { Injectable, Inject, ForbiddenException, UnprocessableEntityException } from '@nestjs/common';
+import { Model } from 'mongoose';
 import * as nodemailer from 'nodemailer';
+import { UsersService } from '../users/users.service';
+import { EmailVerification } from './interfaces/emailverification.interface';
 import {default as config} from '../config';
 
 @Injectable()
 export class AuthService {
-  constructor(private usersService: UsersService) {}
+  constructor(@Inject('EmailVerification_MODEL') private emailVerificationModel: Model<EmailVerification>,
+    private usersService: UsersService) {}
 
-  async validateUser(email: string, pass: string): Promise<any> {
-    var user = await this.usersService.findOne(email);
-    if (!user) throw new UnauthorizedException('Invalid user');
-    var isValidPass = await bcrypt.compare(pass, user.password);
-    if (isValidPass) {
-      var result = { firstname: user.firstname, lastname: user.lastname, role: user.role }
-      return result;
-    }
-    throw new UnauthorizedException('Incorrect password');
+  async createEmailToken(email: string): Promise<boolean> {
+    var emailVerificationModel = await this.emailVerificationModel.findOneAndUpdate( 
+      {email: email},
+      { 
+        email: email,
+        token: (Math.floor(Math.random() * (9000000)) + 1000000).toString(), //Generate 7 digits number
+      },
+      {upsert: true}
+    );
+    return true;
   }
 
   async sendEmailVerification(email: string): Promise<boolean> {
-    // TODO generate random token and save it
-    var emailToken = 12345678;
-    if(emailToken){
+    var model = await this.emailVerificationModel.findOne({ email: email});
+    if (model && model.token) {
       let transporter = nodemailer.createTransport({
         service: 'Gmail',
         secure: config.mail.secure, // true for 465, false for other ports
@@ -39,8 +41,8 @@ export class AuthService {
         to: email,
         subject: 'Email Verification', 
         text: 'Email Verification', 
-        html: 'Hi! <br><br> Thanks for your registration<br><br>'+
-        '<p>' + emailToken + '</p>'
+        html: 'Hello! <br><br> Thanks for your registration<br><br>'+
+        '<a href='+ config.host.url + ':' + config.host.port +'/auth/verify/'+ model.token + '>Click here to activate your account</a>'
       };
       var sent = await new Promise<boolean>(async function(resolve, reject) {
         return await transporter.sendMail(mailOptions, async (error, info) => {
@@ -54,7 +56,25 @@ export class AuthService {
       })
       return sent;
     } else {
-      return false;
+      throw new UnprocessableEntityException();
+    }
+  }
+
+  async verifyEmail(token: string): Promise<boolean> {
+    var emailVerification = await this.emailVerificationModel.findOne({token: token});
+    if(emailVerification && emailVerification.email){
+      var userFromDb = await this.usersService.findOne(emailVerification.email);
+      if (userFromDb) {
+        userFromDb.valid = true;
+        var savedUser = await userFromDb.save();
+        await emailVerification.remove();
+        return !!savedUser;
+      } else {
+        await emailVerification.remove();
+        throw new ForbiddenException('Invalid user');
+      }
+    } else {
+      throw new ForbiddenException('Code not valid');
     }
   }
 }

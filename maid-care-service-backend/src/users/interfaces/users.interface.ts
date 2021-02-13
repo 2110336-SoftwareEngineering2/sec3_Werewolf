@@ -6,4 +6,5 @@ export interface User extends Document{
   firstname: string;
   lastname: string;
   role: string;
+  valid: boolean;
 }

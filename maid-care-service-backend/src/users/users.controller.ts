@@ -12,7 +12,7 @@ export class UsersController {
       var user =  await this.usersService.updateProfile(userDto);
       var result = { firstname: user.firstname, lastname: user.lastname }
       return result;
-    } catch(error){
+    } catch (error) {
       throw error;
     }
   }

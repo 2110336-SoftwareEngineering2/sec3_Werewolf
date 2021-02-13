@@ -1,4 +1,4 @@
-import { Controller, Body, Param, Get, Post } from '@nestjs/common';
+import { Controller, Body, Param, Get, Post, UnprocessableEntityException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
 import { User } from '../users/interfaces/users.interface';
@@ -7,29 +7,39 @@ import { UserDto } from '../users/dto/user.dto';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService, private readonly userService: UsersService) {}
+  constructor(private readonly authService: AuthService, private readonly usersService: UsersService) {}
 
   @Post('login')
   async login(@Body() login: Login) {
     try {
-      return await this.authService.validateUser(login.email, login.password)
-    } catch(error){
+      var user = await this.usersService.validateUser(login.email, login.password)
+      var result = { firstname: user.firstname, lastname: user.lastname, role: user.role }
+      return result;
+    } catch (error) {
       throw error;
     }
   }
 
-  @Get('send-verification/:email')
-  public async sendEmailVerification(@Param() params): Promise<boolean> {
-    var isEmailSent = await this.authService.sendEmailVerification(params.email);
-    return isEmailSent;
+  @Post('register')
+  async register(@Body() createUserDto: UserDto): Promise<any> {
+	try {
+      var user = await this.usersService.createNewUser(createUserDto);
+      await this.authService.createEmailToken(user.email);
+      var isEmailSent = await this.authService.sendEmailVerification(user.email);
+	  if (!isEmailSent) throw new UnprocessableEntityException();
+      var result = { email:user.email, firstname: user.firstname, lastname: user.lastname, role: user.role }
+      return result;
+	} catch (error) {
+      throw error;
+    }
   }
 
-  @Post('register')
-  async register(@Body() createUserDto: UserDto): Promise<User> {
-	try {
-      var user = await this.userService.createNewUser(createUserDto);
-      return user;
-	} catch(error){
+  @Get('verify/:token')
+  public async verifyEmail(@Param() params): Promise<boolean> {
+    try {
+      var isEmailVerified = await this.authService.verifyEmail(params.token);
+      return isEmailVerified;
+    } catch (error) {
       throw error;
     }
   }
