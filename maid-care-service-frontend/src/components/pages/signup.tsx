@@ -73,15 +73,16 @@ export const SignUp = () => {
   return (
     <Flex bg="brandGreen" align="center" justify="center" minH="100vh">
       <FlexBox>
-        <VStack spacing="20x">
+        <VStack spacing="20x" >
             <Center>
                 <Box fontSize="1xl" mb="30px" mr="100px">Grab<br/>Maidcare</Box>
-                <Box fontSize="2xl" mb="30px" ml="100px">Step {steps} of 3</Box>
+                <Box fontSize="2xl" mb="30px" ml="100px" color="gray.400">Step {steps} of 3</Box>
             </Center>
           <Box fontSize="3xl" mb="30px" fontWeight="extrabold">Create Your Maid Account</Box>
-          
-          {step_inputform()}
-          {step_button()}
+          <VStack align="left"  w="400px">
+            {step_inputform()}
+            {step_button()}
+          </VStack>
         </VStack>
       </FlexBox>
     </Flex>

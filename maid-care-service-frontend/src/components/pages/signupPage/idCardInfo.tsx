@@ -13,8 +13,8 @@ type cardProps = {
 
 export const IdCardInfo = ( {nationality, citizenId, bankAccount} :  cardProps) => {
   return(
-    <VStack spacing="20px">
-      <FormControl id="nationality">
+    <>
+      <FormControl id="nationality" width={{sm:"270px",md:"368px"}}>
         <FormLabel mb="0">Nationality</FormLabel>
           <Input placeholder="Text Here" className="formField"/>
         </FormControl>
@@ -28,6 +28,6 @@ export const IdCardInfo = ( {nationality, citizenId, bankAccount} :  cardProps) 
           <FormLabel mb="0">Back Account Number</FormLabel>
           <Input placeholder="Text Here"  className="formField" />
         </FormControl>
-    </VStack>
+    </>
   );
 };

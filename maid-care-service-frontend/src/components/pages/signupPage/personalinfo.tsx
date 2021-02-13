@@ -13,8 +13,8 @@ type personalProps = {
 
 export const PersonalInfo = ({firstname, lastname, birthday}: personalProps) => {
   return(
-    <VStack spacing="20px">
-      <FormControl id="firstname">
+    <>
+      <FormControl id="firstname" width={{sm:"270px",md:"368px"}}>
         <FormLabel mb="0">First name</FormLabel>
           <Input placeholder="Text Here" className="formField" value={firstname}/>
         </FormControl>
@@ -28,6 +28,6 @@ export const PersonalInfo = ({firstname, lastname, birthday}: personalProps) => 
           <FormLabel mb="0">Date of Birth</FormLabel>
           <Input type="date"  className="formField" value={birthday}/>
         </FormControl>
-    </VStack>
+    </>
   );
 };
