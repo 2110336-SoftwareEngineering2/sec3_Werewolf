@@ -63,7 +63,7 @@ export class AuthService {
   async verifyEmail(token: string): Promise<boolean> {
     var emailVerification = await this.emailVerificationModel.findOne({token: token});
     if(emailVerification && emailVerification.email){
-      var userFromDb = await this.usersService.findOne(emailVerification.email);
+      var userFromDb = await this.usersService.findUser(emailVerification.email);
       if (userFromDb) {
         userFromDb.valid = true;
         var savedUser = await userFromDb.save();

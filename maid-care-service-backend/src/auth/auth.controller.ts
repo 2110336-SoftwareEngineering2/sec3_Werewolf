@@ -14,6 +14,10 @@ export class AuthController {
     try {
       var user = await this.usersService.validateUser(login.email, login.password)
       var result = { firstname: user.firstname, lastname: user.lastname, role: user.role }
+      if (user.role === "maid") {
+        var maid = await this.usersService.findMaid(login.email)
+        Object.assign(result, {avgRating: maid.avgRating});
+      }
       return result;
     } catch (error) {
       throw error;

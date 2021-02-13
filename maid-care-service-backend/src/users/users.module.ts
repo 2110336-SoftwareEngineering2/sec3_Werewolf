@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { DatabaseModule } from '../database/database.module';
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
+import { MaidsProviders } from './maids.providers';
 import { UsersProviders } from './users.providers';
 
 @Module({
@@ -9,7 +10,8 @@ import { UsersProviders } from './users.providers';
   controllers: [UsersController],
   providers: [
     UsersService,
-    ...UsersProviders,
+    ...MaidsProviders,
+    ...UsersProviders
   ],
   exports: [UsersService]
 })

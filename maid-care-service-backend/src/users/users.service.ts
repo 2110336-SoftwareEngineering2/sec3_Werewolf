@@ -1,6 +1,7 @@
 import { Injectable, Inject, BadRequestException, UnauthorizedException, ForbiddenException, ConflictException  } from '@nestjs/common';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
+import { Maid } from './interfaces/maids.interface';
 import { User } from './interfaces/users.interface';
 import { UserDto } from './dto/user.dto';
 
@@ -9,16 +10,20 @@ const saltRounds = 10;
 @Injectable()
 export class UsersService {
   constructor(
-    @Inject('USER_MODEL')
-    private userModel: Model<User>,
+    @Inject('MAID_MODEL') private maidModel: Model<Maid>,
+    @Inject('USER_MODEL') private userModel: Model<User>
   ) {}
 
-  async findOne(email: string): Promise<User> {
+  async findUser(email: string): Promise<User> {
     return this.userModel.findOne({email: email}).exec();
   }
 
+  async findMaid(email: string): Promise<Maid> {
+    return this.maidModel.findOne({email: email}).exec();
+  }
+
   async validateUser(email: string, pass: string): Promise<User> {
-    var user = await this.findOne(email);
+    var user = await this.findUser(email);
     if (!user) throw new UnauthorizedException('Invalid user');
     var isValidPass = await bcrypt.compare(pass, user.password);
     if (!isValidPass) throw new UnauthorizedException('Incorrect password');
@@ -28,8 +33,12 @@ export class UsersService {
 
   async createNewUser(newUser: UserDto): Promise<User> {
     if(this.isValidEmail(newUser.email) && newUser.password && this.isValidRole(newUser.role)){
-      var userRegistered = await this.findOne(newUser.email);
+      var userRegistered = await this.findUser(newUser.email);
       if (!userRegistered) {
+        if (newUser.role === "maid") {
+          var createdMaid = new this.maidModel(newUser);
+          await createdMaid.save();
+        }
         newUser.password = await bcrypt.hash(newUser.password, saltRounds);
         var createdUser = new this.userModel(newUser);
         return await createdUser.save();
