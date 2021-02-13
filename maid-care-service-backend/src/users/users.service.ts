@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, BadRequestException, ForbiddenException  } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { User } from './interfaces/users.interface';
 import { UserDto } from './dto/user.dto';
@@ -17,22 +17,21 @@ export class UsersService {
     return this.userModel.findOne({email: email}).exec();
   }
 
-  async createNewUser(newUser: UserDto): Promise<boolean> {
+  async createNewUser(newUser: UserDto): Promise<User> {
     if(this.isValidEmail(newUser.email) && newUser.password && this.isValidRole(newUser.role)){
       var userRegistered = await this.findOne(newUser.email);
-      if(userRegistered) return false;
+      if (userRegistered) throw new ForbiddenException('User already registered');
       newUser.password = await bcrypt.hash(newUser.password, saltRounds);
       var createdUser = new this.userModel(newUser);
-      await createdUser.save();
-      return true;
+      return await createdUser.save();
     } else {
-      return false;
+      throw new BadRequestException();
     }
   }
-  
+
   async updateProfile(userDto: UserDto): Promise<User> {
     let userFromDb = await this.userModel.findOne({ email: userDto.email});
-    if(!userFromDb) return null;
+    if(!userFromDb) throw new ForbiddenException('Invalid user');
     if(userDto.firstname) userFromDb.firstname = userDto.firstname;
     if(userDto.lastname) userFromDb.lastname = userDto.lastname;
     await userFromDb.save();
@@ -45,7 +44,7 @@ export class UsersService {
       return re.test(email);
     } else return false
   }
-  
+
   isValidRole (role : string){
     return role === "customer" || role === "maid" || role === "admin";
   }

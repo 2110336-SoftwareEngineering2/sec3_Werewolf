@@ -5,14 +5,15 @@ import { UserDto } from './dto/user.dto';
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService ) {}
-  
+
   @Post('update-profile')
   async updateProfile(@Body() userDto: UserDto):Promise<any> {
-    var user =  await this.usersService.updateProfile(userDto);
-    if (!user) {
-      return false;
+    try {
+      var user =  await this.usersService.updateProfile(userDto);
+      var result = { firstname: user.firstname, lastname: user.lastname }
+      return result;
+    } catch(error){
+      throw error;
     }
-	var result = { firstname: user.firstname, lastname: user.lastname }
-    return result;
   }
 }
