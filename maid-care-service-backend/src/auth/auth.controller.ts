@@ -21,10 +21,10 @@ export class AuthController {
       var result = { firstname: user.firstname, lastname: user.lastname, role: user.role }
       if (user.role === "customer") {
         var customer = await this.customerService.findCustomer(login.email)
-        Object.assign(result, {g_coin: customer.g_coin});
+        if (customer) Object.assign(result, {g_coin: customer.g_coin});
       } else if (user.role === "maid") {
         var maid = await this.maidsService.findMaid(login.email)
-        Object.assign(result, {avgRating: maid.avgRating});
+        if (maid) Object.assign(result, {avgRating: maid.avgRating});
       }
       return result;
     } catch (error) {

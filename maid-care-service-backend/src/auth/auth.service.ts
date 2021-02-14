@@ -3,7 +3,6 @@ import { Model } from 'mongoose';
 import * as nodemailer from 'nodemailer';
 import { UsersService } from '../users/users.service';
 import { EmailVerification } from './interfaces/emailverification.interface';
-import {default as config} from '../config';
 
 @Injectable()
 export class AuthService {
@@ -27,22 +26,22 @@ export class AuthService {
     if (model && model.token) {
       let transporter = nodemailer.createTransport({
         service: 'Gmail',
-        secure: config.mail.secure, // true for 465, false for other ports
+        secure: false, // true for 465, false for other ports
         auth: {
-          user: config.mail.user,
-          pass: config.mail.pass
+          user: process.env.MAIL_USERNAME,
+          pass: process.env.MAIL_PASSWORD
         },
         tls: {
           rejectUnauthorized:false
         }
       });
       let mailOptions = {
-        from: '"Werewolf" <' + config.mail.user + '>', 
+        from: '"Werewolf" <' + process.env.MAIL_USERNAME + '>', 
         to: email,
         subject: 'Email Verification', 
         text: 'Email Verification', 
         html: 'Hello! <br><br> Thanks for your registration<br><br>'+
-        '<a href='+ config.host.url + ':' + config.host.port +'/auth/verify/'+ model.token + '>Click here to activate your account</a>'
+        '<a href='+ process.env.SERVER_URL + ':' + process.env.SERVER_PORT +'/auth/verify/'+ model.token + '>Click here to activate your account</a>'
       };
       var sent = await new Promise<boolean>(async function(resolve, reject) {
         return await transporter.sendMail(mailOptions, async (error, info) => {

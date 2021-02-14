@@ -1,12 +1,11 @@
 import * as mongoose from 'mongoose';
-import {default as config} from '../config';
 
 export const databaseProviders = [
   {
     provide: 'DATABASE_CONNECTION',
     useFactory: (): Promise<typeof mongoose> =>
-      mongoose.connect('mongodb://' + (config.db.user?(config.db.user + ':' + config.db.pass + '@'):'') 
-        + config.db.host + ':' + config.db.port + '/' + config.db.database + '?authSource=' + config.db.authSource, 
-        {useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false }),
+      mongoose.connect('mongodb://' + (process.env.DB_USERNAME?(process.env.DB_USERNAME + ':' + process.env.DB_PASSWORD + '@'):'') 
+        + process.env.DB_HOST + ':' + process.env.DB_PORT + '/' + process.env.DB_DATABASE + '?authSource=' + process.env.DB_AUTHSOURCE, 
+        {useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false })
   },
 ];
