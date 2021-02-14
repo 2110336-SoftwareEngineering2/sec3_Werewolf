@@ -2,23 +2,8 @@ version: '3'
 
 services:
 
-  mongo:
-    image: mongo:3.6.21-xenial
-    container_name: 'mongodb'
-    restart: always
-    environment:
-      MONGO_INITDB_DATABASE: maid_care_service_database
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: password
+  backend:
+    container_name: maid-care-service-backend
+    restart: unless-stopped
     ports:
-      - '27017:27017'
-    volumes:
-      - ./mongodb/db:/data/db
-      - mongo_data:/data/db
-    networks:
-      - webnet
-
-networks:
-  webnet:
-volumes:
-  mongo_data:
+      - "3000":"3000"
