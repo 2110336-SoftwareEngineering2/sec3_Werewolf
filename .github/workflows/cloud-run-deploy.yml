@@ -48,7 +48,7 @@ jobs:
         with:
           node-version: 14.x
       - name: Install Dependencies
-        run: npm run install --production
+        run: npm install --production
       - name: Build Nest Project
         run: npm run build
       - name: Build docker image
