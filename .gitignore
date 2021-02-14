@@ -1,3 +1,66 @@
 maid-care-service-frontend/node_modules
 maid-care-service-backend/node_modules
+maid-care-service-backend/dist/
 
+maid-care-service-frontend/.env
+maid-care-service-backend/.env
+
+
+# Frontend Gitignore
+# dependencies
+maid-care-service-frontend/node_modules
+maid-care-service-frontend/.pnp
+maid-care-service-frontend/.pnp.js
+
+# testing
+maid-care-service-frontend/coverage
+
+# production
+maid-care-service-frontend/build
+
+# misc
+maid-care-service-frontend/.DS_Store
+maid-care-service-frontend/.env.local
+maid-care-service-frontend/.env.development.local
+maid-care-service-frontend/.env.test.local
+maid-care-service-frontend/.env.production.local
+
+maid-care-service-frontend/npm-debug.log*
+maid-care-service-frontend/yarn-debug.log*
+maid-care-service-frontend/yarn-error.log*
+
+# Backend Gitignore
+# compiled output
+/dist
+/node_modules
+
+# Logs
+maid-care-service-backend/logs
+maid-care-service-backend/*.log
+maid-care-service-backend/npm-debug.log*
+maid-care-service-backend/yarn-debug.log*
+maid-care-service-backend/yarn-error.log*
+maid-care-service-backend/lerna-debug.log*
+
+# OS
+.DS_Store
+
+# Tests
+maid-care-service-backend/coverage
+maid-care-service-backend/.nyc_output
+
+# IDEs and editors
+maid-care-service-backend/.idea
+maid-care-service-backend/.project
+maid-care-service-backend/.classpath
+maid-care-service-backend/.c9/
+maid-care-service-backend/*.launch
+maid-care-service-backend/.settings/
+maid-care-service-backend/*.sublime-workspace
+
+# IDE - VSCode
+maid-care-service-backend/.vscode/*
+maid-care-service-backend/!.vscode/settings.json
+maid-care-service-backend/!.vscode/tasks.json
+maid-care-service-backend/!.vscode/launch.json
+maid-care-service-backend/!.vscode/extensions.json
