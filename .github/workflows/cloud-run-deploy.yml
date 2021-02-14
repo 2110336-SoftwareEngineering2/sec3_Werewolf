@@ -35,6 +35,7 @@ jobs:
     # skip test for now
       
   deploy-cloud-run:
+    needs: [build-and-test]
     runs-on: ubuntu-latest
     
     strategy:
@@ -59,7 +60,7 @@ jobs:
 
       - name: Configure Docker
         run: |
-          gcloud aith configure-docker
+          gcloud auth configure-docker
         
       - name: Build
         run: |
