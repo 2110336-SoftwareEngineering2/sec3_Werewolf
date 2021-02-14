@@ -1,11 +1,11 @@
 import { Controller, Body, Post, UseGuards } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { UsersService } from './users.service';
 import { UserDto } from './dto/user.dto';
 import { CreatePromotionDto } from './dto/create-promotion.dto';
 
 @Controller('users')
-//@UseGuards(AuthGuard('jwt'))
+//@UseGuards(JwtAuthGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 

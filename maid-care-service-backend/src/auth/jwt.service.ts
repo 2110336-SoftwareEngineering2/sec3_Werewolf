@@ -10,7 +10,7 @@ export class JWTService {
   async createToken(email, role) {
     const expiresIn = 36000000,
       secretOrKey = "secret";
-    const userInfo = { email: email, roles: [role]};
+    const userInfo = { email: email, role: role};
     const token = jwt.sign(userInfo, secretOrKey, { expiresIn });
     return {
       expires_in: expiresIn,
