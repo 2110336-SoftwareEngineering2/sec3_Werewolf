@@ -26,7 +26,10 @@ export class UsersService {
   async createNewUser(newUser: UserDto): Promise<User> {
     var userRegistered = await this.findUser(newUser.email);
     if (!userRegistered) {
-      if (!this.isValidEmail(newUser.email) || !newUser.password || !this.isValidRole(newUser.role)) throw new BadRequestException();
+      if (!this.isValidEmail(newUser.email)) throw new BadRequestException('Bad email');
+      if (!newUser.password) throw new BadRequestException('No password');
+      if (newUser.phone && !this.isValidPhoneNumber(newUser.phone)) throw new BadRequestException('Bad phone number');
+      if (!this.isValidRole(newUser.role)) throw new BadRequestException('Invalid role');
       newUser.password = await bcrypt.hash(newUser.password, saltRounds);
       var createdUser = new this.userModel(newUser);
       return await createdUser.save();
@@ -45,18 +48,29 @@ export class UsersService {
     }
     if (userDto.firstname) userFromDb.firstname = userDto.firstname;
     if (userDto.lastname) userFromDb.lastname = userDto.lastname;
+	if (userDto.phone ) {
+      if (!this.isValidPhoneNumber(userDto.phone)) throw new BadRequestException('Bad phone number');
+      userFromDb.phone = userDto.phone;
+	}
     await userFromDb.save();
     return userFromDb;
   }
 
-  isValidEmail (email : string){
+  isValidEmail(email : string){
     if (email) {
       var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
       return re.test(email);
     } else return false
   }
+  
+  isValidPhoneNumber(phone : string){
+	if (phone) {
+      var phoneno = /^\d{10}$/;
+      return phoneno.test(phone);
+    } else return false
+  }
 
-  isValidRole (role : string){
+  isValidRole(role : string){
     return role === "customer" || role === "maid" || role === "admin";
   }
 }

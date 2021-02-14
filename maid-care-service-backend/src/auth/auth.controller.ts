@@ -18,7 +18,7 @@ export class AuthController {
   async login(@Body() login: Login) {
     try {
       var user = await this.usersService.validateUser(login.email, login.password)
-      var result = { firstname: user.firstname, lastname: user.lastname, role: user.role }
+      var result = { firstname: user.firstname, lastname: user.lastname, phone: user.phone, role: user.role }
       if (user.role === "customer") {
         var customer = await this.customerService.findCustomer(login.email)
         if (customer) Object.assign(result, {g_coin: customer.g_coin});
@@ -41,7 +41,7 @@ export class AuthController {
       await this.authService.createEmailToken(user.email);
       var isEmailSent = await this.authService.sendEmailVerification(user.email);
 	  if (!isEmailSent) throw new UnprocessableEntityException();
-      var result = { email:user.email, firstname: user.firstname, lastname: user.lastname, role: user.role }
+      var result = { email:user.email, firstname: user.firstname, lastname: user.lastname, phone: user.phone, role: user.role }
       return result;
 	} catch (error) {
       throw error;

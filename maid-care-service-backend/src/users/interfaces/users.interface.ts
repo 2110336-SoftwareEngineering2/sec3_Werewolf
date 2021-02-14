@@ -5,6 +5,7 @@ export interface User extends Document{
   password: string;
   firstname: string;
   lastname: string;
+  phone: string;
   role: string;
   valid: boolean;
 }

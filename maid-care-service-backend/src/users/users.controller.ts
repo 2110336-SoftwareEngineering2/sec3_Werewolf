@@ -10,7 +10,7 @@ export class UsersController {
   async updateProfile(@Body() userDto: UserDto):Promise<any> {
     try {
       var user =  await this.usersService.updateProfile(userDto);
-      var result = { firstname: user.firstname, lastname: user.lastname }
+      var result = { firstname: user.firstname, lastname: user.lastname, phone: user.phone }
       return result;
     } catch (error) {
       throw error;

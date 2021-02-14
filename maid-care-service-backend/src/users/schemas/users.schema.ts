@@ -5,6 +5,7 @@ export const UserSchema = new mongoose.Schema({
   password: String,
   firstname: String,
   lastname: String,
+  phone: String,
   role: String,
   valid : { type: Boolean, default: false }
 });
