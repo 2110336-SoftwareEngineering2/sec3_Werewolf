@@ -22,7 +22,7 @@ RUN npm run build
 
 FROM base AS release
 COPY --from=builder /tmp/node_modules ./node_modules
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/package.json ./
+COPY --from=builder usr/src/app/dist ./dist
+COPY --from=builder usr/src/app/package.json ./
 
 CMD ["npm", "run", "start:prod"]
