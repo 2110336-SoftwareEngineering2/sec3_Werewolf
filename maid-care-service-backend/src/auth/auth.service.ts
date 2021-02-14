@@ -1,13 +1,54 @@
 import { Injectable, Inject, UnauthorizedException, ForbiddenException, UnprocessableEntityException } from '@nestjs/common';
-import { Model } from 'mongoose';
+import * as bcrypt from 'bcrypt';
 import * as nodemailer from 'nodemailer';
+import { Model } from 'mongoose';
+import { JWTService } from './jwt.service';
+import { CustomerService } from '../customer/customer.service';
+import { MaidsService } from '../maids/maids.service';
 import { UsersService } from '../users/users.service';
 import { EmailVerification } from './interfaces/emailverification.interface';
+import { UserDto } from '../users/dto/user.dto';
 
 @Injectable()
 export class AuthService {
   constructor(@Inject('EmailVerification_MODEL') private emailVerificationModel: Model<EmailVerification>,
+    private jwtService: JWTService,
+    private customerService: CustomerService,
+    private maidsService: MaidsService,
     private usersService: UsersService) {}
+
+  async validateLogin(email, pass) {
+	try {
+      var user = await this.usersService.findUser(email);
+	} catch (error) {
+      throw error;
+    }
+    if (!user) throw new UnauthorizedException('Invalid user');
+	var isValidPass = await bcrypt.compare(pass, user.password);
+    if (!isValidPass) throw new UnauthorizedException('Incorrect password');
+    if(!user.valid) throw new UnauthorizedException('Email not verified');
+    var result = { firstname: user.firstname, lastname: user.lastname, phone: user.phone, role: user.role }
+    if (user.role === "customer") {
+      var customer = await this.customerService.findCustomer(email)
+      if (customer) Object.assign(result, {g_coin: customer.g_coin});
+    } else if (user.role === "maid") {
+      var maid = await this.maidsService.findMaid(email)
+      if (maid) Object.assign(result, {avgRating: maid.avgRating});
+    }
+    var accessToken =  await this.jwtService.createToken(email, user.role);
+    return { token: accessToken, user: result}
+  }
+  
+  async register(createUserDto: UserDto) {
+	try {
+      var user = await this.usersService.createNewUser(createUserDto);
+      if (user.role === "customer") await this.customerService.createNewCustomer(user.email);
+      else if (user.role === "maid") await this.maidsService.createNewMaid(user.email);
+      return user;
+	} catch (error) {
+      throw error;
+    }
+  }
 
   async createEmailToken(email: string): Promise<boolean> {
     var emailVerificationModel = await this.emailVerificationModel.findOneAndUpdate( 

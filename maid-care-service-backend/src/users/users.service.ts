@@ -17,15 +17,6 @@ export class UsersService {
     return this.userModel.findOne({email: email}).exec();
   }
 
-  async validateUser(email: string, pass: string): Promise<User> {
-    var user = await this.findUser(email);
-    if (!user) throw new UnauthorizedException('Invalid user');
-    var isValidPass = await bcrypt.compare(pass, user.password);
-    if (!isValidPass) throw new UnauthorizedException('Incorrect password');
-    if(!user.valid) throw new UnauthorizedException('Email not verified');
-    return user;
-  }
-
   async createNewUser(newUser: UserDto): Promise<User> {
     var userRegistered = await this.findUser(newUser.email);
     if (!userRegistered) {
@@ -45,7 +36,7 @@ export class UsersService {
 
   async updateProfile(userDto: UserDto): Promise<User> {
     try {
-      var userFromDb = await this.validateUser(userDto.email, userDto.password);
+      var userFromDb = await this.findUser(userDto.email);
     } catch (error) {
       throw new ForbiddenException(error.message);
     }
@@ -61,7 +52,7 @@ export class UsersService {
 
   async createPromotion(createPromotionDto: CreatePromotionDto): Promise<Promotion> {
     try {
-      var admin = await this.validateUser(createPromotionDto.email, createPromotionDto.password);
+      var admin = await this.findUser(createPromotionDto.email);
     } catch (error) {
       throw new ForbiddenException(error.message);
     }
