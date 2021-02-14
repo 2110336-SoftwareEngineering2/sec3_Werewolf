@@ -5,9 +5,9 @@ name: Backend
 
 on:
   push:
-    branches: [ main ]
+    branches: [ backend ]
   pull_request:
-    branches: [ main ]
+    branches: [ backend ]
 
 defaults:
   run:
