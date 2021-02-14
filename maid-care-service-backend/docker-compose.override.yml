@@ -1,11 +1,11 @@
-version: "3"
+version: '3'
 
 services:
   backend:
     image: node:14
     volumes:
       - .:/usr/src/app
-    command: yarn start:dev
+    command: sh -c 'cd /usr/src/app && yarn && yarn start:dev'
     env_file:
       - .env
     environment:

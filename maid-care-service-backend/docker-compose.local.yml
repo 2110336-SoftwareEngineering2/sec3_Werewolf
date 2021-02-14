@@ -1,4 +1,4 @@
-version: "3"
+version: '3'
 
 services:
   backend:
@@ -8,19 +8,21 @@ services:
       - .:/usr/src/app
     env_file:
       - .env
-    command: yarn start:dev
+    command: sh -c 'cd /usr/src/app && yarn && yarn start:dev'
     environment:
       NODE_ENV: development
       MONGO_URL: mongodb://mongo:27017/maid-care-service
+    ports:
+      - '3000:3000'
     depends_on:
       - mongo
-    
+
   mongo:
     container_name: maid-care-service-mongo
     image: mongo:4
     restart: unless-stopped
     ports:
-      - "27017:27017"
+      - '27017:27017'
     volumes:
       - ./mongodb/db:/data/db
       - ./mongodb/config:/data/configdb
