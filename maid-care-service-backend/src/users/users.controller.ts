@@ -4,7 +4,7 @@ import { UserDto } from './dto/user.dto';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService ) {}
+  constructor(private readonly usersService: UsersService) {}
 
   @Post('update-profile')
   async updateProfile(@Body() userDto: UserDto):Promise<any> {

@@ -4,7 +4,7 @@ import { Maid } from './interfaces/maids.interface';
 
 @Injectable()
 export class MaidsService {
-  constructor(@Inject('MAID_MODEL') private maidModel: Model<Maid>,) {}
+  constructor(@Inject('MAID_MODEL') private maidModel: Model<Maid>) {}
 
   async findMaid(email: string): Promise<Maid> {
     return this.maidModel.findOne({email: email}).exec();
@@ -17,5 +17,6 @@ export class MaidsService {
       var createdMaid = new this.maidModel(newMaid);
       return await createdMaid.save();
     }
+    return maidRegistered;
   }
 }
