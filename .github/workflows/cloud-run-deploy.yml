@@ -63,6 +63,7 @@ jobs:
       - name: Configure Docker
         run: |
           gcloud auth configure-docker
+          gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
         
       - name: Build
         run: |
@@ -78,5 +79,5 @@ jobs:
             --region asia-southeast1 \
             --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/maid-care-backend:latest \
             --platform managed \
-            --allow-unauthenticated \
+            --no-allow-unauthenticated \
             --project ${{ secrets.GCP_PROJECT_ID }}
