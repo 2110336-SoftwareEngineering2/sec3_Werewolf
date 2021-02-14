@@ -6,8 +6,6 @@ name: Backend
 on:
   push:
     branches: [ backend ]
-  pull_request:
-    branches: [ backend ]
   
   workflow_dispatch:
 
@@ -35,7 +33,25 @@ jobs:
 #       skip test for now
 #     - name: Run Test
 #       run: npm run test
-      
+
+    - uses: sarisia/actions-status-discord@v1
+      if: success()
+      with:
+        webhook: ${{ secrets.DISCORD_WEBHOOK }}
+        title: "Run Test"
+        description: "Congrat! Your PR passed the test"
+        color: 0x28a745
+        username: Werewolf GitHub Actions
+    
+    - uses: sarisia/actions-status-discord@v1
+      if: failure()
+      with:
+        webhook: ${{ secrets.DISCORD_WEBHOOK }}
+        title: "Run Test"
+        description: "Sorry, but your is shit!"
+        color: 0xd73a49
+        username: Werewolf GitHub Actions
+        
   build_and_deploy:
     name: Build Docker Image and deploy to Cloud Run
     runs-on: ubuntu-latest
@@ -73,4 +89,22 @@ jobs:
           region: asia-east1
           env: .env
           service key: ${{ secrets.GCP_SA_KEY_BASE64 }}
+      
+      - uses: sarisia/actions-status-discord@v1
+        if: success()
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          title: "Deploy to Cloud Run"
+          description: "Congrat! deploy successfully"
+          color: 0x28a745
+          username: Werewolf GitHub Actions
+
+      - uses: sarisia/actions-status-discord@v1
+        if: failure()
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          title: "Deploy to Cloud Run"
+          description: "Sorry, something wrong here"
+          color: 0xd73a49
+          username: Werewolf GitHub Actions
     
