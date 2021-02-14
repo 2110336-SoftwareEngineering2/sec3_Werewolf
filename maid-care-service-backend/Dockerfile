@@ -1,30 +1,28 @@
-FROM node:14.15.4-alpine AS development
+FROM node:14.15.4-alpine AS base
 
 WORKDIR /usr/src/app
 
+FROM base AS development
+
 COPY package*.json ./
 
-RUN npm install --only=development
+RUN npm install --production
+RUN cp -R node_modules /tmp/node_modules
 
-COPY . .
+RUN npm install
 
-RUN npm install rimraf
+COPY . ./
+
+FROM development AS builder
+## skip test for now
+# RUN npm run lint
+# RUN npm run test:cov
+# RUN npm run test:e2e
 RUN npm run build
 
-FROM node:14.15.4-alpine AS production
+FROM base AS release
+COPY --from=builder /tmp/node_modules ./node_modules
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/package.json ./
 
-ARG NODE_ENV=production
-ENV NODE_ENV=${NODE_ENV}}
-
-WORKDIR /urs/src/app
-
-COPY package*.json ./
-
-RUN npm install --only=production
-EXPOSE 3000
-
-COPY . .
-
-COPY --from=development /usr/src/app/dist ./dist
-
-CMD ["node", "dist/main"]
+CMD ["npm", "run", "start:prod"]
