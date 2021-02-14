@@ -54,18 +54,23 @@ jobs:
       - name: Build docker image
         run: docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/maid-care-backend:${{ github.sha }} .
           
-      - name: Deploy to Cloud Run
-        uses: google-github-actions/deploy-cloudrun@v0.3.0
+      - name: Create .env
+        run: |
+          cat > .env << EOF1
+          NODE_ENV=production
+          GCP_PROJECT_ID=${{ secrets.GCP_PROJECT_ID }}
+          GCP_SA_KEY=${{ secrets.GCP_SA_KEY }}
+          MONGO_URL=${{secrets.MONGO_URL }}
+          SECRET=${{ secrets.SECRET }}
+          EOF1
+        
+      - name: Deploy service to Cloud Run
+        uses: stefda/action-cloud-run@v1.0
         with:
           image: gcr.io/${{ secrets.GCP_PROJECT_ID }}/maid-care-backend:${{ github.sha }}
           service: maid-care-service-backend
-          region: asia-southeast1
-          env_vars: 
-            NODE_ENV=production
-            GCP_PROJECT_ID=${{ secrets.GCP_PROJECT_ID }}
-            GCP_SA_KEY=${{ secrets.GCP_SA_KEY }}
-            MONGO_URL=${{secrets.MONGO_URL }}
-            SECRET=${{ secrets.SECRET }}
-          project_id: ${{ secrets.GCP_PROJECT_ID }}
-          credentials: true
+          project: ${{ secrets.GCP_PROJECT_ID }}
+          region: asia-east1
+          env: .env
+          service key: ${{ secrets.GCP_SA_KEY }}
     
