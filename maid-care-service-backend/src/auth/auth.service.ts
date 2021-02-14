@@ -1,4 +1,4 @@
-import { Injectable, Inject, ForbiddenException, UnprocessableEntityException } from '@nestjs/common';
+import { Injectable, Inject, UnauthorizedException, ForbiddenException, UnprocessableEntityException } from '@nestjs/common';
 import { Model } from 'mongoose';
 import * as nodemailer from 'nodemailer';
 import { UsersService } from '../users/users.service';
@@ -73,7 +73,7 @@ export class AuthService {
         throw new ForbiddenException('Invalid user');
       }
     } else {
-      throw new ForbiddenException('Code not valid');
+      throw new UnauthorizedException('Code not valid');
     }
   }
 }

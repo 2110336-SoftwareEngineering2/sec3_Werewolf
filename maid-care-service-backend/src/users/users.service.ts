@@ -2,13 +2,16 @@ import { Injectable, Inject, BadRequestException, UnauthorizedException, Forbidd
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { User } from './interfaces/users.interface';
+import { Promotion } from './interfaces/promotion.interface';
 import { UserDto } from './dto/user.dto';
+import { CreatePromotionDto } from './dto/create-promotion.dto';
 
 const saltRounds = 10;
 
 @Injectable()
 export class UsersService {
-  constructor(@Inject('USER_MODEL') private userModel: Model<User>) {}
+  constructor(@Inject('USER_MODEL') private userModel: Model<User>,
+    @Inject('PROMOTION_MODEL') private promotionModel: Model<Promotion>) {}
 
   async findUser(email: string): Promise<User> {
     return this.userModel.findOne({email: email}).exec();
@@ -42,9 +45,9 @@ export class UsersService {
 
   async updateProfile(userDto: UserDto): Promise<User> {
     try {
-      var userFromDb = await this.validateUser(userDto.email, userDto.password)
+      var userFromDb = await this.validateUser(userDto.email, userDto.password);
     } catch (error) {
-      throw new ForbiddenException('Invalid user');
+      throw new ForbiddenException(error.message);
     }
     if (userDto.firstname) userFromDb.firstname = userDto.firstname;
     if (userDto.lastname) userFromDb.lastname = userDto.lastname;
@@ -54,6 +57,19 @@ export class UsersService {
 	}
     await userFromDb.save();
     return userFromDb;
+  }
+
+  async createPromotion(createPromotionDto: CreatePromotionDto): Promise<Promotion> {
+    try {
+      var admin = await this.validateUser(createPromotionDto.email, createPromotionDto.password);
+    } catch (error) {
+      throw new ForbiddenException(error.message);
+    }
+    if (admin.role === "admin") {
+      var createdPromotion = new this.promotionModel(createPromotionDto);
+      createdPromotion.creater = admin.email;
+      return await createdPromotion.save();
+    } else throw new UnauthorizedException('user is not admin');
   }
 
   isValidEmail(email : string){
