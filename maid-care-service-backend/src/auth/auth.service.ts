@@ -82,7 +82,7 @@ export class AuthService {
         subject: 'Email Verification', 
         text: 'Email Verification', 
         html: 'Hello! <br><br> Thanks for your registration<br><br>'+
-        '<a href='+ process.env.SERVER_URL + ':' + process.env.SERVER_PORT +'/auth/verify/'+ model.token + '>Click here to activate your account</a>'
+        '<a href='+ process.env.SERVER_URL +'/auth/verify/'+ model.token + '>Click here to activate your account</a>'
       };
       var sent = await new Promise<boolean>(async function(resolve, reject) {
         return await transporter.sendMail(mailOptions, async (error, info) => {
