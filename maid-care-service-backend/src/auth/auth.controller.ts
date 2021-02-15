@@ -23,10 +23,9 @@ export class AuthController {
       var user = await this.authService.register(createUserDto);
       await this.authService.createEmailToken(user.email);
       var isEmailSent = await this.authService.sendEmailVerification(user.email);
-	  if (!isEmailSent) throw new UnprocessableEntityException();
-      var result = { email:user.email, firstname: user.firstname, lastname: user.lastname, phone: user.phone, role: user.role }
-      return result;
-	} catch (error) {
+      if (!isEmailSent) throw new UnprocessableEntityException();
+      return { email:user.email, firstname: user.firstname, lastname: user.lastname, phone: user.phone, role: user.role };
+    } catch (error) {
       throw error;
     }
   }

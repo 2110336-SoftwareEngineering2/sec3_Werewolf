@@ -4,7 +4,7 @@ import * as bcrypt from 'bcrypt';
 import { User } from './interfaces/users.interface';
 import { Promotion } from './interfaces/promotion.interface';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UserDto } from './dto/user.dto';
+import { ProfileDto } from './dto/profile.dto';
 import { CreatePromotionDto } from './dto/create-promotion.dto';
 
 const saltRounds = 10;
@@ -35,14 +35,14 @@ export class UsersService {
     }
   }
 
-  async updateProfile(userDto: UserDto): Promise<User> {
-    var userFromDb = await this.findUser(userDto.email);
+  async updateProfile(email: string, newProfile: ProfileDto): Promise<User> {
+    var userFromDb = await this.findUser(email);
     if (!userFromDb)  throw new ForbiddenException('Invalid user');
-    if (userDto.firstname) userFromDb.firstname = userDto.firstname;
-    if (userDto.lastname) userFromDb.lastname = userDto.lastname;
-	if (userDto.phone ) {
-      if (!this.isValidPhoneNumber(userDto.phone)) throw new BadRequestException('Bad phone number');
-      userFromDb.phone = userDto.phone;
+    if (newProfile.firstname) userFromDb.firstname = newProfile.firstname;
+    if (newProfile.lastname) userFromDb.lastname = newProfile.lastname;
+	if (newProfile.phone ) {
+      if (!this.isValidPhoneNumber(newProfile.phone)) throw new BadRequestException('Bad phone number');
+      userFromDb.phone = newProfile.phone;
 	}
     await userFromDb.save();
     return userFromDb;
@@ -52,12 +52,12 @@ export class UsersService {
     return this.promotionModel.findOne({code: code}).exec();
   }
 
-  async createPromotion(createPromotionDto: CreatePromotionDto): Promise<Promotion> {
-    var admin = await this.findUser(createPromotionDto.email);
+  async createPromotion(email: string, createPromotionDto: CreatePromotionDto): Promise<Promotion> {
+    var admin = await this.findUser(email);
     if (!admin)  throw new ForbiddenException('Invalid user');
     if (admin.role === "admin") {
       var createdPromotion = new this.promotionModel(createPromotionDto);
-      createdPromotion.creater = admin.email;
+      createdPromotion.creater = email;
       while (true) {
         var code = this.randomCode(12);
         if (!await this.findPromotion(code)) break;

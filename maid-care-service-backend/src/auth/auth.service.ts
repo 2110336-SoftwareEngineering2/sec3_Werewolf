@@ -23,7 +23,7 @@ export class AuthService {
 	var isValidPass = await bcrypt.compare(pass, user.password);
     if (!isValidPass) throw new UnauthorizedException('Incorrect password');
     if(!user.valid) throw new UnauthorizedException('Email not verified');
-    var result = { firstname: user.firstname, lastname: user.lastname, phone: user.phone, role: user.role }
+    var result = { firstname: user.firstname, lastname: user.lastname, phone: user.phone, role: user.role };
     if (user.role === "customer") {
       var customer = await this.customerService.findCustomer(email)
       if (customer) Object.assign(result, {g_coin: customer.g_coin});
@@ -32,7 +32,7 @@ export class AuthService {
       if (maid) Object.assign(result, {avgRating: maid.avgRating});
     }
     var accessToken =  await this.jwtService.createToken(email, user.role);
-    return { token: accessToken, user: result}
+    return { token: accessToken, user: result};
   }
   
   async register(createUserDto: CreateUserDto) {
