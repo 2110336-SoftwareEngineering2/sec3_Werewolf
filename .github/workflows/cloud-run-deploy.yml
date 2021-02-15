@@ -79,7 +79,7 @@ jobs:
           envkey_MONGO_URL: ${{ secrets.MONGO_URL }}
           envkey_SERVER_URL: ${{ secrets.SERVER_URL }}
           envkey_MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
-          envkey_MAIL_PASSWORD: ${{ secrets.MAIL_P`ASSWORD }}
+          envkey_MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
           envkey_SECRET: ${{ secrets.SECRET }}
       
       - name: Deploy service to Cloud Run
