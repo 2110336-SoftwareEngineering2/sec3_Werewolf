@@ -7,7 +7,7 @@ import { CustomerService } from '../customer/customer.service';
 import { MaidsService } from '../maids/maids.service';
 import { UsersService } from '../users/users.service';
 import { EmailVerification } from './interfaces/emailverification.interface';
-import { UserDto } from '../users/dto/user.dto';
+import { CreateUserDto } from '../users/dto/create-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -18,11 +18,7 @@ export class AuthService {
     private usersService: UsersService) {}
 
   async validateLogin(email, pass) {
-	try {
-      var user = await this.usersService.findUser(email);
-	} catch (error) {
-      throw error;
-    }
+	var user = await this.usersService.findUser(email);
     if (!user) throw new UnauthorizedException('Invalid user');
 	var isValidPass = await bcrypt.compare(pass, user.password);
     if (!isValidPass) throw new UnauthorizedException('Incorrect password');
@@ -39,7 +35,7 @@ export class AuthService {
     return { token: accessToken, user: result}
   }
   
-  async register(createUserDto: UserDto) {
+  async register(createUserDto: CreateUserDto) {
 	try {
       var user = await this.usersService.createNewUser(createUserDto);
       if (user.role === "customer") await this.customerService.createNewCustomer(user.email);
@@ -51,11 +47,15 @@ export class AuthService {
   }
 
   async createEmailToken(email: string): Promise<boolean> {
+    while (true) {
+      var token = (Math.floor(Math.random() * (9000000)) + 1000000).toString(); //Generate 7 digits number
+      if (!await this.emailVerificationModel.findOne({token: token})) break;
+    }
     var emailVerificationModel = await this.emailVerificationModel.findOneAndUpdate( 
       {email: email},
       { 
         email: email,
-        token: (Math.floor(Math.random() * (9000000)) + 1000000).toString(), //Generate 7 digits number
+        token: token
       },
       {upsert: true}
     );

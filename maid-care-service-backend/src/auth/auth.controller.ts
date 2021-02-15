@@ -2,7 +2,7 @@ import { Controller, Body, Param, Get, Post, UnprocessableEntityException } from
 import { AuthService } from './auth.service';
 import { User } from '../users/interfaces/users.interface';
 import { Login } from './interfaces/login.interface';
-import { UserDto } from '../users/dto/user.dto';
+import { CreateUserDto } from '../users/dto/create-user.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -18,7 +18,7 @@ export class AuthController {
   }
 
   @Post('register')
-  async register(@Body() createUserDto: UserDto): Promise<any> {
+  async register(@Body() createUserDto: CreateUserDto): Promise<any> {
 	try {
       var user = await this.authService.register(createUserDto);
       await this.authService.createEmailToken(user.email);

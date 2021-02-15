@@ -3,6 +3,7 @@ import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { User } from './interfaces/users.interface';
 import { Promotion } from './interfaces/promotion.interface';
+import { CreateUserDto } from './dto/create-user.dto';
 import { UserDto } from './dto/user.dto';
 import { CreatePromotionDto } from './dto/create-promotion.dto';
 
@@ -17,7 +18,7 @@ export class UsersService {
     return this.userModel.findOne({email: email}).exec();
   }
 
-  async createNewUser(newUser: UserDto): Promise<User> {
+  async createNewUser(newUser: CreateUserDto): Promise<User> {
     var userRegistered = await this.findUser(newUser.email);
     if (!userRegistered) {
       if (!this.isValidEmail(newUser.email)) throw new BadRequestException('Bad email');
@@ -35,11 +36,8 @@ export class UsersService {
   }
 
   async updateProfile(userDto: UserDto): Promise<User> {
-    try {
-      var userFromDb = await this.findUser(userDto.email);
-    } catch (error) {
-      throw new ForbiddenException(error.message);
-    }
+    var userFromDb = await this.findUser(userDto.email);
+    if (!userFromDb)  throw new ForbiddenException('Invalid user');
     if (userDto.firstname) userFromDb.firstname = userDto.firstname;
     if (userDto.lastname) userFromDb.lastname = userDto.lastname;
 	if (userDto.phone ) {
@@ -50,15 +48,21 @@ export class UsersService {
     return userFromDb;
   }
 
+  async findPromotion(code: string): Promise<Promotion> {
+    return this.promotionModel.findOne({code: code}).exec();
+  }
+
   async createPromotion(createPromotionDto: CreatePromotionDto): Promise<Promotion> {
-    try {
-      var admin = await this.findUser(createPromotionDto.email);
-    } catch (error) {
-      throw new ForbiddenException(error.message);
-    }
+    var admin = await this.findUser(createPromotionDto.email);
+    if (!admin)  throw new ForbiddenException('Invalid user');
     if (admin.role === "admin") {
       var createdPromotion = new this.promotionModel(createPromotionDto);
       createdPromotion.creater = admin.email;
+      while (true) {
+        var code = this.randomCode(12);
+        if (!await this.findPromotion(code)) break;
+      }
+      createdPromotion.code = code;
       return await createdPromotion.save();
     } else throw new UnauthorizedException('user is not admin');
   }
@@ -79,5 +83,15 @@ export class UsersService {
 
   isValidRole(role : string){
     return role === "customer" || role === "maid" || role === "admin";
+  }
+  
+  randomCode(length) {
+    var result = '';
+    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
   }
 }

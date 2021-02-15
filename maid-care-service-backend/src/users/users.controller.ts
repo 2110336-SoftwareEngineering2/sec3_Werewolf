@@ -1,11 +1,11 @@
 import { Controller, Body, Post, UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/passport/jwt-auth.guard';
 import { UsersService } from './users.service';
 import { UserDto } from './dto/user.dto';
 import { CreatePromotionDto } from './dto/create-promotion.dto';
 
 @Controller('users')
-//@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
@@ -24,7 +24,7 @@ export class UsersController {
   async createPromotion(@Body() createPromotionDto: CreatePromotionDto):Promise<any> {
     try {
       var promotion = await this.usersService.createPromotion(createPromotionDto);
-      var result = { code: promotion._id, description: promotion.description, availableDate: promotion.availableDate, expiredDate: promotion.expiredDate }
+      var result = { code: promotion.code, description: promotion.description, availableDate: promotion.availableDate, expiredDate: promotion.expiredDate }
       return result;
     } catch (error) {
       throw error;

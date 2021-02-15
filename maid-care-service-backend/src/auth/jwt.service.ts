@@ -1,5 +1,6 @@
 import * as jwt from 'jsonwebtoken';
 import { Injectable } from '@nestjs/common';
+import { jwtConstants } from './passport/constants';
 import { UsersService } from '../users/users.service';
 import { User } from '../users/interfaces/users.interface';
 
@@ -8,10 +9,9 @@ export class JWTService {
   constructor(private usersService: UsersService) {}
 
   async createToken(email, role) {
-    const expiresIn = 36000000,
-      secretOrKey = "secret";
+    const expiresIn = 36000000;
     const userInfo = { email: email, role: role};
-    const token = jwt.sign(userInfo, secretOrKey, { expiresIn });
+    const token = jwt.sign(userInfo, jwtConstants.secret, { expiresIn });
     return {
       expires_in: expiresIn,
       access_token: token,
