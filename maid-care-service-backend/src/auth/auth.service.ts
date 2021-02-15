@@ -1,4 +1,4 @@
-import { Injectable, Inject, UnauthorizedException, ForbiddenException, UnprocessableEntityException } from '@nestjs/common';
+import { Injectable, Inject, UnauthorizedException, ForbiddenException, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import * as nodemailer from 'nodemailer';
 import { Model } from 'mongoose';
@@ -17,7 +17,7 @@ export class AuthService {
     private maidsService: MaidsService,
     private usersService: UsersService) {}
 
-  async validateLogin(email, pass) {
+  async validateLogin(email: string, pass: string) {
 	var user = await this.usersService.findUser(email);
     if (!user) throw new UnauthorizedException('Invalid user');
 	var isValidPass = await bcrypt.compare(pass, user.password);
@@ -116,5 +116,20 @@ export class AuthService {
     } else {
       throw new UnauthorizedException('Code not valid');
     }
+  }
+
+  async deleteUser(email: string, pass: string) {
+    var user = await this.usersService.findUser(email);
+    if (!user) throw new NotFoundException('User not valid');
+    var isValidPass = await bcrypt.compare(pass, user.password);
+    if (!isValidPass) throw new UnauthorizedException('Incorrect password');
+    if (user.role === "customer") {
+      var customer = await this.customerService.findCustomer(email);
+      if (customer) await customer.remove();
+    } else if (user.role === "maid") {
+      var maid = await this.maidsService.findMaid(email);
+      if (maid) await maid.remove();
+    }
+    return await user.remove();
   }
 }

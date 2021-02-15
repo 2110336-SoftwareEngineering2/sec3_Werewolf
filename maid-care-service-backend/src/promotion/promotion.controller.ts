@@ -28,7 +28,7 @@ export class PromotionController {
   async removePromotion(@Request() req, @Param('code') code: string) {
     if (req.user.role === "admin") {
         try {
-		  return await this.promotionService.removePromotion(code);
+          return await this.promotionService.removePromotion(code);
         } catch (error) {
           throw error;
         }

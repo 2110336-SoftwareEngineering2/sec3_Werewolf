@@ -1,4 +1,4 @@
-import { Controller, Body, Param, Get, Post, UnprocessableEntityException } from '@nestjs/common';
+import { Controller, Body, Param, Get, Post, Delete, UnprocessableEntityException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { User } from '../users/interfaces/users.interface';
 import { Login } from './interfaces/login.interface';
@@ -48,6 +48,15 @@ export class AuthController {
     try {
       var isEmailVerified = await this.authService.verifyEmail(params.token);
       return isEmailVerified;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  @Delete('delete-user')
+  async deleteUser(@Body() login: Login) {
+    try {
+      return await this.authService.deleteUser(login.email, login.password);
     } catch (error) {
       throw error;
     }
