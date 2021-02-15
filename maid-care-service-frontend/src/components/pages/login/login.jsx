@@ -8,7 +8,7 @@ import {
 } from "@chakra-ui/react";
 
 import FlexBox from "../../shared/FlexBox";
-import LogInForm from "./LogInform";
+import LogInForm from "./LogInform.jsx";
 
 export const LogIn = () => {
   
@@ -31,3 +31,5 @@ export const LogIn = () => {
     </Flex>
   );
 };
+
+export default LogIn;

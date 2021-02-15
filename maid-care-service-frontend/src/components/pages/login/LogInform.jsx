@@ -4,7 +4,7 @@ import * as Yup from "yup";
 
 import { Flex, VStack, Link, Center, Button } from "@chakra-ui/react";
 
-import { TextInput } from "../../shared/FormikField";
+import { TextInput } from "../../shared/FormikField.jsx";
 
 const LogInForm = () => {
   const [showPW, setShowPW] = useState(false);
@@ -20,19 +20,23 @@ const LogInForm = () => {
     </Link>
   );
 
+
   return (
     <VStack spacing={4}>
       <Formik
         initialValues={{ email: "", password: "" }}
-        /*validationSchema={Yup.object({
+        validationSchema={Yup.object({
           email: Yup.string()
             .email("Invalid email address")
             .required("Required"),
-        })}*/
-        onSubmit={() => console.log("submit")}
+          password: Yup.string()
+        })}
+        onSubmit={values => {
+          console.log(values);
+        }}
       >
         <Form>
-          <Flex flexDirection="column" width={{ sm: "72", md: "96" }}>
+        <Flex flexDirection="column" width={{ sm: "72", md: "96" }}>
             <TextInput
               label="Email"
               name="email"
@@ -47,10 +51,8 @@ const LogInForm = () => {
               child={showPWButton}
             />
           </Flex>
-        </Form>
-      </Formik>
-      <Center>
-        <Button
+          <Center>
+          <Button
           boxShadow="xl"
           className="button"
           mt="6"
@@ -60,9 +62,10 @@ const LogInForm = () => {
         >
           Log In
         </Button>
-      </Center>
+          </Center>
+        </Form>
+      </Formik>
     </VStack>
   );
 };
-
 export default LogInForm;
