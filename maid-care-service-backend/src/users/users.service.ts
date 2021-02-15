@@ -45,6 +45,14 @@ export class UsersService {
     return userFromDb;
   }
 
+  async setPassword(email: string, newPassword: string): Promise<boolean> {
+    var user = await this.findUser(email);
+    if (!user) throw new ForbiddenException('Invalid user');
+    user.password = await bcrypt.hash(newPassword, saltRounds);
+    var savedUser = await user.save();
+    return !!savedUser;
+  }
+
   isValidEmail(email : string){
     if (email) {
       var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;

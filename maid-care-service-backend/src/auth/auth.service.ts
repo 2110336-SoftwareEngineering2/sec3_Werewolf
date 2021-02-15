@@ -103,24 +103,26 @@ export class AuthService {
   async verifyEmail(token: string): Promise<boolean> {
     var emailVerification = await this.emailVerificationModel.findOne({token: token});
     if(emailVerification && emailVerification.email){
-      var userFromDb = await this.usersService.findUser(emailVerification.email);
-      if (userFromDb) {
-        userFromDb.valid = true;
-        var savedUser = await userFromDb.save();
-        await emailVerification.remove();
-        return !!savedUser;
-      } else {
-        await emailVerification.remove();
-        throw new ForbiddenException('Invalid user');
-      }
+      var user = await this.usersService.findUser(emailVerification.email);
+      await emailVerification.remove();
+      if (!user) throw new ForbiddenException('Invalid user');
+      user.valid = true;
+      var savedUser = await user.save();
+      return !!savedUser;
     } else {
       throw new UnauthorizedException('Code not valid');
     }
   }
 
+  async checkPassword(email: string, pass: string): Promise<boolean> {
+    var user = await this.usersService.findUser(email);
+    if (!user) throw new NotFoundException('Invalid user');
+    return await bcrypt.compare(pass, user.password);
+  }
+
   async deleteUser(email: string, pass: string) {
     var user = await this.usersService.findUser(email);
-    if (!user) throw new NotFoundException('User not valid');
+    if (!user) throw new NotFoundException('Invalid user');
     var isValidPass = await bcrypt.compare(pass, user.password);
     if (!isValidPass) throw new UnauthorizedException('Incorrect password');
     if (user.role === "customer") {
