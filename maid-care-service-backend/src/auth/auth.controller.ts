@@ -17,6 +17,19 @@ export class AuthController {
     }
   }
 
+  //create new user without email verification
+  @Post('create-user')
+  async createUser(@Body() createUserDto: CreateUserDto): Promise<any> {
+	try {
+      var user = await this.authService.register(createUserDto);
+      user.valid = true;
+      await user.save();
+      return { email:user.email, firstname: user.firstname, lastname: user.lastname, phone: user.phone, role: user.role };
+    } catch (error) {
+      throw error;
+    }
+  }
+
   @Post('register')
   async register(@Body() createUserDto: CreateUserDto): Promise<any> {
 	try {

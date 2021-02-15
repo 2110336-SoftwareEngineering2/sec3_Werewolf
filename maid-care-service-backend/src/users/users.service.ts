@@ -1,18 +1,15 @@
-import { Injectable, Inject, BadRequestException, UnauthorizedException, ForbiddenException, ConflictException  } from '@nestjs/common';
+import { Injectable, Inject, BadRequestException, ForbiddenException, ConflictException  } from '@nestjs/common';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { User } from './interfaces/users.interface';
-import { Promotion } from './interfaces/promotion.interface';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ProfileDto } from './dto/profile.dto';
-import { CreatePromotionDto } from './dto/create-promotion.dto';
 
 const saltRounds = 10;
 
 @Injectable()
 export class UsersService {
-  constructor(@Inject('USER_MODEL') private userModel: Model<User>,
-    @Inject('PROMOTION_MODEL') private promotionModel: Model<Promotion>) {}
+  constructor(@Inject('USER_MODEL') private userModel: Model<User>) {}
 
   async findUser(email: string): Promise<User> {
     return this.userModel.findOne({email: email}).exec();
@@ -48,25 +45,6 @@ export class UsersService {
     return userFromDb;
   }
 
-  async findPromotion(code: string): Promise<Promotion> {
-    return this.promotionModel.findOne({code: code}).exec();
-  }
-
-  async createPromotion(email: string, createPromotionDto: CreatePromotionDto): Promise<Promotion> {
-    var admin = await this.findUser(email);
-    if (!admin)  throw new ForbiddenException('Invalid user');
-    if (admin.role === "admin") {
-      var createdPromotion = new this.promotionModel(createPromotionDto);
-      createdPromotion.creater = email;
-      while (true) {
-        var code = this.randomCode(12);
-        if (!await this.findPromotion(code)) break;
-      }
-      createdPromotion.code = code;
-      return await createdPromotion.save();
-    } else throw new UnauthorizedException('user is not admin');
-  }
-
   isValidEmail(email : string){
     if (email) {
       var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -83,15 +61,5 @@ export class UsersService {
 
   isValidRole(role : string){
     return role === "customer" || role === "maid" || role === "admin";
-  }
-  
-  randomCode(length) {
-    var result = '';
-    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    var charactersLength = characters.length;
-    for ( var i = 0; i < length; i++ ) {
-      result += characters.charAt(Math.floor(Math.random() * charactersLength));
-    }
-    return result;
   }
 }
