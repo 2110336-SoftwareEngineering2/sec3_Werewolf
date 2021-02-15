@@ -5,6 +5,7 @@ maid-care-service-backend/dist/
 maid-care-service-frontend/.env
 maid-care-service-backend/.env
 
+
 # Frontend Gitignore
 # dependencies
 maid-care-service-frontend/node_modules
