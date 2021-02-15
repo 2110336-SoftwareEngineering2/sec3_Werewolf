@@ -72,6 +72,7 @@ jobs:
           
       - name: Create .env
         run: |
+          touch .env
           cat > .env << EOF1
           NODE_ENV=production
           GCP_PROJECT_ID=${{ secrets.GCP_PROJECT_ID }}
