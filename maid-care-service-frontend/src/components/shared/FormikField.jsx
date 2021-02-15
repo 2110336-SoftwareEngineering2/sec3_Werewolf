@@ -20,7 +20,7 @@ const TextInput = ({label,type,placeholder,child,...props}) => {
                 {child}
             </InputRightElement>: <></> }
         </InputGroup>
-        {meta.touched && meta.error ? (
+        {isInvalid ? (
          <div className="error">{meta.error}</div>
        ) : null}
     </FormControl>)

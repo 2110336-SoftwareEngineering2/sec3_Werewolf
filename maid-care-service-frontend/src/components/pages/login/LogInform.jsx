@@ -24,18 +24,12 @@ const LogInForm = () => {
     <VStack spacing={4}>
       <Formik
         initialValues={{ email: "", password: "" }}
-        validationSchema={Yup.object({
+        /*validationSchema={Yup.object({
           email: Yup.string()
             .email("Invalid email address")
             .required("Required"),
-        })}
-        onSubmit={(values, { setSubmitting }) => {
-            console.log("yo")
-            setTimeout(() => {
-              alert(JSON.stringify(values, null, 2));
-              setSubmitting(false);
-            }, 400);
-          }}
+        })}*/
+        onSubmit={() => console.log("submit")}
       >
         <Form>
           <Flex flexDirection="column" width={{ sm: "72", md: "96" }}>
