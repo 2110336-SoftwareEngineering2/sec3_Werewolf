@@ -3,7 +3,7 @@ import { ChakraProvider} from "@chakra-ui/react";
 import {Switch, Route} from "react-router-dom";
 import theme from "./theme.js"
 
-import {LogIn} from './components/pages/login';
+import {LogIn} from './components/pages/login/login';
 
 export const App = () => {
 	return (

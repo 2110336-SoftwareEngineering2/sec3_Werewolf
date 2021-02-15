@@ -1,10 +1,7 @@
 import * as React from "react";
 import {Flex} from "@chakra-ui/react";
-type Props = {
-    children:JSX.Element,
-}
 
-const FlexBox = ({children}:Props) => (
+const FlexBox = ({children}) => (
     <Flex
         py="30px"
         px={{base:"30px",md:"50px"}}
