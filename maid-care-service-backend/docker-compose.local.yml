@@ -9,11 +9,11 @@ services:
     env_file:
       - .env
     command: sh -c 'cd /usr/src/app && yarn && yarn start:dev'
+    ports:
+      - '3000:3000'
     environment:
       NODE_ENV: development
       MONGO_URL: mongodb://mongo:27017/maid-care-service
-    ports:
-      - '3000:3000'
     depends_on:
       - mongo
 
@@ -24,5 +24,7 @@ services:
     ports:
       - '27017:27017'
     volumes:
-      - ./mongodb/db:/data/db
-      - ./mongodb/config:/data/configdb
+      - mongo_db:/data/db
+
+volumes:
+  mongo_db:
