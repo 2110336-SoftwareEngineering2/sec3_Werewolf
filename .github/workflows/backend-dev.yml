@@ -1,0 +1,55 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Backend Test
+
+on:
+
+  pull_request:
+    branches: [ backend ]
+
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: maid-care-service-backend
+
+jobs:
+    test:
+
+      runs-on: ubuntu-latest
+
+      strategy:
+        matrix:
+          node-version: [14.x]
+
+      steps:
+      - uses: actions/checkout@v2
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install Dependencies
+        run: npm install
+  #       skip test for now
+  #     - name: Run Test
+  #       run: npm run test
+
+      - uses: sarisia/actions-status-discord@v1
+        if: success()
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          title: "Run Test"
+          description: "Congrat! Your PR passed the test"
+          color: 0x28a745
+          username: Werewolf GitHub Actions
+
+      - uses: sarisia/actions-status-discord@v1
+        if: failure()
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          title: "Run Test"
+          description: "Sorry, but your is shit!"
+          color: 0xd73a49
+          username: Werewolf GitHub Actions
+
