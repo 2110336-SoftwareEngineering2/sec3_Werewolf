@@ -18,40 +18,41 @@ export class AuthService {
     private usersService: UsersService) {}
 
   async validateLogin(email: string, pass: string) {
-	var user = await this.usersService.findUser(email);
+    let user = await this.usersService.findUser(email);
     if (!user) throw new UnauthorizedException('Invalid user');
-	var isValidPass = await bcrypt.compare(pass, user.password);
+    let isValidPass = await bcrypt.compare(pass, user.password);
     if (!isValidPass) throw new UnauthorizedException('Incorrect password');
     if(!user.valid) throw new UnauthorizedException('Email not verified');
-    var result = { firstname: user.firstname, lastname: user.lastname, phone: user.phone, role: user.role };
-    if (user.role === "customer") {
-      var customer = await this.customerService.findCustomer(email)
+    let result = { firstname: user.firstname, lastname: user.lastname, phone: user.phone, role: user.role };
+    if (user.role === 'customer') {
+      let customer = await this.customerService.findCustomer(email)
       if (customer) Object.assign(result, {g_coin: customer.g_coin});
-    } else if (user.role === "maid") {
-      var maid = await this.maidsService.findMaid(email)
+    } else if (user.role === 'maid') {
+      let maid = await this.maidsService.findMaid(email)
       if (maid) Object.assign(result, {avgRating: maid.avgRating});
     }
-    var accessToken =  await this.jwtService.createToken(email, user.role);
+    let accessToken =  await this.jwtService.createToken(email, user.role);
     return { token: accessToken, user: result};
   }
-  
+
   async register(createUserDto: CreateUserDto) {
-	try {
-      var user = await this.usersService.createNewUser(createUserDto);
-      if (user.role === "customer") await this.customerService.createNewCustomer(user.email);
-      else if (user.role === "maid") await this.maidsService.createNewMaid(user.email);
+    try {
+      let user = await this.usersService.createNewUser(createUserDto);
+      if (user.role === 'customer') await this.customerService.createNewCustomer(user.email);
+      else if (user.role === 'maid') await this.maidsService.createNewMaid(user.email);
       return user;
-	} catch (error) {
+    } catch (error) {
       throw error;
     }
   }
 
   async createEmailToken(email: string): Promise<boolean> {
+    let token;
     while (true) {
-      var token = (Math.floor(Math.random() * (9000000)) + 1000000).toString(); //Generate 7 digits number
+      token = (Math.floor(Math.random() * (9000000)) + 1000000).toString(); //Generate 7 digits number
       if (!await this.emailVerificationModel.findOne({token: token})) break;
     }
-    var emailVerificationModel = await this.emailVerificationModel.findOneAndUpdate( 
+    let emailVerificationModel = await this.emailVerificationModel.findOneAndUpdate( 
       {email: email},
       { 
         email: email,
@@ -63,7 +64,7 @@ export class AuthService {
   }
 
   async sendEmailVerification(email: string): Promise<boolean> {
-    var model = await this.emailVerificationModel.findOne({ email: email});
+    let model = await this.emailVerificationModel.findOne({ email: email});
     if (model && model.token) {
       let transporter = nodemailer.createTransport({
         service: 'Gmail',
@@ -84,7 +85,7 @@ export class AuthService {
         html: 'Hello! <br><br> Thanks for your registration<br><br>'+
         '<a href='+ process.env.SERVER_URL +'/auth/verify/'+ model.token + '>Click here to activate your account</a>'
       };
-      var sent = await new Promise<boolean>(async function(resolve, reject) {
+      let sent = await new Promise<boolean>(async function(resolve, reject) {
         return await transporter.sendMail(mailOptions, async (error, info) => {
           if (error) {      
             console.log('Message sent: %s', error);
@@ -101,13 +102,13 @@ export class AuthService {
   }
 
   async verifyEmail(token: string): Promise<boolean> {
-    var emailVerification = await this.emailVerificationModel.findOne({token: token});
+    let emailVerification = await this.emailVerificationModel.findOne({token: token});
     if(emailVerification && emailVerification.email){
-      var user = await this.usersService.findUser(emailVerification.email);
+      let user = await this.usersService.findUser(emailVerification.email);
       await emailVerification.remove();
       if (!user) throw new ForbiddenException('Invalid user');
       user.valid = true;
-      var savedUser = await user.save();
+      let savedUser = await user.save();
       return !!savedUser;
     } else {
       throw new UnauthorizedException('Code not valid');
@@ -115,21 +116,21 @@ export class AuthService {
   }
 
   async checkPassword(email: string, pass: string): Promise<boolean> {
-    var user = await this.usersService.findUser(email);
+    let user = await this.usersService.findUser(email);
     if (!user) throw new NotFoundException('Invalid user');
     return await bcrypt.compare(pass, user.password);
   }
 
   async deleteUser(email: string, pass: string) {
-    var user = await this.usersService.findUser(email);
+    let user = await this.usersService.findUser(email);
     if (!user) throw new NotFoundException('Invalid user');
-    var isValidPass = await bcrypt.compare(pass, user.password);
+    let isValidPass = await bcrypt.compare(pass, user.password);
     if (!isValidPass) throw new UnauthorizedException('Incorrect password');
-    if (user.role === "customer") {
-      var customer = await this.customerService.findCustomer(email);
+    if (user.role === 'customer') {
+      let customer = await this.customerService.findCustomer(email);
       if (customer) await customer.remove();
-    } else if (user.role === "maid") {
-      var maid = await this.maidsService.findMaid(email);
+    } else if (user.role === 'maid') {
+      let maid = await this.maidsService.findMaid(email);
       if (maid) await maid.remove();
     }
     return await user.remove();

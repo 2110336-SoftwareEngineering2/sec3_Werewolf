@@ -11,10 +11,10 @@ export class CustomerService {
   }
 
   async createNewCustomer(email: string): Promise<Customer> {
-    var customerRegistered = await this.findCustomer(email);
+    let customerRegistered = await this.findCustomer(email);
     if (!customerRegistered) {
-      var newCustomer = { email: email };
-      var createdCustomer = new this.customerModel(newCustomer);
+      let newCustomer = { email: email };
+      let createdCustomer = new this.customerModel(newCustomer);
       return await createdCustomer.save();
     }
     return customerRegistered;
