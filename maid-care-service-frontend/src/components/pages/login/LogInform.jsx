@@ -1,4 +1,6 @@
-  import React, { useState } from "react";
+import React, { useState} from "react";
+import {useHistory} from "react-router-dom";
+
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
@@ -6,7 +8,12 @@ import axios from "axios";
 import { Flex, VStack, Link, Center, Button,Box } from "@chakra-ui/react";
 import { TextInput } from "../../shared/FormikField.jsx";
 
+import userStore from "../../../MobX/User";
+
+
 const LogInForm = () => {
+
+  const history = useHistory();
 
   const [showPW, setShowPW] = useState(false);
   const [message,setMessage] = useState(null);
@@ -40,7 +47,14 @@ const LogInForm = () => {
       auth.post('/login',values)
     .then(response => {
       setMessage(null);
-      console.log(response.data);
+      localStorage.setItem('token',response.data.token.access_token)
+      localStorage.setItem('isLoggedIn',true)
+      userStore.userData = response.data.user;
+      userStore.isLoggedIn = true;
+      return userStore.isLoggedIn;
+    })
+    .then(res => {
+      history.push('/home');
     })
     .catch(err => {
       if(err.response){
