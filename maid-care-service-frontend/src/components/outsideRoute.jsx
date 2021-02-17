@@ -3,14 +3,14 @@ import {Redirect,Route} from "react-router-dom";
 
 import userStore from "./../MobX/User";
 
-const ProtectedRoute = (props) => {
-    if(userStore.isLoggedIn){
+const OutsideRoute = (props) => {
+    if(!userStore.isLoggedIn){
         console.log(userStore.isLoggedIn)
         return(<Route {...props} />)
     }
     else{
-        return(<Redirect to="/login" />)
+        return(<Redirect to="/home" />)
     }
 }
 
-export default ProtectedRoute;
+export default OutsideRoute;
