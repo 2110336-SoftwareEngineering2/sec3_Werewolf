@@ -4,8 +4,8 @@ import {Redirect,Route} from "react-router-dom";
 import userStore from "./../MobX/User";
 
 const ProtectedRoute = (props) => {
-    
-    if(localStorage.getItem('isLoggedIn')){
+    console.log(userStore.isLoggedIn)
+    if(userStore.isLoggedIn){
         return(<Route {...props} />)
     }
     else{

@@ -47,15 +47,10 @@ const LogInForm = () => {
       auth.post('/login',values)
     .then(response => {
       setMessage(null);
-      localStorage.setItem('token',response.data.token.access_token)
-      localStorage.setItem('isLoggedIn',true)
-      userStore.userData = response.data.user;
-      userStore.isLoggedIn = true;
-      return userStore.isLoggedIn;
+      userStore.setUser(response.data.user);
+      userStore.login(true) 
     })
-    .then(res => {
-      history.push('/home');
-    })
+    .then(() => history.push('/home'))
     .catch(err => {
       if(err.response){
         setMessage(err.response.data.message);

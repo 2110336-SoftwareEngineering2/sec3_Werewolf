@@ -11,8 +11,6 @@ import FlexBox from "../../shared/FlexBox";
 import LogInForm from "./LogInform.jsx";
 
 export const LogIn = () => {
-
-  let api = process.env.REACT_APP_API_URL;
   
   
   return (
