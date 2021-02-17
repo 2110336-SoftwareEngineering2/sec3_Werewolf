@@ -1,19 +1,10 @@
-import React from "react";
-import {
-  Box,
-  Flex,
-  VStack,
-  Link,
-  Text,
-  HStack
-} from "@chakra-ui/react";
+import React from 'react';
+import { Box, Flex, VStack, Link, Text } from '@chakra-ui/react';
 
-import FlexBox from "../../shared/FlexBox";
-import LogInForm from "./LogInform.jsx";
+import FlexBox from '../../shared/FlexBox';
+import LogInForm from './LogInform.jsx';
 
 export const LogIn = () => {
-  
-  
   return (
     <Flex bg="brandGreen" align="center" justify="center" minH="100vh">
       <FlexBox>
@@ -23,10 +14,10 @@ export const LogIn = () => {
             <br />
             Maidcare
           </Box>
-          <LogInForm/>
-          <Link fontSize={{base:"sm",md:"md"}}>Forgot password</Link>
-          <Text fontSize={{base:"sm",md:"md"}} mb="16">Want to be maid? {" "}
-            <Link color="#38A169">Create Account Here</Link>
+          <LogInForm />
+          <Link fontSize={{ base: 'sm', md: 'md' }}>Forgot password</Link>
+          <Text fontSize={{ base: 'sm', md: 'md' }} mb="16">
+            Want to be maid? <Link color="#38A169">Create Account Here</Link>
           </Text>
         </VStack>
       </FlexBox>
