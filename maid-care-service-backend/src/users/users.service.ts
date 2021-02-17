@@ -1,4 +1,10 @@
-import { Injectable, Inject, BadRequestException, ForbiddenException, ConflictException  } from '@nestjs/common';
+import {
+  Injectable,
+  Inject,
+  BadRequestException,
+  ForbiddenException,
+  ConflictException,
+} from '@nestjs/common';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { User } from './interfaces/users.interface';
@@ -12,16 +18,19 @@ export class UsersService {
   constructor(@Inject('USER_MODEL') private userModel: Model<User>) {}
 
   async findUser(email: string): Promise<User> {
-    return this.userModel.findOne({email: email}).exec();
+    return this.userModel.findOne({ email: email }).exec();
   }
 
   async createNewUser(newUser: CreateUserDto): Promise<User> {
     let userRegistered = await this.findUser(newUser.email);
     if (!userRegistered) {
-      if (!this.isValidEmail(newUser.email)) throw new BadRequestException('Bad email');
+      if (!this.isValidEmail(newUser.email))
+        throw new BadRequestException('Bad email');
       if (!newUser.password) throw new BadRequestException('No password');
-      if (newUser.phone && !this.isValidPhoneNumber(newUser.phone)) throw new BadRequestException('Bad phone number');
-      if (!this.isValidRole(newUser.role)) throw new BadRequestException('Invalid role');
+      if (newUser.phone && !this.isValidPhoneNumber(newUser.phone))
+        throw new BadRequestException('Bad phone number');
+      if (!this.isValidRole(newUser.role))
+        throw new BadRequestException('Invalid role');
       newUser.password = await bcrypt.hash(newUser.password, saltRounds);
       let createdUser = new this.userModel(newUser);
       return await createdUser.save();
@@ -34,13 +43,14 @@ export class UsersService {
 
   async updateProfile(email: string, newProfile: ProfileDto): Promise<User> {
     let userFromDb = await this.findUser(email);
-    if (!userFromDb)  throw new ForbiddenException('Invalid user');
+    if (!userFromDb) throw new ForbiddenException('Invalid user');
     if (newProfile.firstname) userFromDb.firstname = newProfile.firstname;
     if (newProfile.lastname) userFromDb.lastname = newProfile.lastname;
-	if (newProfile.phone ) {
-      if (!this.isValidPhoneNumber(newProfile.phone)) throw new BadRequestException('Bad phone number');
+    if (newProfile.phone) {
+      if (!this.isValidPhoneNumber(newProfile.phone))
+        throw new BadRequestException('Bad phone number');
       userFromDb.phone = newProfile.phone;
-	}
+    }
     await userFromDb.save();
     return userFromDb;
   }
@@ -53,21 +63,21 @@ export class UsersService {
     return !!savedUser;
   }
 
-  isValidEmail(email : string){
+  isValidEmail(email: string) {
     if (email) {
       let re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
       return re.test(email);
-    } else return false
+    } else return false;
   }
-  
-  isValidPhoneNumber(phone : string){
+
+  isValidPhoneNumber(phone: string) {
     if (phone) {
       let phoneno = /^\d{10}$/;
       return phoneno.test(phone);
-    } else return false
+    } else return false;
   }
 
-  isValidRole(role : string){
+  isValidRole(role: string) {
     return role === 'customer' || role === 'maid' || role === 'admin';
   }
 }

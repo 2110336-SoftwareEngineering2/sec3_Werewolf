@@ -10,18 +10,13 @@ import { MaidsModule } from '../maids/maids.module';
 import { UsersModule } from '../users/users.module';
 
 @Module({
-  imports: [
-    DatabaseModule,
-    CustomerModule,
-    MaidsModule,
-    UsersModule,
-  ],
+  imports: [DatabaseModule, CustomerModule, MaidsModule, UsersModule],
   controllers: [AuthController],
   providers: [
     AuthService,
     JWTService,
     JwtStrategy,
-    ...EmailVerificationProviders
-  ]
+    ...EmailVerificationProviders,
+  ],
 })
 export class AuthModule {}

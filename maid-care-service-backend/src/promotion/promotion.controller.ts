@@ -1,20 +1,43 @@
-import { Controller, Body, Request, Param, Get, Post, Delete, UseGuards, UnauthorizedException, NotFoundException } from '@nestjs/common';
-import { ApiBearerAuth } from '@nestjs/swagger'
+import {
+  Controller,
+  Body,
+  Request,
+  Param,
+  Get,
+  Post,
+  Delete,
+  UseGuards,
+  UnauthorizedException,
+  NotFoundException,
+} from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/passport/jwt-auth.guard';
 import { PromotionService } from './promotion.service';
 import { CreatePromotionDto } from './dto/create-promotion.dto';
 
 @Controller('promotion')
+@ApiTags('promotion')
 export class PromotionController {
   constructor(private readonly promotionService: PromotionService) {}
 
   @Post('create-promotion')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('acess-token')
-  async createPromotion(@Request() req, @Body() createPromotionDto: CreatePromotionDto):Promise<any> {
+  async createPromotion(
+    @Request() req,
+    @Body() createPromotionDto: CreatePromotionDto,
+  ): Promise<any> {
     if (req.user.role === 'admin') {
-      let promotion = await this.promotionService.createPromotion(req.user.email, createPromotionDto);
-      return { code: promotion.code, description: promotion.description, availableDate: promotion.availableDate, expiredDate: promotion.expiredDate };
+      let promotion = await this.promotionService.createPromotion(
+        req.user.email,
+        createPromotionDto,
+      );
+      return {
+        code: promotion.code,
+        description: promotion.description,
+        availableDate: promotion.availableDate,
+        expiredDate: promotion.expiredDate,
+      };
     } else throw new UnauthorizedException('user is not admin');
   }
 
@@ -27,13 +50,14 @@ export class PromotionController {
 
   @Delete(':code')
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('acess-token')
   async removePromotion(@Request() req, @Param('code') code: string) {
     if (req.user.role === 'admin') {
-        try {
-          return await this.promotionService.removePromotion(code);
-        } catch (error) {
-          throw error;
-        }
+      try {
+        return await this.promotionService.removePromotion(code);
+      } catch (error) {
+        throw error;
+      }
     } else throw new UnauthorizedException('user is not admin');
   }
 }

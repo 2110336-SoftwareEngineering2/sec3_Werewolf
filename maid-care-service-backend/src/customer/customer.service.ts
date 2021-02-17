@@ -4,10 +4,12 @@ import { Customer } from './interfaces/customer.interface';
 
 @Injectable()
 export class CustomerService {
-  constructor(@Inject('CUSTOMER_MODEL') private customerModel: Model<Customer>) {}
+  constructor(
+    @Inject('CUSTOMER_MODEL') private customerModel: Model<Customer>,
+  ) {}
 
   async findCustomer(email: string): Promise<Customer> {
-    return this.customerModel.findOne({email: email}).exec();
+    return this.customerModel.findOne({ email: email }).exec();
   }
 
   async createNewCustomer(email: string): Promise<Customer> {

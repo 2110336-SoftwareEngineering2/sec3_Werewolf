@@ -10,7 +10,7 @@ export class JWTService {
 
   async createToken(email, role) {
     const expiresIn = 36000000;
-    const userInfo = { email: email, role: role};
+    const userInfo = { email: email, role: role };
     const token = jwt.sign(userInfo, jwtConstants.secret, { expiresIn });
     return {
       expires_in: expiresIn,
@@ -21,7 +21,7 @@ export class JWTService {
   async validateUser(signedUser): Promise<User> {
     let userFromDb = await this.usersService.findUser(signedUser.email);
     if (userFromDb) {
-        return userFromDb;
+      return userFromDb;
     }
     return null;
   }
