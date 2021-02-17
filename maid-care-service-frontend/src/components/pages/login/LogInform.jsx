@@ -3,22 +3,20 @@ import {useHistory} from "react-router-dom";
 
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
-import axios from "axios";
 
 import { VStack, Link, Center, Button,Box } from "@chakra-ui/react";
 import { TextInput } from "../../shared/FormikField.jsx";
 
 import userStore from "../../../MobX/User";
 
-import {baseURL} from '../../../baseURL';
+import {auth} from "../../../axiosConfig";
 
 
 const LogInForm = () => {
 
   const history = useHistory();
-
   const [showPW, setShowPW] = useState(false);
-  const [message,setMessage] = useState(null);
+  const [error,setError] = useState(null)
 
   const showPWButton = (
     <Link
@@ -32,12 +30,6 @@ const LogInForm = () => {
     </Link>
   );
 
-
-  const auth = axios.create({
-    baseURL: baseURL+ "/auth", // use proxy for baseURL
-    headers: {'Content-Type':'application/json'}
-  })
-
   const yupValidation = Yup.object({
     email: Yup.string()
       .email("Invalid email address")
@@ -47,22 +39,24 @@ const LogInForm = () => {
 
   const handleSubmit = (values,{setSubmitting}) => {
     setTimeout(() => {
-      auth.post('/login',values)
-    .then(response => {
-      setMessage(null);
-      userStore.setUser(response.data.user);
-      userStore.login(true) 
-    })
-    .then(() => history.push('/home'))
-    .catch(err => {
-      if(err.response){
-        setMessage(err.response.data.message);
-      }
-      else{
-        setMessage(err.request)
-      }
-    })
-    setSubmitting(false);
+      auth
+      .post('/login', values)
+      .then(response => {
+        setError(null)
+        userStore.toggleLogin()
+        userStore.setUser(response.data.user)
+      })
+      .then(() => {
+          return(history.push("/home"))
+      })
+      .catch(err => {
+        if (err.response) {
+           setError(err.response.data.message);
+        } else {
+            setError(err.request);
+        }
+      });
+      setSubmitting(false);
     }, 400);
   }
 
@@ -88,7 +82,7 @@ const LogInForm = () => {
               child={showPWButton}
             />
         </VStack>
-          <Box color="red" mt="3">{message}</Box>
+          <Box color="red" mt="3">{error}</Box>
           <Center>
           <Button
           boxShadow="xl"
