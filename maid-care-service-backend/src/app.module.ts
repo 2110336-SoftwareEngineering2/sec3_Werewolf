@@ -17,9 +17,9 @@ import { PromotionModule } from './promotion/promotion.module';
     CustomerModule,
     UsersModule,
     MaidsModule,
-    PromotionModule
+    PromotionModule,
   ],
   controllers: [AppController],
-  providers: [AppService]
+  providers: [AppService],
 })
 export class AppModule {}
