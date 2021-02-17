@@ -11,6 +11,7 @@ const FlexBox = ({ children }) => (
     align="center"
     justify="center">
     {children}
+    
   </Flex>
 );
 
