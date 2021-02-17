@@ -7,10 +7,7 @@ import { DatabaseModule } from '../database/database.module';
 @Module({
   imports: [DatabaseModule],
   controllers: [PromotionController],
-  providers: [
-    PromotionService,
-    ...PromotionProviders
-  ],
-  exports: [PromotionService]
+  providers: [PromotionService, ...PromotionProviders],
+  exports: [PromotionService],
 })
 export class PromotionModule {}
