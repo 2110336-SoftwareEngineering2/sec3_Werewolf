@@ -5,10 +5,12 @@ import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 
-import { Flex, VStack, Link, Center, Button,Box } from "@chakra-ui/react";
+import { VStack, Link, Center, Button,Box } from "@chakra-ui/react";
 import { TextInput } from "../../shared/FormikField.jsx";
 
 import userStore from "../../../MobX/User";
+
+import {baseURL} from '../../../baseURL';
 
 
 const LogInForm = () => {
@@ -30,8 +32,9 @@ const LogInForm = () => {
     </Link>
   );
 
+
   const auth = axios.create({
-    baseURL: "/auth", // use proxy for baseURL
+    baseURL: baseURL+ "/auth", // use proxy for baseURL
     headers: {'Content-Type':'application/json'}
   })
 
@@ -64,14 +67,13 @@ const LogInForm = () => {
   }
 
   return (
-    <VStack spacing={4}>
       <Formik
         initialValues={{ email: "", password: "" }}
         validationSchema={yupValidation}
         onSubmit={handleSubmit}
       >
         <Form>
-        <Flex flexDirection="column" width={{ sm: "72", md: "96" }}>
+        <VStack spacing={4} width={{ sm: "72", md: "96" }}>
             <TextInput
               label="Email"
               name="email"
@@ -85,7 +87,7 @@ const LogInForm = () => {
               placeholder="password"
               child={showPWButton}
             />
-          </Flex>
+        </VStack>
           <Box color="red" mt="3">{message}</Box>
           <Center>
           <Button
@@ -101,7 +103,6 @@ const LogInForm = () => {
           </Center>
         </Form>
       </Formik>
-    </VStack>
   );
 };
 export default LogInForm;

@@ -5,6 +5,7 @@ import {
   VStack,
   Link,
   Text,
+  HStack
 } from "@chakra-ui/react";
 
 import FlexBox from "../../shared/FlexBox";
