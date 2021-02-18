@@ -21,9 +21,7 @@ const TextInput = ({ label, type, placeholder, child, ...props }) => {
         <Input id={field.name} {...field} {...props} type={type} placeholder={placeholder} />
         {child && <InputRightElement width="16">{child}</InputRightElement>}
       </InputGroup>
-      {meta.touched && meta.error && (
-        <FormErrorMessage className="error">{meta.error}</FormErrorMessage>
-      )}
+      {meta.touched && meta.error && <FormErrorMessage>{meta.error}</FormErrorMessage>}
     </FormControl>
   );
 };

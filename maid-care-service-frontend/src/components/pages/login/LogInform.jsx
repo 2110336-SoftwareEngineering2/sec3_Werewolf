@@ -4,23 +4,32 @@ import { useHistory } from 'react-router-dom';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 
-import { VStack, Link, Center, Button } from '@chakra-ui/react';
+import {
+  VStack,
+  Link,
+  Center,
+  Button,
+  FormErrorMessage,
+  FormControl,
+  Text,
+} from '@chakra-ui/react';
 import { TextInput } from '../../shared/FormikField.jsx';
 
 import userStore from '../../../store/User';
+import { observer } from 'mobx-react-lite';
 
-const LogInForm = () => {
+const LogInForm = observer(() => {
   const history = useHistory();
   const [showPW, setShowPW] = useState(false);
 
   const handleSubmit = async ({ email, password }, { setSubmitting }) => {
-    try {
-      setSubmitting(true);
-      userStore.login({ email, password });
-      history.replace('/home');
-    } catch (err) {
-      console.error(err);
+    setSubmitting(true);
+    // log user in
+    await userStore.login({ email, password });
+    if (userStore.errors.length) {
       setSubmitting(false);
+    } else {
+      history.push('/home');
     }
   };
 
@@ -28,8 +37,8 @@ const LogInForm = () => {
     <Formik
       initialValues={{ email: '', password: '' }}
       validationSchema={Yup.object({
-        email: Yup.string().email('Invalid email address'),
-        password: Yup.string(),
+        email: Yup.string().email('Invalid email address').required('Please fill Email'),
+        password: Yup.string().required('Please fill Password'),
       })}
       onSubmit={handleSubmit}>
       {({ isSubmitting }) => (
@@ -61,6 +70,7 @@ const LogInForm = () => {
                 </Link>
               }
             />
+            {userStore.errors.length && <Text color="red">{userStore.error_message}</Text>}
           </VStack>
           <Center>
             <Button
@@ -78,7 +88,7 @@ const LogInForm = () => {
       )}
     </Formik>
   );
-};
+});
 export default LogInForm;
 
 // setTimeout(() => {
