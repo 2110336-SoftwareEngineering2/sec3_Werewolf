@@ -1,16 +1,7 @@
-import {
-  Controller,
-  Body,
-  Request,
-  Get,
-  Post,
-  UseGuards,
-  ForbiddenException,
-} from '@nestjs/common';
-import { ApiBearerAuth, ApiTags, ApiCreatedResponse } from '@nestjs/swagger';
+import { Controller, Body, Request, Post, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/passport/jwt-auth.guard';
 import { UsersService } from './users.service';
-import { User } from './interfaces/users.interface';
 import { ProfileDto } from './dto/profile.dto';
 
 @Controller('users')
@@ -19,17 +10,6 @@ import { ProfileDto } from './dto/profile.dto';
 @ApiTags('user')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
-
-  @Get('get-user')
-  async getUser(@Request() req): Promise<User> {
-    try {
-      let user = await this.usersService.findUser(req.user.email);
-      if (!user) throw new ForbiddenException('Invalid user');
-      return user;
-    } catch (error) {
-      throw error;
-    }
-  }
 
   @Post('update-profile')
   async updateProfile(
