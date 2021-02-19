@@ -19,12 +19,16 @@ export class CustomerController {
   constructor(private readonly customerService: CustomerService) {}
 
   @Get('get-customer')
-  async getCustomer(@Request() req): Promise<Customer> {
+  async getCustomer(@Request() req) {
     if (req.user.role === 'customer') {
       try {
         let customer = await this.customerService.findCustomer(req.user.email);
         if (!customer) throw new ForbiddenException('Invalid customer');
-        return customer;
+        let result = {
+          email: customer.email,
+          g_coin: customer.g_coin,
+        };
+        return result;
       } catch (error) {
         throw error;
       }

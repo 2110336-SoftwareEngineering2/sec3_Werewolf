@@ -42,11 +42,18 @@ export class AuthController {
   @Get('get-user')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('acess-token')
-  async getUser(@Request() req): Promise<User> {
+  async getUser(@Request() req) {
     try {
       let user = await this.usersService.findUser(req.user.email);
       if (!user) throw new ForbiddenException('Invalid user');
-      return user;
+      let result = {
+        email: user.email,
+        firstname: user.firstname,
+        lastname: user.lastname,
+        phone: user.phone,
+        role: user.role,
+      };
+      return result;
     } catch (error) {
       throw error;
     }

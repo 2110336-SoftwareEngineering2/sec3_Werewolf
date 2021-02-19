@@ -19,12 +19,17 @@ export class MaidsController {
   constructor(private readonly maidsService: MaidsService) {}
 
   @Get('get-maid')
-  async getCustomer(@Request() req): Promise<Maid> {
+  async getCustomer(@Request() req) {
     if (req.user.role === 'maid') {
       try {
         let maid = await this.maidsService.findMaid(req.user.email);
         if (!maid) throw new ForbiddenException('Invalid maid');
-        return maid;
+        let result = {
+          email: maid.email,
+          avgRating: maid.avgRating,
+          totalReviews: maid.totalReviews,
+        };
+        return result;
       } catch (error) {
         throw error;
       }
