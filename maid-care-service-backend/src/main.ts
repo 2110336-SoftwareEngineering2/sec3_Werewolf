@@ -15,6 +15,8 @@ async function bootstrap() {
       'acess-token',
     )
     .addTag('user')
+    .addTag('customer')
+    .addTag('maid')
     .addTag('promotion')
     .build();
   const document = SwaggerModule.createDocument(app, config);
