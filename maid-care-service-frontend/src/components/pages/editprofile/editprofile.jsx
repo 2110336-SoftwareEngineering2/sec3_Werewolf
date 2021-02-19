@@ -2,12 +2,15 @@ import React from "react";
 import {
   Box,
   Flex,
+  Stack,
   VStack,
+  Image,
   Link,
   Text,
 } from "@chakra-ui/react";
 
 import FlexBox from "../../shared/FlexBox";
+import MaidLogo from "../../../MaidLogo.svg";
 
 export const EditProfile = () => {
   
@@ -16,15 +19,16 @@ export const EditProfile = () => {
     <Flex bg="brandGreen" align="center" justify="center" minH="100vh">
       <FlexBox>
         <VStack spacing="3">
-          <Box fontSize="3xl" mb="5">
-            Grab
-            <br />
-            Maidcare
-          </Box>
-          <Link fontSize={{base:"sm",md:"md"}}>Forgot password</Link>
-          <Text fontSize={{base:"sm",md:"md"}} mb="16">Want to be maid? {" "}
-            <Link color="#38A169">Create Account Here</Link>
-          </Text>
+          <Stack direction="row">
+            <Image
+                width="146px"
+                height="41.48px"
+                objectFit="contain"
+                src={MaidLogo}
+                alt="Grab MaidCare Logo"
+            />
+          </Stack>
+          <Box fontSize="3xl" fontWeight="bold" mb="5">Edit Your Profile</Box>
         </VStack>
       </FlexBox>
     </Flex>

@@ -16,7 +16,7 @@ export const App = () => {
           <Redirect to="/home" />
         </Route>
         <Route exact path="/login" component={LogIn} />
-        <Route exact path="/editprofile" component={EditProfile} />
+        <Route exact path="/profile/edit" component={EditProfile} />
         <ProtectedRoute exact path="/home" component={Home} />
       </Switch>
     </ChakraProvider>
