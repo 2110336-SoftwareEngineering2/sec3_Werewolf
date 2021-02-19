@@ -1,5 +1,4 @@
-import { createContext } from 'react';
-import { observable, action, makeObservable, computed } from 'mobx';
+import { observable, action, makeObservable } from 'mobx';
 import { auth } from '../api';
 
 class UserStore {
@@ -8,38 +7,51 @@ class UserStore {
   constructor() {
     makeObservable(this, {
       userData: observable,
-      isAuthenticated: computed,
       login: action,
       logout: action,
+      getUserData: action,
     });
+
+    this.getUserData();
+  }
+
+  get isAuthenticated() {
+    return localStorage.getItem('token') ? true : false;
   }
 
   async login({ email, password }) {
     return auth
       .post('/login', { email, password })
-      .then(res => {
-        const { token, user } = res.data;
-        localStorage.setItem('token', token.access_token);
-        this.userData = user;
-        return res;
+      .then(response => {
+        console.log('response', response);
+        const { access_token } = response.data;
+        localStorage.setItem('token', access_token);
+        this.getUserData();
+        return response;
       })
       .catch(error => {
-        console.log('error!');
         this.logout();
         throw error;
       });
   }
 
-  logout() {
-    localStorage.removeItem('token');
-    this.userData = null;
+  async getUserData() {
+    return auth
+      .get('/get-user')
+      .then(response => {
+        console.log('get user res', response);
+        const user = response.data;
+        this.userData = user;
+      })
+      .catch(error => {
+        console.log('get user err', error);
+        // throw error;
+      });
   }
 
-  get isAuthenticated() {
-    return localStorage.getItem('token');
+  logout() {
+    localStorage.removeItem('token');
   }
 }
 
-const userStore = createContext(new UserStore());
-
-export default userStore;
+export default UserStore;

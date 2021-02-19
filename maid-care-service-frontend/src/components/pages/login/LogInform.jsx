@@ -6,7 +6,7 @@ import * as Yup from 'yup';
 
 import { VStack, Link, Center, Button, Text } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
-import { useStores } from '../../../hooks';
+import { useStores } from '../../../hooks/use-stores';
 
 import { TextInput } from '../../shared/FormikField.jsx';
 
@@ -14,6 +14,7 @@ const LogInForm = observer(() => {
   const history = useHistory();
   const location = useLocation();
   const { userStore } = useStores();
+
   const [showPW, setShowPW] = useState(false);
   const [errors, setErrors] = useState([]);
 
@@ -30,12 +31,10 @@ const LogInForm = observer(() => {
       // log user in
       await userStore.login({ email, password });
       setErrors([]);
-      console.log('history', history);
-      console.log('location', location);
       if (location.state) {
         history.push(location.state.from.pathname);
       } else {
-        history.replace('/');
+        history.push('/');
       }
     } catch (error) {
       console.log(error);

@@ -1,10 +1,19 @@
 import React from 'react';
+import { observer } from 'mobx-react-lite';
 import { Box, Flex, VStack, Link, Text } from '@chakra-ui/react';
+import { Redirect } from 'react-router-dom';
 
 import FlexBox from '../../shared/FlexBox';
 import LogInForm from './LogInform.jsx';
+import { useStores } from '../../../hooks/use-stores';
 
-export const LogIn = () => {
+export const LogIn = observer(() => {
+  const { userStore } = useStores();
+
+  if (userStore.isAuthenticated) {
+    return <Redirect to="/" />;
+  }
+
   return (
     <Flex bg="brandGreen" align="center" justify="center" minH="100vh">
       <FlexBox>
@@ -23,6 +32,6 @@ export const LogIn = () => {
       </FlexBox>
     </Flex>
   );
-};
+});
 
 export default LogIn;
