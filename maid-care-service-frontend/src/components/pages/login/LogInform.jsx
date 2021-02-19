@@ -1,35 +1,56 @@
-import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
 
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 
-import {
-  VStack,
-  Link,
-  Center,
-  Button,
-  FormErrorMessage,
-  FormControl,
-  Text,
-} from '@chakra-ui/react';
-import { TextInput } from '../../shared/FormikField.jsx';
-
-import userStore from '../../../store/User';
+import { VStack, Link, Center, Button, Text } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
+import { useStores } from '../../../hooks';
+
+import { TextInput } from '../../shared/FormikField.jsx';
 
 const LogInForm = observer(() => {
   const history = useHistory();
+  const location = useLocation();
+  const { userStore } = useStores();
   const [showPW, setShowPW] = useState(false);
+  const [errors, setErrors] = useState([]);
+
+  // Clean up states.
+  useEffect(() => {
+    return () => {
+      setErrors([]);
+    };
+  }, []);
 
   const handleSubmit = async ({ email, password }, { setSubmitting }) => {
-    setSubmitting(true);
-    // log user in
-    await userStore.login({ email, password });
-    if (userStore.errors.length) {
+    try {
+      setSubmitting(true);
+      // log user in
+      await userStore.login({ email, password });
+      setErrors([]);
+      console.log('history', history);
+      console.log('location', location);
+      if (location.state) {
+        history.push(location.state.from.pathname);
+      } else {
+        history.replace('/');
+      }
+    } catch (error) {
+      console.log(error);
+      setErrors([...errors, error.response.data]);
       setSubmitting(false);
-    } else {
-      history.push('/home');
+    }
+  };
+
+  const errorMessage = errors => {
+    const lastError = errors[errors.length - 1];
+    switch (lastError.statusCode) {
+      case 401:
+        return 'Email or Password is invalid';
+      default:
+        return 'Internal Server Error';
     }
   };
 
@@ -70,7 +91,7 @@ const LogInForm = observer(() => {
                 </Link>
               }
             />
-            {userStore.errors.length && <Text color="red">{userStore.error_message}</Text>}
+            {!isSubmitting && errors.length && <Text color="red">{errorMessage(errors)}</Text>}
           </VStack>
           <Center>
             <Button
@@ -90,24 +111,3 @@ const LogInForm = observer(() => {
   );
 });
 export default LogInForm;
-
-// setTimeout(() => {
-//   auth
-//   .post('/login', values)
-//   .then(response => {
-//     setError(null)
-//     userStore.toggleLogin()
-//     userStore.setUser(response.data.user)
-//   })
-//   .then(() => {
-//       return(history.push("/home"))
-//   })
-//   .catch(err => {
-//     if (err.response) {
-//        setError(err.response.data.message);
-//     } else {
-//         setError(err.request);
-//     }
-//   });
-//   setSubmitting(false);
-// }, 400);

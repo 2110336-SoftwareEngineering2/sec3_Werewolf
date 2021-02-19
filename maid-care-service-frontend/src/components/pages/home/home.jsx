@@ -1,9 +1,11 @@
 import { Button, Center, Text, VStack } from '@chakra-ui/react';
+import { observer } from 'mobx-react-lite';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
-import userStore from '../../../store/User';
+import { useStores } from '../../../hooks';
 
-const Home = () => {
+const Home = observer(() => {
+  const { userStore } = useStores();
   const history = useHistory();
 
   const handleLogout = () => {
@@ -11,6 +13,8 @@ const Home = () => {
     history.push('/login');
   };
 
+  console.log(userStore.isAuthenticated);
+  console.log(userStore);
   return (
     <>
       <Center h="100vh">
@@ -21,6 +25,6 @@ const Home = () => {
       </Center>
     </>
   );
-};
+});
 
 export default Home;
