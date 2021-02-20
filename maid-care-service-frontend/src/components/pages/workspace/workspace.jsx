@@ -25,6 +25,12 @@ import {
     Link,
     Text,
     flexbox,
+    AlertDialog,
+    AlertDialogBody,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogContent,
+    AlertDialogOverlay,
   } from "@chakra-ui/react";
 
 import {
@@ -73,6 +79,26 @@ export const Workspace = () => {
         libraries
     });
 
+    var workspaceInfo = {
+        houseNo : `${houseNo}`,
+        address1: `${address1}`,
+        address2: `${address2}`,
+        city: `${city}`,
+        state: `${state}`,
+        country: "Thailand"
+    }
+
+    const [houseNo, setHouseNo] = React.useState("");
+    const [address1, setAddress1] = React.useState("");
+    const [address2, setAddress2] = React.useState("");
+    const [city, setCity] = React.useState("");
+    const [state, setState] = React.useState("");
+    const handleHouseNo = (event) => setHouseNo(event.target.value);
+    const handleAddress1 = (event) => setAddress1(event.target.value);
+    const handleAddress2 = (event) => setAddress2(event.target.value);
+    const handleCity = (event) => setCity(event.target.value);
+    const handleState = (event) => setState(event.target.value);
+
     // markers is variable that contain all the map marker that created by user when they click on the map. 
     const [markers, setMarkers] = React.useState([]);
     // selected is variables that 
@@ -105,7 +131,18 @@ export const Workspace = () => {
         <Box bg="gray.200" h="100vh">
             <GrabmaidHeader/>
             <Center mt="20px">
-                <InfoSidebar panTo={panTo}/>
+                <InfoSidebar 
+                    houseNo={houseNo}
+                    address1={address1}
+                    address2={address2}
+                    city={city}
+                    state={state}
+                    handleHouseNo={handleHouseNo} 
+                    handleAddress1={handleAddress1} 
+                    handleAddress2={handleAddress2} 
+                    handleCity={handleCity} 
+                    handleState={handleState} 
+                    panTo={panTo}/>
                 <GoogleMap
                     id="map"
                     mapContainerStyle={mapContainerStyle}
@@ -142,7 +179,10 @@ export const Workspace = () => {
 
 export default Workspace;
 
-const InfoSidebar = ( {panTo} ) => {
+const InfoSidebar = ( {houseNo, address1, address2, city, state, handleHouseNo, handleAddress1, handleAddress2, handleCity, handleState, panTo} ) => {
+    const [isOpen, setIsOpen] = React.useState(false)
+    const onClose = () => setIsOpen(false)
+    const cancelRef = React.useRef()
     return (
         <FlexBox>
           <VStack spacing="20x" h="850px" w="350px">
@@ -151,23 +191,23 @@ const InfoSidebar = ( {panTo} ) => {
 
             <FormControl id="house-no" width={{sm:"270px",md:"368px"}}>
                 <FormLabel mb="0">House no.</FormLabel>
-                <Input placeholder="Text Here" className="formField" />
+                <Input placeholder="Text Here" className="formField" value={handleHouseNo}/>
             </FormControl>
             <FormControl id="address-1" width={{sm:"270px",md:"368px"}}>
                 <FormLabel mb="0">Address 1</FormLabel>
-                <Input placeholder="Text Here" className="formField" />
+                <Input placeholder="Text Here" className="formField" value={handleAddress1}/>
             </FormControl>
             <FormControl id="address" width={{sm:"270px",md:"368px"}}>
                 <FormLabel mb="0">Address 2</FormLabel>
-                <Input placeholder="Text Here" className="formField" />
+                <Input placeholder="Text Here" className="formField" value={handleAddress2}/>
             </FormControl>
             <FormControl id="city" width={{sm:"270px",md:"368px"}}>
                 <FormLabel mb="0">City</FormLabel>
-                <Input placeholder="Text Here" className="formField" />
+                <Input placeholder="Text Here" className="formField" value={handleCity}/>
             </FormControl>
             <FormControl id="state" width={{sm:"270px",md:"368px"}}>
                 <FormLabel mb="0">State</FormLabel>
-                <Input placeholder="Text Here" className="formField" />
+                <Input placeholder="Text Here" className="formField" value={handleState}/>
             </FormControl>
             <FormControl id="country" width={{sm:"270px",md:"368px"}}>
                 <FormLabel mb="0">Country</FormLabel>
@@ -175,8 +215,39 @@ const InfoSidebar = ( {panTo} ) => {
             </FormControl>
 
             <Center>
-                <Button boxShadow="xl" w="200px" className="button" mt="25px" mb="10px" ml="30px" bg="buttonGreen" >Confirm</Button>
+                <Button boxShadow="xl" w="200px" className="button" mt="25px" mb="10px" ml="30px" bg="buttonGreen" onClick={() => setIsOpen(true)} >Confirm</Button>
             </Center>
+
+
+
+            <AlertDialog
+                isOpen={isOpen}
+                leastDestructiveRef={cancelRef}
+                onClose={onClose}
+                isCentered
+            >
+                <AlertDialogOverlay>
+                    <AlertDialogContent>
+                        <AlertDialogHeader fontSize="lg" fontWeight="bold">
+                            Add this places to your saved places?
+                        </AlertDialogHeader>
+
+                        <AlertDialogBody>
+                            Your address : house no. {houseNo} {address1} {address2} {city} {state} Thailand
+                        </AlertDialogBody>
+
+                        <AlertDialogFooter>
+                        <Button ref={cancelRef} onClick={onClose}>
+                            Cancel
+                        </Button>
+                        <Button colorScheme="green" onClick={onClose} ml={3}>
+                            Confirm
+                        </Button>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialogOverlay>
+            </AlertDialog>
+
 
           </VStack>
         </FlexBox>
