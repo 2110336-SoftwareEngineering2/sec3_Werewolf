@@ -102,9 +102,9 @@ export const Workspace = () => {
     if (isLoadError) return "Error loading maps";
     if(!isLoaded) return "Loading Mpas";
     return (
-        <Box bg="gray.200">
+        <Box bg="gray.200" h="100vh">
             <GrabmaidHeader/>
-            <Center>
+            <Center mt="20px">
                 <InfoSidebar panTo={panTo}/>
                 <GoogleMap
                     id="map"
