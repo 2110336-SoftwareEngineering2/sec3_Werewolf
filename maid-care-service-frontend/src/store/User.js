@@ -1,4 +1,4 @@
-import { observable, action, makeObservable } from 'mobx';
+import { observable, action, makeObservable, when } from 'mobx';
 import { auth } from '../api';
 
 class UserStore {
@@ -12,7 +12,14 @@ class UserStore {
       getUserData: action,
     });
 
-    this.getUserData();
+    // fetch user when authenticated
+    when(
+      () => this.isAuthenticated,
+      () => this.getUserData(),
+      {
+        timeout: 3000,
+      }
+    );
   }
 
   get isAuthenticated() {
@@ -26,7 +33,6 @@ class UserStore {
         console.log('response', response);
         const { access_token } = response.data;
         localStorage.setItem('token', access_token);
-        this.getUserData();
         return response;
       })
       .catch(error => {
