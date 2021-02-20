@@ -86,6 +86,7 @@ export const Workspace = () => {
     return (
         <div><h1>Grap maid (This for header)</h1>
             <Search  panTo={panTo}/>
+            <LocateMe  panTo={panTo}/>
             <GoogleMap
                 id="map"
                 mapContainerStyle={mapContainerStyle}
@@ -165,4 +166,23 @@ function Search( {panTo} ) {
             </Combobox>
         </div>
     );
+}
+
+function LocateMe( {panTo} ) {
+    return (
+        <button 
+            className="button-locateMe"
+            onClick={ () => {
+                navigator.geolocation.getCurrentPosittion(
+                    (position) => {panTo( {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude,
+                    });
+                },
+                () => null)
+            }}
+        >
+            Locate Me
+        </button>
+    )
 }
