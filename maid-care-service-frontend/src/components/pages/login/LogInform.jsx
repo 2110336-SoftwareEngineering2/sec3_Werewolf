@@ -1,102 +1,112 @@
-import React, { useState} from "react";
-import {useHistory} from "react-router-dom";
+import React, { useState, useEffect } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
 
-import { Formik, Form } from "formik";
-import * as Yup from "yup";
+import { Formik, Form } from 'formik';
+import * as Yup from 'yup';
 
-import { VStack, Link, Center, Button,Box } from "@chakra-ui/react";
-import { TextInput } from "../../shared/FormikField.jsx";
+import { VStack, Link, Center, Button, Text } from '@chakra-ui/react';
+import { observer } from 'mobx-react-lite';
+import { useStores } from '../../../hooks/use-stores';
 
-import userStore from "../../../MobX/User";
+import { TextInput } from '../../shared/FormikField.jsx';
 
-import {auth} from "../../../axiosConfig";
-
-
-const LogInForm = () => {
-
+const LogInForm = observer(() => {
   const history = useHistory();
+  const location = useLocation();
+  const { userStore } = useStores();
+
   const [showPW, setShowPW] = useState(false);
-  const [error,setError] = useState(null)
+  const [errors, setErrors] = useState([]);
 
-  const showPWButton = (
-    <Link
-      color="gray.500"
-      fontWeight="700"
-      onClick={() => {
-        setShowPW(!showPW);
-      }}
-    >
-      {showPW ? "hide" : "show"}
-    </Link>
-  );
+  // Clean up states.
+  useEffect(() => {
+    return () => {
+      setErrors([]);
+    };
+  }, []);
 
-  const yupValidation = Yup.object({
-    email: Yup.string()
-      .email("Invalid email address")
-      .required("Required"),
-    password: Yup.string()
-  })
-
-  const handleSubmit = (values,{setSubmitting}) => {
-    setTimeout(() => {
-      auth
-      .post('/login', values)
-      .then(response => {
-        setError(null)
-        userStore.toggleLogin()
-        userStore.setUser(response.data.user)
-      })
-      .then(() => {
-          return(history.push("/home"))
-      })
-      .catch(err => {
-        if (err.response) {
-           setError(err.response.data.message);
-        } else {
-            setError(err.request);
-        }
-      });
+  const handleSubmit = async ({ email, password }, { setSubmitting }) => {
+    try {
+      setSubmitting(true);
+      // log user in
+      await userStore.login({ email, password });
+      setErrors([]);
+      if (location.state) {
+        history.push(location.state.from.pathname);
+      } else {
+        history.push('/');
+      }
+    } catch (error) {
+      console.log(error);
+      setErrors([...errors, error.response.data]);
       setSubmitting(false);
-    }, 400);
-  }
+    }
+  };
+
+  const errorMessage = errors => {
+    const lastError = errors[errors.length - 1];
+    switch (lastError.statusCode) {
+      case 401:
+        return 'Email or Password is invalid';
+      default:
+        return 'Internal Server Error';
+    }
+  };
 
   return (
-      <Formik
-        initialValues={{ email: "", password: "" }}
-        validationSchema={yupValidation}
-        onSubmit={handleSubmit}
-      >
+    <Formik
+      initialValues={{ email: '', password: '' }}
+      validationSchema={Yup.object({
+        email: Yup.string().email('Invalid email address').required('Please fill Email'),
+        password: Yup.string().required('Please fill Password'),
+      })}
+      onSubmit={handleSubmit}>
+      {({ isSubmitting }) => (
         <Form>
-        <VStack spacing={4} width={{ sm: "72", md: "96" }}>
+          <VStack spacing={4} width={{ sm: '72', md: '96' }}>
+            {/* Email Field */}
             <TextInput
               label="Email"
               name="email"
-              type="email"
+              type="text"
               placeholder="email"
+              autoComplete="username"
             />
+            {/* Password Field */}
             <TextInput
               label="Password"
               name="password"
-              type={showPW ? "text" : "password"}
+              type={showPW ? 'text' : 'password'}
               placeholder="password"
-              child={showPWButton}
+              autoComplete="current-password"
+              child={
+                <Link
+                  color="gray.500"
+                  fontWeight="700"
+                  onClick={() => {
+                    setShowPW(!showPW);
+                  }}>
+                  {showPW ? 'hide' : 'show'}
+                </Link>
+              }
             />
-        </VStack>
-          <Box color="red" mt="3">{error}</Box>
+            {!isSubmitting && errors.length && <Text color="red">{errorMessage(errors)}</Text>}
+          </VStack>
           <Center>
-          <Button
-          boxShadow="xl"
-          className="button"
-          mt="6"
-          mb="0.75"
-          bg="buttonGreen"
-          type="submit"
-        >
-          Log In
-        </Button>
+            <Button
+              isLoading={isSubmitting}
+              boxShadow="xl"
+              className="button"
+              mt="6"
+              mb="0.75"
+              bg="buttonGreen"
+              type="submit">
+              Log In
+            </Button>
           </Center>
         </Form>
-      </Formik>
+      )}
+    </Formik>
   );
-};
+});
 export default LogInForm;
