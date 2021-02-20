@@ -7,6 +7,25 @@
 */ 
 
 import React, {useState, useCallback, useRef} from "react";
+import FlexBox from "../../shared/FlexBox";
+import MaidLogo from "../../../MaidLogo.svg";
+
+import {
+    Box,
+    chakra,
+    Flex,
+    FormControl,
+    FormLabel,
+    Input,
+    InputGroup,
+    InputRightElement,
+    VStack,
+    Center,
+    Button,
+    Link,
+    Text,
+    flexbox,
+  } from "@chakra-ui/react";
 
 import {
     Combobox,
@@ -42,8 +61,8 @@ const defauleCenter = {
 
 // mapContainerStyle is height and width of map window.
 const mapContainerStyle = {
-    height: "100vh",
-    width: "100vw",
+    height: "900px",
+    width: "1000px",
 };
 
 
@@ -61,8 +80,7 @@ export const Workspace = () => {
 
     // onMapClick is a function that create map marker when user click on the map. 
     const onMapClick = React.useCallback((event) => {
-      setMarkers((current) => [
-        ...current,
+      setMarkers(() => [
         {
           lat: event.latLng.lat(),
           lng: event.latLng.lng(),
@@ -84,45 +102,89 @@ export const Workspace = () => {
     if (isLoadError) return "Error loading maps";
     if(!isLoaded) return "Loading Mpas";
     return (
-        <div><h1>Grap maid (This for header)</h1>
-            <Search  panTo={panTo}/>
-            <LocateMe  panTo={panTo}/>
-            <GoogleMap
-                id="map"
-                mapContainerStyle={mapContainerStyle}
-                zoom={8}
-                center={defauleCenter}
-                onClick={onMapClick}
-                onLoad = {onMapLoad}
-            >
-                {markers.map( (marker) => (
-                    <Marker
-                        key = {marker.time.toISOString()}
-                        position={ { lat : marker.lat, lng: marker.lng} }
-                        onClick={() => {setSelected(marker);}}
-                    />
-                ))
-                }
+        <Box bg="gray.200">
+            <GrabmaidHeader/>
+            <Center>
+                <InfoSidebar panTo={panTo}/>
+                <GoogleMap
+                    id="map"
+                    mapContainerStyle={mapContainerStyle}
+                    zoom={8}
+                    center={defauleCenter}
+                    onClick={onMapClick}
+                    onLoad = {onMapLoad}
+                >
+                    <LocateMe  panTo={panTo}/>
+                    {markers.map( (marker) => (
+                        <Marker
+                            key = {marker.time.toISOString()}
+                            position={ { lat : marker.lat, lng: marker.lng} }
+                            onClick={() => {setSelected(marker);}}
+                        />
+                    ))
+                    }
 
-                {selected ? (
-                    <InfoWindow
-                        position = { {lat : selected.lat, lng: selected.lng} }
-                        onCloseClick={() => { setSelected(null); }}
-                    >
-                        <div>
-                            <h2>new workspace</h2>
-                        </div>
-                    </InfoWindow>
-                ) : null}
-            </GoogleMap>
-        </div>
+                    {selected ? (
+                        <InfoWindow
+                            position = { {lat : selected.lat, lng: selected.lng} }
+                            onCloseClick={() => { setSelected(null); }}
+                        >
+                            <div>
+                                <h2>new workspace</h2>
+                            </div>
+                        </InfoWindow>
+                    ) : null}
+                </GoogleMap>
+            </Center>
+        </Box>
     );
 }
 
 export default Workspace;
 
+const InfoSidebar = ( {panTo} ) => {
+    return (
+        <FlexBox>
+          <VStack spacing="20x" h="850px" w="350px">
+            <Box fontSize="3xl" mb="15px" fontWeight="extrabold">New workspace</Box>
+            <SearchLocation  panTo={panTo}/>
 
-function Search( {panTo} ) {
+            <FormControl id="house-no" width={{sm:"270px",md:"368px"}}>
+                <FormLabel mb="0">House no.</FormLabel>
+                <Input placeholder="Text Here" className="formField" />
+            </FormControl>
+            <FormControl id="address-1" width={{sm:"270px",md:"368px"}}>
+                <FormLabel mb="0">Address 1</FormLabel>
+                <Input placeholder="Text Here" className="formField" />
+            </FormControl>
+            <FormControl id="address" width={{sm:"270px",md:"368px"}}>
+                <FormLabel mb="0">Address 2</FormLabel>
+                <Input placeholder="Text Here" className="formField" />
+            </FormControl>
+            <FormControl id="city" width={{sm:"270px",md:"368px"}}>
+                <FormLabel mb="0">City</FormLabel>
+                <Input placeholder="Text Here" className="formField" />
+            </FormControl>
+            <FormControl id="state" width={{sm:"270px",md:"368px"}}>
+                <FormLabel mb="0">State</FormLabel>
+                <Input placeholder="Text Here" className="formField" />
+            </FormControl>
+            <FormControl id="country" width={{sm:"270px",md:"368px"}}>
+                <FormLabel mb="0">Country</FormLabel>
+                <Input placeholder="Text Here" className="formField" value={"Thailand"} />
+            </FormControl>
+
+            <Center>
+                <Button boxShadow="xl" w="200px" className="button" mt="25px" mb="10px" ml="30px" bg="buttonGreen" >Confirm</Button>
+            </Center>
+
+          </VStack>
+        </FlexBox>
+    );
+}
+
+
+const SearchLocation = ( {panTo} ) => {
     const {
         ready, 
         value, 
@@ -136,7 +198,7 @@ function Search( {panTo} ) {
         });
 
     return (
-        <div className="workspace-search">
+        <Box  >
             <Combobox
                 onSelect={ async (address) => {
                     setValue(address, false);
@@ -164,11 +226,11 @@ function Search( {panTo} ) {
                     </ComboboxList>
                 </ComboboxPopover>  
             </Combobox>
-        </div>
+        </Box>
     );
 }
 
-function LocateMe( {panTo} ) {
+const LocateMe = ( {panTo} ) => {
     return (
         <button 
             className="button-locateMe"
@@ -185,4 +247,12 @@ function LocateMe( {panTo} ) {
             Locate Me
         </button>
     )
+}
+
+const GrabmaidHeader = () => {
+    return (
+        <Box w="100%" h="40px" bg="brandGreen" color="white">
+            <chakra.img src={MaidLogo} h="30px" ml="100px" />
+        </Box>
+    );
 }
