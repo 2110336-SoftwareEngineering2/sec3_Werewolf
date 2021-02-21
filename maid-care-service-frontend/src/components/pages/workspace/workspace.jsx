@@ -79,15 +79,6 @@ export const Workspace = () => {
         libraries
     });
 
-    var workspaceInfo = {
-        houseNo : `${houseNo}`,
-        address1: `${address1}`,
-        address2: `${address2}`,
-        city: `${city}`,
-        state: `${state}`,
-        country: "Thailand"
-    }
-
     const [houseNo, setHouseNo] = React.useState("");
     const [address1, setAddress1] = React.useState("");
     const [address2, setAddress2] = React.useState("");
@@ -191,27 +182,27 @@ const InfoSidebar = ( {houseNo, address1, address2, city, state, handleHouseNo, 
 
             <FormControl id="house-no" width={{sm:"270px",md:"368px"}}>
                 <FormLabel mb="0">House no.</FormLabel>
-                <Input placeholder="Text Here" className="formField" value={handleHouseNo}/>
+                <Input placeholder="Text Here" className="formField" value={houseNo} onChange={handleHouseNo}/>
             </FormControl>
             <FormControl id="address-1" width={{sm:"270px",md:"368px"}}>
                 <FormLabel mb="0">Address 1</FormLabel>
-                <Input placeholder="Text Here" className="formField" value={handleAddress1}/>
+                <Input placeholder="Text Here" className="formField" value={address1} onChange={handleAddress1}/>
             </FormControl>
             <FormControl id="address" width={{sm:"270px",md:"368px"}}>
                 <FormLabel mb="0">Address 2</FormLabel>
-                <Input placeholder="Text Here" className="formField" value={handleAddress2}/>
+                <Input placeholder="Text Here" className="formField" value={address2} onChange={handleAddress2}/>
             </FormControl>
             <FormControl id="city" width={{sm:"270px",md:"368px"}}>
                 <FormLabel mb="0">City</FormLabel>
-                <Input placeholder="Text Here" className="formField" value={handleCity}/>
+                <Input placeholder="Text Here" className="formField" value={city} onChange={handleCity}/>
             </FormControl>
             <FormControl id="state" width={{sm:"270px",md:"368px"}}>
                 <FormLabel mb="0">State</FormLabel>
-                <Input placeholder="Text Here" className="formField" value={handleState}/>
+                <Input placeholder="Text Here" className="formField" value={state} onChange={handleState}/>
             </FormControl>
             <FormControl id="country" width={{sm:"270px",md:"368px"}}>
                 <FormLabel mb="0">Country</FormLabel>
-                <Input placeholder="Text Here" className="formField" value={"Thailand"} />
+                <Input placeholder="Text Here" className="formField" value={"Thailand"}/>
             </FormControl>
 
             <Center>
