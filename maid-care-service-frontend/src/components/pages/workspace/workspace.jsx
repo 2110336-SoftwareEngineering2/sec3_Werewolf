@@ -13,18 +13,12 @@ import MaidLogo from "../../../MaidLogo.svg";
 import {
     Box,
     chakra,
-    Flex,
     FormControl,
     FormLabel,
     Input,
-    InputGroup,
-    InputRightElement,
     VStack,
     Center,
     Button,
-    Link,
-    Text,
-    flexbox,
     AlertDialog,
     AlertDialogBody,
     AlertDialogFooter,
@@ -39,14 +33,12 @@ import {
     ComboboxPopover,
     ComboboxList,
     ComboboxOption,
-    ComboboxOptionText,
 } from "@reach/combobox";
   
 import {
   GoogleMap,
   useLoadScript,
   Marker,
-  InfoWindow,
 } from "@react-google-maps/api";
 
 // this package is for relocating when user enters the location in the search box
@@ -54,7 +46,6 @@ import usePlacesAutocomplete, {
     getGeocode,
     getLatLng,
   } from "use-places-autocomplete";
-import { date } from "yup";
 
 const libraries = ["places"];
 
@@ -92,8 +83,6 @@ export const Workspace = () => {
 
     // markers is variable that contain all the map marker that created by user when they click on the map. 
     const [markers, setMarkers] = React.useState([]);
-    // selected is variables that 
-    const [selected, setSelected] = React.useState(null);
 
     // onMapClick is a function that create map marker when user click on the map. 
     const onMapClick = React.useCallback((event) => {
@@ -147,21 +136,10 @@ export const Workspace = () => {
                         <Marker
                             key = {marker.time.toISOString()}
                             position={ { lat : marker.lat, lng: marker.lng} }
-                            onClick={() => {setSelected(marker);}}
                         />
                     ))
                     }
 
-                    {selected ? (
-                        <InfoWindow
-                            position = { {lat : selected.lat, lng: selected.lng} }
-                            onCloseClick={() => { setSelected(null); }}
-                        >
-                            <div>
-                                <h2>new workspace</h2>
-                            </div>
-                        </InfoWindow>
-                    ) : null}
                 </GoogleMap>
             </Center>
         </Box>
@@ -197,16 +175,17 @@ const InfoSidebar = ( {houseNo, address1, address2, city, state, handleHouseNo, 
                 <Input placeholder="Text Here" className="formField" value={city} onChange={handleCity}/>
             </FormControl>
             <FormControl id="state" width={{sm:"270px",md:"368px"}}>
-                <FormLabel mb="0">State</FormLabel>
+                <FormLabel mb="0">State / Province</FormLabel>
                 <Input placeholder="Text Here" className="formField" value={state} onChange={handleState}/>
             </FormControl>
+
             <FormControl id="country" width={{sm:"270px",md:"368px"}}>
                 <FormLabel mb="0">Country</FormLabel>
                 <Input placeholder="Text Here" className="formField" value={"Thailand"}/>
             </FormControl>
 
             <Center>
-                <Button boxShadow="xl" w="200px" className="button" mt="25px" mb="10px" ml="30px" bg="buttonGreen" onClick={() => setIsOpen(true)} >Confirm</Button>
+                <Button boxShadow="xl" w="200px" className="button" mt="25px" mb="10px" ml="30px" bg="buttonGreen" onClick={() => setIsOpen(true)} >Add to saved places</Button>
             </Center>
 
 
@@ -259,25 +238,30 @@ const SearchLocation = ( {panTo} ) => {
             }
         });
 
+    const handleSelect = async (address) => {
+        setValue(address, false);
+        clearSuggestions();
+        
+        try {
+            const results = await getGeocode({ address });
+            const { lat, lng } = await getLatLng(results[0]);
+            panTo({ lat, lng });
+        } catch (error) {
+            console.log("😱 Error: ", error);
+        }
+    };
+
+    const handleInput = (e) => {
+        setValue(e.target.value);
+    };
+
     return (
         <Box  >
-            <Combobox
-                onSelect={ async (address) => {
-                    setValue(address, false);
-                    clearSuggestions();
-                    try {
-                        const results = await getGeocode( {address} );
-                        const { lat, lng } = await getLatLng(results[0]);
-                        panTo( {lat, lng} );
-                    } catch(error) {
-                        console.log("Error");
-                    }
-                }}
-            >
+            <Combobox onSelect={handleSelect}>
                 <ComboboxInput
                     placeholder="Search" 
                     value={value} 
-                    onChange={ (event) => { setValue(event.target.value); } }
+                    onChange={handleInput}
                     disabled ={ !ready }
                 />
                 <ComboboxPopover>
@@ -294,10 +278,17 @@ const SearchLocation = ( {panTo} ) => {
 
 const LocateMe = ( {panTo} ) => {
     return (
-        <button 
+        <Button 
+            boxShadow="xl" 
+            color="white"
+            w="100px"  
+            position="absolute"
+            bottom="30px" 
+            right="400px" 
+            bg="buttonGreen"
             className="button-locateMe"
             onClick={ () => {
-                navigator.geolocation.getCurrentPosittion(
+                navigator.geolocation.getCurrentPosition(
                     (position) => {panTo( {
                         lat: position.coords.latitude,
                         lng: position.coords.longitude,
@@ -307,8 +298,8 @@ const LocateMe = ( {panTo} ) => {
             }}
         >
             Locate Me
-        </button>
-    )
+        </Button>
+    );
 }
 
 const GrabmaidHeader = () => {
