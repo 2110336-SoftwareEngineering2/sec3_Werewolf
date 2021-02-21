@@ -26,7 +26,7 @@ export class PromotionController {
   async createPromotion(
     @Request() req,
     @Body() createPromotionDto: CreatePromotionDto,
-  ): Promise<any> {
+  ) {
     if (req.user.role === 'admin') {
       let promotion = await this.promotionService.createPromotion(
         req.user.email,

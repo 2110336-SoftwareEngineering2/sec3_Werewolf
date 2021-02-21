@@ -33,21 +33,8 @@ export class AuthService {
     let isValidPass = await bcrypt.compare(pass, user.password);
     if (!isValidPass) throw new UnauthorizedException('Incorrect password');
     if (!user.valid) throw new UnauthorizedException('Email not verified');
-    let result = {
-      firstname: user.firstname,
-      lastname: user.lastname,
-      phone: user.phone,
-      role: user.role,
-    };
-    if (user.role === 'customer') {
-      let customer = await this.customerService.findCustomer(email);
-      if (customer) Object.assign(result, { g_coin: customer.g_coin });
-    } else if (user.role === 'maid') {
-      let maid = await this.maidsService.findMaid(email);
-      if (maid) Object.assign(result, { avgRating: maid.avgRating });
-    }
     let accessToken = await this.jwtService.createToken(email, user.role);
-    return { token: accessToken, user: result };
+    return accessToken;
   }
 
   async register(createUserDto: CreateUserDto) {
@@ -65,7 +52,7 @@ export class AuthService {
 
   async createEmailToken(email: string, role: string): Promise<boolean> {
     let token = (await this.jwtService.createToken(email, role)).access_token;
-    let emailVerificationModel = await this.emailVerificationModel.findOneAndUpdate(
+    await this.emailVerificationModel.findOneAndUpdate(
       { email: email },
       {
         email: email,
