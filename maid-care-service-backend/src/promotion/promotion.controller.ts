@@ -20,7 +20,7 @@ import { CreatePromotionDto } from './dto/create-promotion.dto';
 export class PromotionController {
   constructor(private readonly promotionService: PromotionService) {}
 
-  @Post('create')
+  @Post()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('acess-token')
   async createPromotion(

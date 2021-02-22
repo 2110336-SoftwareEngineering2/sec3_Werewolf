@@ -2,10 +2,14 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class ProfileDto {
   constructor(object: any) {
+    this.password = object.password;
     this.firstname = object.firstname;
     this.lastname = object.lastname;
     this.phone = object.phone;
   }
+
+  @ApiProperty({ type: String })
+  password: string;
 
   @ApiProperty({ type: String })
   readonly firstname: string;

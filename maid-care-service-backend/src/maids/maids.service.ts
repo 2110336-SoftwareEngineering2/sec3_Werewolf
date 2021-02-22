@@ -6,14 +6,14 @@ import { Maid } from './interfaces/maids.interface';
 export class MaidsService {
   constructor(@Inject('MAID_MODEL') private maidModel: Model<Maid>) {}
 
-  async findMaid(email: string): Promise<Maid> {
-    return this.maidModel.findOne({ email: email }).exec();
+  async findMaid(id: string): Promise<Maid> {
+    return this.maidModel.findOne({ _id: id }).exec();
   }
 
-  async createNewMaid(email: string): Promise<Maid> {
-    const maidRegistered = await this.findMaid(email);
+  async createNewMaid(id: string): Promise<Maid> {
+    const maidRegistered = await this.findMaid(id);
     if (!maidRegistered) {
-      const newMaid = { email: email };
+      const newMaid = { _id: id };
       const createdMaid = new this.maidModel(newMaid);
       return await createdMaid.save();
     }
