@@ -9,7 +9,6 @@ import {
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/passport/jwt-auth.guard';
 import { CustomerService } from './customer.service';
-import { Customer } from './interfaces/customer.interface';
 
 @Controller('customer')
 @UseGuards(JwtAuthGuard)
@@ -18,13 +17,15 @@ import { Customer } from './interfaces/customer.interface';
 export class CustomerController {
   constructor(private readonly customerService: CustomerService) {}
 
-  @Get('get-customer')
+  @Get()
   async getCustomer(@Request() req) {
     if (req.user.role === 'customer') {
       try {
-        let customer = await this.customerService.findCustomer(req.user.email);
+        const customer = await this.customerService.findCustomer(
+          req.user.email,
+        );
         if (!customer) throw new ForbiddenException('Invalid customer');
-        let result = {
+        const result = {
           email: customer.email,
           g_coin: customer.g_coin,
         };

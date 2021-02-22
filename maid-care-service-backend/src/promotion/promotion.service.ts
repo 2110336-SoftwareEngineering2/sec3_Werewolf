@@ -17,7 +17,7 @@ export class PromotionService {
     creater: string,
     createPromotionDto: CreatePromotionDto,
   ): Promise<Promotion> {
-    let createdPromotion = new this.promotionModel(createPromotionDto);
+    const createdPromotion = new this.promotionModel(createPromotionDto);
     createdPromotion.creater = creater;
     let code;
     while (true) {
@@ -29,16 +29,16 @@ export class PromotionService {
   }
 
   async removePromotion(code: string) {
-    let promotion = await this.findPromotion(code);
+    const promotion = await this.findPromotion(code);
     if (!promotion) throw new NotFoundException('Promotion not valid');
     return await promotion.remove();
   }
 
   randomCode(length) {
     let result = '';
-    let characters =
+    const characters =
       'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let charactersLength = characters.length;
+    const charactersLength = characters.length;
     for (let i = 0; i < length; i++) {
       result += characters.charAt(Math.floor(Math.random() * charactersLength));
     }

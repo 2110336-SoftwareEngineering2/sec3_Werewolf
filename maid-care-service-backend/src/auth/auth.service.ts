@@ -28,18 +28,18 @@ export class AuthService {
   ) {}
 
   async validateLogin(email: string, pass: string) {
-    let user = await this.usersService.findUser(email);
+    const user = await this.usersService.findUser(email);
     if (!user) throw new UnauthorizedException('Invalid user');
-    let isValidPass = await bcrypt.compare(pass, user.password);
+    const isValidPass = await bcrypt.compare(pass, user.password);
     if (!isValidPass) throw new UnauthorizedException('Incorrect password');
     if (!user.valid) throw new UnauthorizedException('Email not verified');
-    let accessToken = await this.jwtService.createToken(email, user.role);
+    const accessToken = await this.jwtService.createToken(email, user.role);
     return accessToken;
   }
 
   async register(createUserDto: CreateUserDto) {
     try {
-      let user = await this.usersService.createNewUser(createUserDto);
+      const user = await this.usersService.createNewUser(createUserDto);
       if (user.role === 'customer')
         await this.customerService.createNewCustomer(user.email);
       else if (user.role === 'maid')
@@ -51,7 +51,7 @@ export class AuthService {
   }
 
   async createEmailToken(email: string, role: string): Promise<boolean> {
-    let token = (await this.jwtService.createToken(email, role)).access_token;
+    const token = (await this.jwtService.createToken(email, role)).access_token;
     await this.emailVerificationModel.findOneAndUpdate(
       { email: email },
       {
@@ -64,9 +64,9 @@ export class AuthService {
   }
 
   async sendEmailVerification(email: string): Promise<boolean> {
-    let model = await this.emailVerificationModel.findOne({ email: email });
+    const model = await this.emailVerificationModel.findOne({ email: email });
     if (model && model.token) {
-      let transporter = nodemailer.createTransport({
+      const transporter = nodemailer.createTransport({
         service: 'Gmail',
         secure: false, // true for 465, false for other ports
         auth: {
@@ -77,7 +77,7 @@ export class AuthService {
           rejectUnauthorized: false,
         },
       });
-      let mailOptions = {
+      const mailOptions = {
         from: '"Werewolf" <' + process.env.MAIL_USERNAME + '>',
         to: email,
         subject: 'Email Verification',
@@ -90,7 +90,7 @@ export class AuthService {
           model.token +
           '>Click here to activate your account</a>',
       };
-      let sent = await new Promise<boolean>(async function (resolve, reject) {
+      const sent = await new Promise<boolean>(async function (resolve, reject) {
         return await transporter.sendMail(mailOptions, async (error, info) => {
           if (error) {
             console.log('Message sent: %s', error);
@@ -107,15 +107,15 @@ export class AuthService {
   }
 
   async verifyEmail(token: string): Promise<boolean> {
-    let emailVerification = await this.emailVerificationModel.findOne({
+    const emailVerification = await this.emailVerificationModel.findOne({
       token: token,
     });
     if (emailVerification && emailVerification.email) {
-      let user = await this.usersService.findUser(emailVerification.email);
+      const user = await this.usersService.findUser(emailVerification.email);
       await emailVerification.remove();
       if (!user) throw new ForbiddenException('Invalid user');
       user.valid = true;
-      let savedUser = await user.save();
+      const savedUser = await user.save();
       return !!savedUser;
     } else {
       throw new UnauthorizedException('Code not valid');
@@ -123,21 +123,21 @@ export class AuthService {
   }
 
   async checkPassword(email: string, pass: string): Promise<boolean> {
-    let user = await this.usersService.findUser(email);
+    const user = await this.usersService.findUser(email);
     if (!user) throw new NotFoundException('Invalid user');
     return await bcrypt.compare(pass, user.password);
   }
 
   async deleteUser(email: string, pass: string) {
-    let user = await this.usersService.findUser(email);
+    const user = await this.usersService.findUser(email);
     if (!user) throw new NotFoundException('Invalid user');
-    let isValidPass = await bcrypt.compare(pass, user.password);
+    const isValidPass = await bcrypt.compare(pass, user.password);
     if (!isValidPass) throw new UnauthorizedException('Incorrect password');
     if (user.role === 'customer') {
-      let customer = await this.customerService.findCustomer(email);
+      const customer = await this.customerService.findCustomer(email);
       if (customer) await customer.remove();
     } else if (user.role === 'maid') {
-      let maid = await this.maidsService.findMaid(email);
+      const maid = await this.maidsService.findMaid(email);
       if (maid) await maid.remove();
     }
     return await user.remove();
