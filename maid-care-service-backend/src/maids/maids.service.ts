@@ -11,10 +11,10 @@ export class MaidsService {
   }
 
   async createNewMaid(email: string): Promise<Maid> {
-    let maidRegistered = await this.findMaid(email);
+    const maidRegistered = await this.findMaid(email);
     if (!maidRegistered) {
-      let newMaid = { email: email };
-      let createdMaid = new this.maidModel(newMaid);
+      const newMaid = { email: email };
+      const createdMaid = new this.maidModel(newMaid);
       return await createdMaid.save();
     }
     return maidRegistered;

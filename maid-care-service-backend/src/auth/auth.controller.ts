@@ -12,14 +12,13 @@ import {
   UnprocessableEntityException,
   ForbiddenException,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags, ApiCreatedResponse } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/passport/jwt-auth.guard';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
 import { Login } from './dto/login';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
-import { User } from '../users/interfaces/users.interface';
 
 @Controller('auth')
 @ApiTags('user')
@@ -39,14 +38,14 @@ export class AuthController {
     }
   }
 
-  @Get('get-user')
+  @Get('user')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('acess-token')
   async getUser(@Request() req) {
     try {
-      let user = await this.usersService.findUser(req.user.email);
+      const user = await this.usersService.findUser(req.user.email);
       if (!user) throw new ForbiddenException('Invalid user');
-      let result = {
+      const result = {
         email: user.email,
         firstname: user.firstname,
         lastname: user.lastname,
@@ -59,12 +58,14 @@ export class AuthController {
     }
   }
 
-  //create new user without email verification
-  @Post('create-user')
+  @Post('user')
+  @ApiCreatedResponse({
+    description: 'create new user without email verification',
+  })
   async createUser(@Body() createUserDto: CreateUserDto) {
     createUserDto.email = createUserDto.email.toLowerCase();
     try {
-      let user = await this.authService.register(createUserDto);
+      const user = await this.authService.register(createUserDto);
       user.valid = true;
       await user.save();
       return {
@@ -83,9 +84,9 @@ export class AuthController {
   async register(@Body() createUserDto: CreateUserDto) {
     createUserDto.email = createUserDto.email.toLowerCase();
     try {
-      let user = await this.authService.register(createUserDto);
+      const user = await this.authService.register(createUserDto);
       await this.authService.createEmailToken(user.email, user.role);
-      let isEmailSent = await this.authService.sendEmailVerification(
+      const isEmailSent = await this.authService.sendEmailVerification(
         user.email,
       );
       if (!isEmailSent) throw new UnprocessableEntityException();
@@ -104,7 +105,7 @@ export class AuthController {
   @Get('verify/:token')
   async verifyEmail(@Param() params): Promise<boolean> {
     try {
-      let isEmailVerified = await this.authService.verifyEmail(params.token);
+      const isEmailVerified = await this.authService.verifyEmail(params.token);
       return isEmailVerified;
     } catch (error) {
       throw error;
@@ -119,7 +120,7 @@ export class AuthController {
       throw new BadRequestException('No new password');
     resetPasswordDto.email = resetPasswordDto.email.toLowerCase();
     try {
-      let isValidPassword = await this.authService.checkPassword(
+      const isValidPassword = await this.authService.checkPassword(
         resetPasswordDto.email,
         resetPasswordDto.currentPassword,
       );
@@ -134,7 +135,7 @@ export class AuthController {
     }
   }
 
-  @Delete('delete-user')
+  @Delete('user')
   async deleteUser(@Body() login: Login) {
     login.email = login.email.toLowerCase();
     try {

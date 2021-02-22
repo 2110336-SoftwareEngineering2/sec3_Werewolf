@@ -22,7 +22,7 @@ export class UsersService {
   }
 
   async createNewUser(newUser: CreateUserDto): Promise<User> {
-    let userRegistered = await this.findUser(newUser.email);
+    const userRegistered = await this.findUser(newUser.email);
     if (!userRegistered) {
       if (!this.isValidEmail(newUser.email))
         throw new BadRequestException('Bad email');
@@ -32,7 +32,7 @@ export class UsersService {
       if (!this.isValidRole(newUser.role))
         throw new BadRequestException('Invalid role');
       newUser.password = await bcrypt.hash(newUser.password, saltRounds);
-      let createdUser = new this.userModel(newUser);
+      const createdUser = new this.userModel(newUser);
       return await createdUser.save();
     } else if (!userRegistered.valid) {
       return userRegistered;
@@ -42,7 +42,7 @@ export class UsersService {
   }
 
   async updateProfile(email: string, newProfile: ProfileDto): Promise<User> {
-    let userFromDb = await this.findUser(email);
+    const userFromDb = await this.findUser(email);
     if (!userFromDb) throw new ForbiddenException('Invalid user');
     if (newProfile.firstname) userFromDb.firstname = newProfile.firstname;
     if (newProfile.lastname) userFromDb.lastname = newProfile.lastname;
@@ -56,23 +56,23 @@ export class UsersService {
   }
 
   async setPassword(email: string, newPassword: string): Promise<boolean> {
-    let user = await this.findUser(email);
+    const user = await this.findUser(email);
     if (!user) throw new ForbiddenException('Invalid user');
     user.password = await bcrypt.hash(newPassword, saltRounds);
-    let savedUser = await user.save();
+    const savedUser = await user.save();
     return !!savedUser;
   }
 
   isValidEmail(email: string) {
     if (email) {
-      let re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
       return re.test(email);
     } else return false;
   }
 
   isValidPhoneNumber(phone: string) {
     if (phone) {
-      let phoneno = /^\d{10}$/;
+      const phoneno = /^\d{10}$/;
       return phoneno.test(phone);
     } else return false;
   }

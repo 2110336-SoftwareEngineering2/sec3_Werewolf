@@ -17,7 +17,7 @@ export class UsersController {
     @Body() profileDto: ProfileDto,
   ): Promise<ProfileDto> {
     try {
-      let user = await this.usersService.updateProfile(
+      const user = await this.usersService.updateProfile(
         req.user.email,
         profileDto,
       );

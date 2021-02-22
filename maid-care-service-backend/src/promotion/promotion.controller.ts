@@ -20,7 +20,7 @@ import { CreatePromotionDto } from './dto/create-promotion.dto';
 export class PromotionController {
   constructor(private readonly promotionService: PromotionService) {}
 
-  @Post('create-promotion')
+  @Post('create')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('acess-token')
   async createPromotion(
@@ -28,7 +28,7 @@ export class PromotionController {
     @Body() createPromotionDto: CreatePromotionDto,
   ) {
     if (req.user.role === 'admin') {
-      let promotion = await this.promotionService.createPromotion(
+      const promotion = await this.promotionService.createPromotion(
         req.user.email,
         createPromotionDto,
       );
@@ -43,7 +43,7 @@ export class PromotionController {
 
   @Get(':code')
   async findPromotion(@Param('code') code: string) {
-    let promotion = await this.promotionService.findPromotion(code);
+    const promotion = await this.promotionService.findPromotion(code);
     if (!promotion) throw new NotFoundException('Promotion not valid');
     return promotion;
   }
