@@ -1,6 +1,12 @@
 import axios from 'axios';
 import { baseURL } from './baseURL';
 
+axios.interceptors.request.use(config => {
+  // enable cors
+  config.headers['Access-Control-Allow-Origin'] = '*';
+  return config;
+});
+
 const auth = axios.create({
   baseURL: baseURL + '/auth', // use proxy for baseURL
   headers: { 'Content-Type': 'application/json' },
