@@ -18,6 +18,9 @@ class UserStore {
       () => this.getUserData(),
       {
         timeout: 3000,
+        onError: err => {
+          localStorage.removeItem('token');
+        },
       }
     );
   }
