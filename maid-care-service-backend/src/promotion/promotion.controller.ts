@@ -35,6 +35,7 @@ export class PromotionController {
       return {
         code: promotion.code,
         description: promotion.description,
+        discountRate: promotion.discountRate,
         availableDate: promotion.availableDate,
         expiredDate: promotion.expiredDate,
       };
