@@ -1,10 +1,27 @@
-.formField{
-    border-radius: 4px;
-    border-color: "#E2E8F0";
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-.button{
-    color: white;
-    width: 103px;
-    height: 48px;
+html,
+body {
+  font-size: 16px;
+}
+
+#root {
+  height: 100vh;
+}
+
+.formField {
+  border-radius: 4px;
+  border-color: '#E2E8F0';
+}
+
+.button {
+  color: white;
+  width: 103px;
+  height: 48px;
 }
