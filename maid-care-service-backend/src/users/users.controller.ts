@@ -84,12 +84,16 @@ export class UsersController {
   }
 
   @Delete(':id')
-  async deleteUser(@Param('id') id: string) {
-    try {
-      return await this.usersService.deleteUser(id);
-    } catch (error) {
-      throw error;
-    }
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('acess-token')
+  async deleteUser(@Request() req, @Param('id') id: string) {
+    if (req.user.role === 'admin' || req.user._id == id) {
+      try {
+        return await this.usersService.deleteUser(id);
+      } catch (error) {
+        throw error;
+      }
+    } else throw new UnauthorizedException();
   }
 
   @Put('reset-password')

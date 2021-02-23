@@ -29,16 +29,10 @@ export class PromotionController {
   ) {
     if (req.user.role === 'admin') {
       const promotion = await this.promotionService.createPromotion(
-        req.user.email,
+        req.user._id,
         createPromotionDto,
       );
-      return {
-        code: promotion.code,
-        description: promotion.description,
-        discountRate: promotion.discountRate,
-        availableDate: promotion.availableDate,
-        expiredDate: promotion.expiredDate,
-      };
+      return promotion;
     } else throw new UnauthorizedException('user is not admin');
   }
 

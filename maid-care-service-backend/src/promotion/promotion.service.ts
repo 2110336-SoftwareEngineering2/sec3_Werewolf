@@ -21,7 +21,7 @@ export class PromotionService {
     createdPromotion.creater = creater;
     let code;
     while (true) {
-      code = this.randomCode(12);
+      code = this.randomCode(20);
       if (!(await this.findPromotion(code))) break;
     }
     createdPromotion.code = code;
