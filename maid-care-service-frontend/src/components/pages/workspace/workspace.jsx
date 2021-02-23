@@ -203,7 +203,7 @@ const InfoSidebar = ( {houseNo, address1, address2, city, state, handleHouseNo, 
                         </AlertDialogHeader>
 
                         <AlertDialogBody>
-                            Your address : house no. {houseNo} {address1} {address2} {city} {state} Thailand
+                            Your address : <br/>house no.{houseNo} {address1} {address2}, {city}, {state}, Thailand
                         </AlertDialogBody>
 
                         <AlertDialogFooter>
