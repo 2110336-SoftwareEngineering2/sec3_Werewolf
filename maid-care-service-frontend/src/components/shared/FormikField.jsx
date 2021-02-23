@@ -3,31 +3,48 @@ import { useField } from 'formik';
 import {
   FormControl,
   FormErrorMessage,
+  FormHelperText,
   FormLabel,
   Input,
   InputGroup,
+  InputLeftElement,
   InputRightElement,
-  Stack,
   Text,
+  Textarea,
 } from '@chakra-ui/react';
 
-const TextInput = ({ label, type, placeholder, child, direction, isRequired, ...props }) => {
+const TextInputField = ({ label, left, right, helperText, ...props }) => {
   const [field, meta] = useField(props);
 
   return (
     <FormControl isInvalid={meta.touched && meta.error}>
-      <Stack direction={direction}>
-        <FormLabel htmlFor={field.name} mb={0}>
-          <Text fontWeight="bold">{label}</Text>
-        </FormLabel>
-        <InputGroup>
-          <Input id={field.name} {...field} {...props} type={type} placeholder={placeholder} />
-          {child && <InputRightElement width="16">{child}</InputRightElement>}
-        </InputGroup>
-        {meta.touched && meta.error && <FormErrorMessage>{meta.error}</FormErrorMessage>}
-      </Stack>
+      <FormLabel htmlFor={field.name}>
+        <Text fontWeight="bold">{label}</Text>
+      </FormLabel>
+      <InputGroup>
+        {left && <InputLeftElement>{left}</InputLeftElement>}
+        <Input id={field.name} {...field} {...props} type={props.type} />
+        {right && <InputRightElement width={16}>{right}</InputRightElement>}
+      </InputGroup>
+      {meta.touched && meta.error && <FormErrorMessage>{meta.error}</FormErrorMessage>}
+      {helperText && <FormHelperText>{helperText}</FormHelperText>}
     </FormControl>
   );
 };
 
-export { TextInput };
+const TextareaFeild = ({ label, helperText, ...props }) => {
+  const [field, meta] = useField(props);
+
+  return (
+    <FormControl isInvalid={meta.touched && meta.error}>
+      <FormLabel>
+        <Text fontWeight="bold">{label}</Text>
+      </FormLabel>
+      <Textarea {...field} {...props} />
+      {meta.touched && meta.error && <FormErrorMessage>{meta.error}</FormErrorMessage>}
+      {helperText && <FormHelperText>{helperText}</FormHelperText>}
+    </FormControl>
+  );
+};
+
+export { TextInputField, TextareaFeild };
