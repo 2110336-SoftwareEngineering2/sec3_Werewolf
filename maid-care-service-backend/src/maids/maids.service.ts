@@ -7,7 +7,9 @@ export class MaidsService {
   constructor(@Inject('MAID_MODEL') private maidModel: Model<Maid>) {}
 
   async findMaid(id: string): Promise<Maid> {
-    return this.maidModel.findOne({ _id: id }).exec();
+    if (String(id).length === 24) {
+      return this.maidModel.findOne({ _id: id }).exec();
+    } else return null;
   }
 
   async createNewMaid(id: string): Promise<Maid> {

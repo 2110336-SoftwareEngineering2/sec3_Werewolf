@@ -9,7 +9,9 @@ export class CustomerService {
   ) {}
 
   async findCustomer(id: string): Promise<Customer> {
-    return this.customerModel.findOne({ _id: id }).exec();
+    if (String(id).length === 24) {
+      return this.customerModel.findOne({ _id: id }).exec();
+    } else return null;
   }
 
   async createNewCustomer(id: string): Promise<Customer> {

@@ -8,7 +8,9 @@ export class JobService {
   constructor(@Inject('JOB_MODEL') private jobModel: Model<Job>) {}
 
   async findJob(id: string): Promise<Job> {
-    return this.jobModel.findOne({ _id: id }).exec();
+    if (String(id).length === 24) {
+      return this.jobModel.findOne({ _id: id }).exec();
+    } else return null;
   }
 
   async findByCustomer(id: string): Promise<Job[]> {

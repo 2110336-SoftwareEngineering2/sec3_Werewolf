@@ -2,7 +2,6 @@ import {
   Injectable,
   Inject,
   BadRequestException,
-  UnauthorizedException,
   ForbiddenException,
   NotFoundException,
   ConflictException,
@@ -30,7 +29,9 @@ export class UsersService {
   }
 
   async findUserById(id: string): Promise<User> {
-    return this.userModel.findOne({ _id: id }).exec();
+    if (String(id).length === 24) {
+      return this.userModel.findOne({ _id: id }).exec();
+    } else return null;
   }
 
   async createNewUser(newUser: CreateUserDto): Promise<User> {
