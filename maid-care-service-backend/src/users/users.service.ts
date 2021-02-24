@@ -79,6 +79,11 @@ export class UsersService {
     }
     if (newProfile.firstname) userFromDb.firstname = newProfile.firstname;
     if (newProfile.lastname) userFromDb.lastname = newProfile.lastname;
+    if (newProfile.birthdate) userFromDb.birthdate = newProfile.birthdate;
+    if (newProfile.citizenId) userFromDb.citizenId = newProfile.citizenId;
+    if (newProfile.nationality) userFromDb.nationality = newProfile.nationality;
+    if (newProfile.bankAccountNumber)
+      userFromDb.bankAccountNumber = newProfile.bankAccountNumber;
     if (newProfile.phone) {
       if (!this.isValidPhoneNumber(newProfile.phone))
         throw new BadRequestException('Bad phone number');

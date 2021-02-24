@@ -13,6 +13,18 @@ export class CreateUserDto {
   @ApiProperty({ type: String })
   readonly lastname: string;
 
+  @ApiProperty({ type: Date })
+  readonly birthdate: Date;
+
+  @ApiProperty({ type: String })
+  readonly citizenId: string;
+
+  @ApiProperty({ type: String })
+  readonly nationality: string;
+
+  @ApiProperty({ type: String })
+  readonly bankAccountNumber: string;
+
   @ApiProperty({ type: String })
   readonly phone: string;
 

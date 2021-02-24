@@ -5,6 +5,10 @@ export interface User extends Document {
   password: string;
   firstname: string;
   lastname: string;
+  birthdate: Date;
+  citizenId: string;
+  nationality: string;
+  bankAccountNumber: string;
   phone: string;
   role: string;
   valid: boolean;

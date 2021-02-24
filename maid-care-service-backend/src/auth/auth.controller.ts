@@ -48,6 +48,10 @@ export class AuthController {
       email: user.email,
       firstname: user.firstname,
       lastname: user.lastname,
+      birthdate: user.birthdate,
+      citizenId: user.citizenId,
+      nationality: user.nationality,
+      bankAccountNumber: user.bankAccountNumber,
       phone: user.phone,
       role: user.role,
     };
@@ -69,6 +73,10 @@ export class AuthController {
         email: user.email,
         firstname: user.firstname,
         lastname: user.lastname,
+        birthdate: user.birthdate,
+        citizenId: user.citizenId,
+        nationality: user.nationality,
+        bankAccountNumber: user.bankAccountNumber,
         phone: user.phone,
         role: user.role,
       };
