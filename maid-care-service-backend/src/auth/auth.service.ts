@@ -3,18 +3,14 @@ import {
   Inject,
   UnauthorizedException,
   ForbiddenException,
-  NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import * as nodemailer from 'nodemailer';
 import { Model } from 'mongoose';
 import { JWTService } from './jwt.service';
-import { CustomerService } from '../customer/customer.service';
-import { MaidsService } from '../maids/maids.service';
 import { UsersService } from '../users/users.service';
 import { EmailVerification } from './interfaces/emailverification.interface';
-import { CreateUserDto } from '../users/dto/create-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -22,8 +18,6 @@ export class AuthService {
     @Inject('EmailVerification_MODEL')
     private emailVerificationModel: Model<EmailVerification>,
     private jwtService: JWTService,
-    private customerService: CustomerService,
-    private maidsService: MaidsService,
     private usersService: UsersService,
   ) {}
 
@@ -35,19 +29,6 @@ export class AuthService {
     if (!user.valid) throw new UnauthorizedException('Email not verified');
     const accessToken = await this.jwtService.createToken(email, user.role);
     return accessToken;
-  }
-
-  async register(createUserDto: CreateUserDto) {
-    try {
-      const user = await this.usersService.createNewUser(createUserDto);
-      if (user.role === 'customer')
-        await this.customerService.createNewCustomer(user.email);
-      else if (user.role === 'maid')
-        await this.maidsService.createNewMaid(user.email);
-      return user;
-    } catch (error) {
-      throw error;
-    }
   }
 
   async createEmailToken(email: string, role: string): Promise<boolean> {
@@ -120,26 +101,5 @@ export class AuthService {
     } else {
       throw new UnauthorizedException('Code not valid');
     }
-  }
-
-  async checkPassword(email: string, pass: string): Promise<boolean> {
-    const user = await this.usersService.findUser(email);
-    if (!user) throw new NotFoundException('Invalid user');
-    return await bcrypt.compare(pass, user.password);
-  }
-
-  async deleteUser(email: string, pass: string) {
-    const user = await this.usersService.findUser(email);
-    if (!user) throw new NotFoundException('Invalid user');
-    const isValidPass = await bcrypt.compare(pass, user.password);
-    if (!isValidPass) throw new UnauthorizedException('Incorrect password');
-    if (user.role === 'customer') {
-      const customer = await this.customerService.findCustomer(email);
-      if (customer) await customer.remove();
-    } else if (user.role === 'maid') {
-      const maid = await this.maidsService.findMaid(email);
-      if (maid) await maid.remove();
-    }
-    return await user.remove();
   }
 }

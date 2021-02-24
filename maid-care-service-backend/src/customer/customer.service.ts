@@ -8,14 +8,14 @@ export class CustomerService {
     @Inject('CUSTOMER_MODEL') private customerModel: Model<Customer>,
   ) {}
 
-  async findCustomer(email: string): Promise<Customer> {
-    return this.customerModel.findOne({ email: email }).exec();
+  async findCustomer(id: string): Promise<Customer> {
+    return this.customerModel.findOne({ _id: id }).exec();
   }
 
-  async createNewCustomer(email: string): Promise<Customer> {
-    const customerRegistered = await this.findCustomer(email);
+  async createNewCustomer(id: string): Promise<Customer> {
+    const customerRegistered = await this.findCustomer(id);
     if (!customerRegistered) {
-      const newCustomer = { email: email };
+      const newCustomer = { _id: id };
       const createdCustomer = new this.customerModel(newCustomer);
       return await createdCustomer.save();
     }

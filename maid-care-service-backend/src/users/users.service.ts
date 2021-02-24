@@ -2,11 +2,15 @@ import {
   Injectable,
   Inject,
   BadRequestException,
+  UnauthorizedException,
   ForbiddenException,
+  NotFoundException,
   ConflictException,
 } from '@nestjs/common';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
+import { CustomerService } from '../customer/customer.service';
+import { MaidsService } from '../maids/maids.service';
 import { User } from './interfaces/users.interface';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ProfileDto } from './dto/profile.dto';
@@ -15,10 +19,18 @@ const saltRounds = 10;
 
 @Injectable()
 export class UsersService {
-  constructor(@Inject('USER_MODEL') private userModel: Model<User>) {}
+  constructor(
+    @Inject('USER_MODEL') private userModel: Model<User>,
+    private customerService: CustomerService,
+    private maidsService: MaidsService,
+  ) {}
 
   async findUser(email: string): Promise<User> {
     return this.userModel.findOne({ email: email }).exec();
+  }
+
+  async findUserById(id: string): Promise<User> {
+    return this.userModel.findOne({ _id: id }).exec();
   }
 
   async createNewUser(newUser: CreateUserDto): Promise<User> {
@@ -41,9 +53,26 @@ export class UsersService {
     }
   }
 
-  async updateProfile(email: string, newProfile: ProfileDto): Promise<User> {
-    const userFromDb = await this.findUser(email);
+  async register(createUserDto: CreateUserDto) {
+    try {
+      const user = await this.createNewUser(createUserDto);
+      if (user.role === 'customer')
+        await this.customerService.createNewCustomer(user._id);
+      else if (user.role === 'maid')
+        await this.maidsService.createNewMaid(user._id);
+      return user;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async updateProfile(id: string, newProfile: ProfileDto): Promise<User> {
+    const userFromDb = await this.findUserById(id);
     if (!userFromDb) throw new ForbiddenException('Invalid user');
+    if (newProfile.password) {
+      newProfile.password = await bcrypt.hash(newProfile.password, saltRounds);
+      userFromDb.password = newProfile.password;
+    }
     if (newProfile.firstname) userFromDb.firstname = newProfile.firstname;
     if (newProfile.lastname) userFromDb.lastname = newProfile.lastname;
     if (newProfile.phone) {
@@ -53,6 +82,25 @@ export class UsersService {
     }
     await userFromDb.save();
     return userFromDb;
+  }
+
+  async deleteUser(id: string) {
+    const user = await this.findUserById(id);
+    if (!user) throw new NotFoundException('Invalid user');
+    if (user.role === 'customer') {
+      const customer = await this.customerService.findCustomer(user._id);
+      if (customer) await customer.remove();
+    } else if (user.role === 'maid') {
+      const maid = await this.maidsService.findMaid(user._id);
+      if (maid) await maid.remove();
+    }
+    return await user.remove();
+  }
+
+  async checkPassword(email: string, pass: string): Promise<boolean> {
+    const user = await this.findUser(email);
+    if (!user) throw new NotFoundException('Invalid user');
+    return await bcrypt.compare(pass, user.password);
   }
 
   async setPassword(email: string, newPassword: string): Promise<boolean> {
