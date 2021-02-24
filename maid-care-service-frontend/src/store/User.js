@@ -1,4 +1,5 @@
 import { observable, action, makeObservable, when } from 'mobx';
+import axiosRetry from 'axios-retry';
 import { auth } from '../api';
 
 class UserStore {
@@ -15,13 +16,7 @@ class UserStore {
     // fetch user when authenticated
     when(
       () => this.isAuthenticated,
-      () => this.getUserData(),
-      {
-        timeout: 3000,
-        onError: err => {
-          localStorage.removeItem('token');
-        },
-      }
+      async () => await this.getUserData()
     );
   }
 
@@ -45,8 +40,9 @@ class UserStore {
   }
 
   async getUserData() {
+    axiosRetry(auth, { retries: 3 });
     return auth
-      .get('/get-user')
+      .get('/user')
       .then(response => {
         console.log('get user res', response);
         const user = response.data;
