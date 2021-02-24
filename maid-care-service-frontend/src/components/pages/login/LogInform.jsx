@@ -8,7 +8,7 @@ import { VStack, Link, Center, Button, Text } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
 import { useStores } from '../../../hooks/use-stores';
 
-import { TextInput } from '../../shared/FormikField.jsx';
+import { TextInputField } from '../../shared/FormikField.jsx';
 
 const LogInForm = observer(() => {
   const history = useHistory();
@@ -65,7 +65,7 @@ const LogInForm = observer(() => {
         <Form>
           <VStack spacing={4} width={{ sm: '72', md: '96' }}>
             {/* Email Field */}
-            <TextInput
+            <TextInputField
               label="Email"
               name="email"
               type="text"
@@ -73,16 +73,17 @@ const LogInForm = observer(() => {
               autoComplete="username"
             />
             {/* Password Field */}
-            <TextInput
+            <TextInputField
               label="Password"
               name="password"
               type={showPW ? 'text' : 'password'}
               placeholder="password"
               autoComplete="current-password"
-              child={
+              right={
                 <Link
                   color="gray.500"
                   fontWeight="700"
+                  p={2}
                   onClick={() => {
                     setShowPW(!showPW);
                   }}>
