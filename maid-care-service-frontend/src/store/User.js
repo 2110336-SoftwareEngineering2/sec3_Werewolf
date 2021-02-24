@@ -15,7 +15,7 @@ class UserStore {
 
     // fetch user when authenticated
     when(
-      () => this.isAuthenticated,
+      () => this.isAuthenticated && !this.userData,
       async () => await this.getUserData()
     );
   }
@@ -31,6 +31,9 @@ class UserStore {
         console.log('response', response);
         const { access_token } = response.data;
         localStorage.setItem('token', access_token);
+
+        this.getUserData();
+
         return response;
       })
       .catch(error => {
