@@ -43,7 +43,10 @@ export class UsersService {
       if (newUser.phone && !this.isValidPhoneNumber(newUser.phone))
         throw new BadRequestException('Bad phone number');
       if (!this.isValidRole(newUser.role))
-        throw new BadRequestException('Invalid role');
+        throw new BadRequestException(
+          newUser.role +
+            ' is not valid role. Role must be customer, maid or admin',
+        );
       newUser.password = await bcrypt.hash(newUser.password, saltRounds);
       const createdUser = new this.userModel(newUser);
       return await createdUser.save();

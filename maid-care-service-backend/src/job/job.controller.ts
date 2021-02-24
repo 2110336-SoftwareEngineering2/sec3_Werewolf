@@ -25,11 +25,8 @@ export class JobController {
   @ApiBearerAuth('acess-token')
   async postJob(@Request() req, @Body() createJobDto: CreateJobDto) {
     if (req.user.role === 'customer') {
-      const promotion = await this.jobService.createPromotion(
-        req.user._id,
-        createJobDto,
-      );
-      return promotion;
+      const Job = await this.jobService.createJob(req.user._id, createJobDto);
+      return Job;
     } else throw new UnauthorizedException('user is not customer');
   }
 
