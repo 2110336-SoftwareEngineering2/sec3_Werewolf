@@ -1,13 +1,15 @@
 import React from "react";
 
-import {TextInput} from "../../shared/FormikField"
+import {TextInputField} from "../../shared/FormikField"
 
-export const IdCardInfo = () => {
+const IDCardInfo = () => {
   return(
     <>
-      <TextInput name="nationality" label="Nationality" placeholder="Nationality" />
-      <TextInput name="citizenID" label="Citizen ID" placeholder="Citizen ID" />
-      <TextInput name="bankAccount" label="Bank Account Number" placeholder="Bank Account Number" />
+      <TextInputField name="nationality" label="Nationality" placeholder="Nationality" />
+      <TextInputField name="citizenID" label="Citizen ID" placeholder="Citizen ID" />
+      <TextInputField name="bankAccount" label="Bank Account Number" placeholder="Bank Account Number" />
     </>
   );
 };
+
+export default IDCardInfo;

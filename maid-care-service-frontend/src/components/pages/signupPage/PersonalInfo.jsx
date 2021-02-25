@@ -1,13 +1,15 @@
 import React from "react";
-import {TextInput,DateInput} from "../../shared/FormikField";
 
-export const PersonalInfo = () => {
+import {TextInputField, DateField} from "../../shared/FormikField";
+
+const PersonalInfo = () => {
   return(
     <>
-
-     <TextInput name="firstName" label="First Name" placeholder="First Name"/>
-     <TextInput name="lastName" label="Last Name" placeholder="Last Name"/>
-     <DateInput name="DOB" label="Date of Birth"/>
+     <TextInputField name="firstName" label="First Name" placeholder="First Name"/>
+     <TextInputField name="lastName" label="Last Name" placeholder="Last Name"/>
+     <DateField name="DOB" label="Date of Birth" helperText="Maid can only be 18-80 years old" />
     </>
   );
 };
+
+export default PersonalInfo;

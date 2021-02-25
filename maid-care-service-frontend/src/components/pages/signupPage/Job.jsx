@@ -1,4 +1,4 @@
-import React from "react";
+/*import React from "react";
 import {VStack,Box} from "@chakra-ui/react"
 import {CheckBox} from "../../shared/FormikField";
 
@@ -15,4 +15,4 @@ export const CapabalityJob = () => {
       </VStack>
     </>
   );
-};
+};*/
