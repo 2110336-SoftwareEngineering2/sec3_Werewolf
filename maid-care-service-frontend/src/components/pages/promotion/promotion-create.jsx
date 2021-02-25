@@ -6,6 +6,7 @@ import {
   FormHelperText,
   FormLabel,
   HStack,
+  Input,
   NumberInput,
   NumberInputField,
   Spacer,
@@ -17,21 +18,14 @@ import React from 'react';
 import { TextareaFeild, TextInputField } from '../../shared/FormikField';
 import * as Yup from 'yup';
 import { Prompt, useHistory } from 'react-router-dom';
+import moment from 'moment';
 
-import DatePicker from '../../shared/DatePicker/DatePicker';
-
-const initialFormValues = {
-  code: '',
-  description: '',
-  rate: 0,
-  startDate: new Date(),
-  endDate: new Date(),
-};
+const FORMAT = `yyyy-MM-DDTHH:mm`;
 
 const PromotionCreate = () => {
   const history = useHistory();
 
-  const today = new Date();
+  const today = moment(new Date()).format(FORMAT);
   const promotionSchema = Yup.object().shape(
     {
       code: Yup.string().required('This field is required'),
@@ -82,10 +76,16 @@ const PromotionCreate = () => {
           Promotion Publish
         </Text>
         <Formik
-          initialValues={initialFormValues}
+          initialValues={{
+            code: '',
+            description: '',
+            rate: 0,
+            startDate: today,
+            endDate: today,
+          }}
           onSubmit={handleSubmit}
           validationSchema={promotionSchema}>
-          {({ isSubmitting, dirty }) => (
+          {({ isSubmitting, dirty, values }) => (
             <Form style={{ width: '100%' }}>
               <Prompt when={dirty} message="Are you sure to discard?"></Prompt>
               <TextInputField
@@ -102,7 +102,7 @@ const PromotionCreate = () => {
                 {({ field, meta }) => (
                   <FormControl isInvalid={meta.touched && meta.error}>
                     <Flex flexDirection="row" justifyContent="flex-start" alignItems="center">
-                      <FormLabel>
+                      <FormLabel htmlFor="startDate">
                         <Text fontWeight="bold">Discount rate</Text>
                       </FormLabel>
                       <NumberInput {...field} max={100} min={0} clampValueOnBlur={true}>
@@ -117,7 +117,7 @@ const PromotionCreate = () => {
               <Spacer margin={6} />
               <Stack direction={['column', 'column', 'row']}>
                 <Field name="startDate">
-                  {({ field, form, meta }) => (
+                  {({ field, meta }) => (
                     <FormControl isInvalid={meta.touched && meta.error}>
                       <Flex
                         flexDirection="row"
@@ -125,19 +125,10 @@ const PromotionCreate = () => {
                           sm: 'space-between',
                         }}
                         alignItems="center">
-                        <FormLabel>
+                        <FormLabel htmlFor="endDate">
                           <Text fontWeight="bold">Available date</Text>
                         </FormLabel>
-                        <DatePicker
-                          id="available-date"
-                          type="text"
-                          dateFormat="dd MMM yyyy HH:mm:SS"
-                          showTimeSelect
-                          {...field}
-                          selectedDate={field.value}
-                          isInvalid={meta.touched && meta.error}
-                          onChange={date => form.setFieldValue(field.name, date, true)}
-                        />
+                        <Input {...field} type="datetime-local" name="startDate" id="startDate" />
                       </Flex>
                       {meta.touched && meta.error && (
                         <FormErrorMessage>{meta.error}</FormErrorMessage>
@@ -147,7 +138,7 @@ const PromotionCreate = () => {
                   )}
                 </Field>
                 <Field name="endDate">
-                  {({ field, form, meta }) => (
+                  {({ field, meta }) => (
                     <FormControl isInvalid={meta.touched && meta.error}>
                       <Flex
                         flexDirection="row"
@@ -158,14 +149,7 @@ const PromotionCreate = () => {
                         <FormLabel>
                           <Text fontWeight="bold">Expired date</Text>
                         </FormLabel>
-                        <DatePicker
-                          id="expired-date"
-                          type="text"
-                          dateFormat="dd MMM yyyy HH:mm:SS"
-                          {...field}
-                          selectedDate={field.value}
-                          onChange={date => form.setFieldValue(field.name, date, true)}
-                        />
+                        <Input {...field} type="datetime-local" name="endDate" id="endDate" />
                       </Flex>
                       {meta.touched && meta.error && (
                         <FormErrorMessage>{meta.error}</FormErrorMessage>
