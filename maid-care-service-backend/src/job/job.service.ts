@@ -7,6 +7,7 @@ import {
 import { Model } from 'mongoose';
 import { Job } from './interfaces/job.interface';
 import { CreateJobDto } from './dto/create-job.dto';
+import { WorkType } from './work';
 
 @Injectable()
 export class JobService {
@@ -29,8 +30,7 @@ export class JobService {
     createJobDto.work.forEach((work) => {
       if (!this.isValidTypeOfWork(work.typeOfWork))
         throw new BadRequestException(
-          work.typeOfWork +
-            ' is not valid. Type of work must be washing_dish, cleaning_room or ironing',
+          work.typeOfWork + ' is not valid type of work',
         );
     });
     const createdJob = new this.jobModel(createJobDto);
@@ -44,9 +44,7 @@ export class JobService {
     return await job.remove();
   }
 
-  isValidTypeOfWork(type: string) {
-    return (
-      type === 'washing_dish' || type === 'cleaning_room' || type === 'ironing'
-    );
+  isValidTypeOfWork(workType: string) {
+    return (<any>Object).values(WorkType).includes(workType);
   }
 }

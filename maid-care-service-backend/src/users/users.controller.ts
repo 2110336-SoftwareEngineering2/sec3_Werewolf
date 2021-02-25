@@ -43,7 +43,6 @@ export class UsersController {
         citizenId: user.citizenId,
         nationality: user.nationality,
         bankAccountNumber: user.bankAccountNumber,
-        phone: user.phone,
         role: user.role,
       };
     } catch (error) {
@@ -66,7 +65,6 @@ export class UsersController {
       citizenId: user.citizenId,
       nationality: user.nationality,
       bankAccountNumber: user.bankAccountNumber,
-      phone: user.phone,
       role: user.role,
     };
     return result;
@@ -88,7 +86,6 @@ export class UsersController {
         citizenId: user.citizenId,
         nationality: user.nationality,
         bankAccountNumber: user.bankAccountNumber,
-        phone: user.phone,
       };
     } catch (error) {
       throw error;

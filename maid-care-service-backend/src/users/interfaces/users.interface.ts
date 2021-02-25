@@ -9,7 +9,6 @@ export interface User extends Document {
   citizenId: string;
   nationality: string;
   bankAccountNumber: string;
-  phone: string;
   role: string;
   valid: boolean;
 }

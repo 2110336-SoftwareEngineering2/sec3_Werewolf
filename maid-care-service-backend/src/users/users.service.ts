@@ -10,6 +10,7 @@ import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { CustomerService } from '../customer/customer.service';
 import { MaidsService } from '../maids/maids.service';
+import { JobService } from '../job/job.service';
 import { User } from './interfaces/users.interface';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ProfileDto } from './dto/profile.dto';
@@ -22,6 +23,7 @@ export class UsersService {
     @Inject('USER_MODEL') private userModel: Model<User>,
     private customerService: CustomerService,
     private maidsService: MaidsService,
+    private jobService: JobService,
   ) {}
 
   async findUser(email: string): Promise<User> {
@@ -40,8 +42,6 @@ export class UsersService {
       if (!this.isValidEmail(newUser.email))
         throw new BadRequestException('Bad email');
       if (!newUser.password) throw new BadRequestException('No password');
-      if (newUser.phone && !this.isValidPhoneNumber(newUser.phone))
-        throw new BadRequestException('Bad phone number');
       if (!this.isValidRole(newUser.role))
         throw new BadRequestException(
           newUser.role +
@@ -58,12 +58,21 @@ export class UsersService {
   }
 
   async register(createUserDto: CreateUserDto) {
+    if (createUserDto.work) {
+      createUserDto.work.forEach((work) => {
+        if (!this.jobService.isValidTypeOfWork(work))
+          throw new BadRequestException(work + ' is not valid type of work');
+      });
+    }
     try {
       const user = await this.createNewUser(createUserDto);
       if (user.role === 'customer')
         await this.customerService.createNewCustomer(user._id);
-      else if (user.role === 'maid')
+      else if (user.role === 'maid') {
         await this.maidsService.createNewMaid(user._id);
+        if (createUserDto.work)
+          await this.maidsService.updateWork(user._id, createUserDto.work);
+      }
       return user;
     } catch (error) {
       throw error;
@@ -84,11 +93,6 @@ export class UsersService {
     if (newProfile.nationality) userFromDb.nationality = newProfile.nationality;
     if (newProfile.bankAccountNumber)
       userFromDb.bankAccountNumber = newProfile.bankAccountNumber;
-    if (newProfile.phone) {
-      if (!this.isValidPhoneNumber(newProfile.phone))
-        throw new BadRequestException('Bad phone number');
-      userFromDb.phone = newProfile.phone;
-    }
     await userFromDb.save();
     return userFromDb;
   }
@@ -98,7 +102,13 @@ export class UsersService {
     if (!user) throw new NotFoundException('Invalid user');
     if (user.role === 'customer') {
       const customer = await this.customerService.findCustomer(user._id);
-      if (customer) await customer.remove();
+      if (customer) {
+        const jobs = await this.jobService.findByCustomer(id);
+        jobs.forEach((job) => {
+          job.remove();
+        });
+        await customer.remove();
+      }
     } else if (user.role === 'maid') {
       const maid = await this.maidsService.findMaid(user._id);
       if (maid) await maid.remove();

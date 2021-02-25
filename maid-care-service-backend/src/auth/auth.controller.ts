@@ -52,7 +52,6 @@ export class AuthController {
       citizenId: user.citizenId,
       nationality: user.nationality,
       bankAccountNumber: user.bankAccountNumber,
-      phone: user.phone,
       role: user.role,
     };
     return result;
@@ -77,7 +76,6 @@ export class AuthController {
         citizenId: user.citizenId,
         nationality: user.nationality,
         bankAccountNumber: user.bankAccountNumber,
-        phone: user.phone,
         role: user.role,
       };
     } catch (error) {

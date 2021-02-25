@@ -9,7 +9,6 @@ export const UserSchema = new mongoose.Schema({
   citizenId: String,
   nationality: String,
   bankAccountNumber: String,
-  phone: String,
   role: String,
   valid: { type: Boolean, default: false },
 });
