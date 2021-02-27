@@ -5,7 +5,7 @@ export enum WorkType {
   dish_washing = 'Dish Washing',
   laundry = 'Laundry',
   gardening = 'Gardening',
-  decluttering = 'Decluttering ',
+  decluttering = 'Decluttering',
 }
 
 export class Work {

@@ -1,4 +1,9 @@
-import { Injectable, Inject, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  Inject,
+  BadRequestException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { Model } from 'mongoose';
 import { Maid } from './interfaces/maids.interface';
 import { JobService } from '../job/job.service';
@@ -32,7 +37,16 @@ export class MaidsService {
         throw new BadRequestException(work + ' is not valid type of work');
     });
     const maidFromDb = await this.findMaid(id);
+    if (!maidFromDb) throw new ForbiddenException('Invalid maid');
     maidFromDb.work = work;
+    await maidFromDb.save();
+    return maidFromDb;
+  }
+
+  async setAvailability(id: string, availability: boolean): Promise<Maid> {
+    const maidFromDb = await this.findMaid(id);
+    if (!maidFromDb) throw new ForbiddenException('Invalid maid');
+    maidFromDb.availability = availability;
     await maidFromDb.save();
     return maidFromDb;
   }

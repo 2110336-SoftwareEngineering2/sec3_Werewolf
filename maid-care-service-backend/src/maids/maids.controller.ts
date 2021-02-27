@@ -42,4 +42,22 @@ export class MaidsController {
       throw error;
     }
   }
+
+  @Put('availability/:availability')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('acess-token')
+  async setAvailability(
+    @Request() req,
+    @Param('availability') availability: boolean,
+  ) {
+    try {
+      const maid = await this.maidsService.setAvailability(
+        req.user._id,
+        availability,
+      );
+      return maid;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
