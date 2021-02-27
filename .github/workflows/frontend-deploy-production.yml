@@ -107,7 +107,7 @@ jobs:
         if: success()
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          title: "Deploy Staging on Netlify"
+          title: "Deploy Production  on Netlify"
           color: 0x28a745
           username: Werewolf GitHub Actions
       
@@ -115,6 +115,6 @@ jobs:
         if: failure()
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          title: "Deploy Staging on Netlify"
+          title: "Deploy Production on Netlify"
           color: 0xd73a49
           username: Werewolf GitHub Actions
