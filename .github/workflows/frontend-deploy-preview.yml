@@ -93,8 +93,11 @@ jobs:
         uses: nwtgck/actions-netlify@v1.1.11
         with:
           publish-dir: './maid-care-service-frontend/build/'
-          deploy-message: "Deploy Production ${{ github.event.head_commit.message }}"
+          production-branch: main
+          production-deploy: false
+          deploy-message: "Deploy Preview Production ${{ github.event.head_commit.message }}"
           netlify-config-path: './maid-care-service-frontend/netlify.toml'
+          alias: deploy-preview-${{ github.event.number }}
         env:
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
