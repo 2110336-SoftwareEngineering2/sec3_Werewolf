@@ -2,7 +2,6 @@ name: Frontend Deploy Preview
 
 on:
   pull_request:
-    types: ['opened', 'edited', 'synchromize']
     branches: [ main ]
     
   workflow_dispatch:
