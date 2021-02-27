@@ -4,8 +4,6 @@ on:
 
   push:
     branches: [ frontend ]
-    paths: 
-      - 'maid-care-service-frontend/**'
 
   workflow_dispatch:
 
@@ -26,8 +24,8 @@ jobs:
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
           noprefix: true
-          title: "Merge!!"
-          description: "Deploying Website"
+          title: "Merge!! to Frontend"
+          description: "Deploying Staging Website"
           color: 0x6f42c1
           username: Werewolf GitHub Actions
 
@@ -41,9 +39,8 @@ jobs:
             
       - name: Build the site
         run: |
-          npm install --production 
-          npm fund
-          npm run build
+          yarn install --production 
+          yarn build
       
       - name: Install Netlify
         run: sudo npm install -g netlify-cli --unsafe-perm=true
@@ -51,16 +48,14 @@ jobs:
       - name: Netlify Actions
         uses: nwtgck/actions-netlify@v1.1.11
         with:
-
+          production-branch: 'main'
           publish-dir: './maid-care-service-frontend/build/'
-
-          deploy-message: ${{ github.event.head_commit.message }}
-
-          production-branch: frontend
+          deploy-message: "Deploy Staging ${{ github.event.head_commit.message }}"
+          alias: ${{ github.ref }}
         env:
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NODE_ENV: "production"
+          NODE_ENV: "staging"
           REACT_APP_SECRET: ${{ secrets.SECRET }}
           REACT_APP_API_URL: ${{ secrets.SERVER_URL }}
           REACT_APP_GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
@@ -69,7 +64,7 @@ jobs:
         if: success()
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          title: "Deploy on Netlify"
+          title: "Deploy Staging on Netlify"
           color: 0x28a745
           username: Werewolf GitHub Actions
       
@@ -77,6 +72,6 @@ jobs:
         if: failure()
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          title: "Deploy on Netlify"
+          title: "Deploy Staging on Netlify"
           color: 0xd73a49
           username: Werewolf GitHub Actions
