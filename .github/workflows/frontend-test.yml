@@ -1,0 +1,65 @@
+name: Frontend Test
+
+on:
+  pull_request:
+    branches: [ frontend ]
+    
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: maid-care-service-frontend
+
+jobs:
+  build-and-test:
+
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [14.x]
+
+    steps:
+
+      - uses: actions/checkout@v2
+      
+      - name: Setup Node.js environment version ${{ matrix.node-version }}
+        uses: actions/setup-node@v2.1.4
+        with: 
+          node-version: ${{ matrix.node_version }}
+        
+      - name: Get npm cache directory
+        id: npm-cache-dir
+        run: |
+          echo "::set-output name=dir::$(npm config get cache)"
+      - uses: actions/cache@v2
+        id: npm-cache # use this to check for `cache-hit` ==> if: steps.npm-cache.outputs.cache-hit != 'true'
+        with:
+          path: ${{ steps.npm-cache-dir.outputs.dir }}
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+          
+      - name: Build and Testing
+        run: |
+          npm install
+          npm run build --if-present
+          npm run test --passWithNoTests
+      
+      - uses: sarisia/actions-status-discord@v1
+        if: success()
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          title: "Run Test"
+          description: "Congrat! Your PR passed the test"
+          color: 0x28a745
+          username: Werewolf GitHub Actions
+      
+      - uses: sarisia/actions-status-discord@v1
+        if: failure()
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          title: "Run Test"
+          description: "Sorry, but your is shit!"
+          color: 0xd73a49
+          username: Werewolf GitHub Actions
