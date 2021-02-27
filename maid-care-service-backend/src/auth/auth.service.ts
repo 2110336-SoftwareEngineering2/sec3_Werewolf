@@ -22,7 +22,7 @@ export class AuthService {
   ) {}
 
   async validateLogin(email: string, pass: string) {
-    const user = await this.usersService.findUser(email);
+    const user = await this.usersService.findUserByEmail(email);
     if (!user) throw new UnauthorizedException('Invalid user');
     const isValidPass = await bcrypt.compare(pass, user.password);
     if (!isValidPass) throw new UnauthorizedException('Incorrect password');
@@ -92,8 +92,12 @@ export class AuthService {
       token: token,
     });
     if (emailVerification && emailVerification.email) {
-      const user = await this.usersService.findUser(emailVerification.email);
+      const user = await this.usersService.findUserByEmail(
+        emailVerification.email,
+      );
+      // remove the email verification token
       await emailVerification.remove();
+      // validate user
       if (!user) throw new ForbiddenException('Invalid user');
       user.valid = true;
       const savedUser = await user.save();

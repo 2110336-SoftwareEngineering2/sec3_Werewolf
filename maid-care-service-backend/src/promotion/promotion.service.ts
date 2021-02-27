@@ -19,6 +19,7 @@ export class PromotionService {
   ): Promise<Promotion> {
     const createdPromotion = new this.promotionModel(createPromotionDto);
     createdPromotion.creater = creater;
+    // generate random code
     let code;
     while (true) {
       code = this.randomCode(20);

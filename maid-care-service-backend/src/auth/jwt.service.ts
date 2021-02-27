@@ -19,7 +19,9 @@ export class JWTService {
   }
 
   async validateUser(signedUser): Promise<User> {
-    const userFromDb = await this.usersService.findUser(signedUser.email);
+    const userFromDb = await this.usersService.findUserByEmail(
+      signedUser.email,
+    );
     return userFromDb;
   }
 }

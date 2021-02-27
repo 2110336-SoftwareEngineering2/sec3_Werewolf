@@ -41,9 +41,9 @@ export class AuthController {
     description: "return user's id, email, firstname, lastname, phone and role",
   })
   async getUser(@Request() req) {
-    const user = await this.usersService.findUser(req.user.email);
+    const user = await this.usersService.findUserByEmail(req.user.email);
     if (!user) throw new ForbiddenException('Invalid user');
-    const result = {
+    return {
       id: user._id,
       email: user.email,
       firstname: user.firstname,
@@ -54,7 +54,6 @@ export class AuthController {
       bankAccountNumber: user.bankAccountNumber,
       role: user.role,
     };
-    return result;
   }
 
   @Post('register')

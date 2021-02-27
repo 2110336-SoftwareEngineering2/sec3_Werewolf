@@ -55,7 +55,7 @@ export class UsersController {
     description: "return user's email, firstname, lastname, phone and role",
   })
   async getCustomer(@Param('id') id: string) {
-    const user = await this.usersService.findUserById(id);
+    const user = await this.usersService.findUser(id);
     if (!user) throw new NotFoundException('invalid user');
     const result = {
       email: user.email,

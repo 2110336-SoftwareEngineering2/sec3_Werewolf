@@ -27,12 +27,14 @@ export class JobService {
     customerId: string,
     createJobDto: CreateJobDto,
   ): Promise<Job> {
+    // validate work
     createJobDto.work.forEach((work) => {
       if (!this.isValidTypeOfWork(work.typeOfWork))
         throw new BadRequestException(
           work.typeOfWork + ' is not valid type of work',
         );
     });
+    // create new job
     const createdJob = new this.jobModel(createJobDto);
     createdJob.customerId = customerId;
     return await createdJob.save();
