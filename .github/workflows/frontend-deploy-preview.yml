@@ -1,4 +1,4 @@
-name: Frontend Test
+name: Frontend Deploy Preview
 
 on:
   pull_request:
@@ -73,20 +73,41 @@ jobs:
     needs: [build-and-test]
     
     steps:
-      - name: Deploy Preview Netlify
-        uses: jsmrcaga/action-netlify-deploy@master
+      - name: Checkout Git Repo
+        uses: actions/checkout@v2
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v2.1.4
+        with: 
+          node-version: 14.x
+            
+      - name: Build the site
+        run: |
+          yarn install --production 
+          yarn build
+      
+      - name: Install Netlify
+        run: sudo npm install -g netlify-cli --unsafe-perm=true
+        
+      - name: Netlify Actions
+        uses: nwtgck/actions-netlify@v1.1.11
         with:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          publish-dir: './maid-care-service-frontend/build/'
+          deploy-message: "Deploy Production ${{ github.event.head_commit.message }}"
+          netlify-config-path: './maid-care-service-frontend/netlify.toml'
+        env:
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-          NETLIFY_DEPLOY_MESSAGE: "Deploy preview v${{ github.ref }}"
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NODE_ENV: "production"
+          REACT_APP_SECRET: ${{ secrets.SECRET }}
+          REACT_APP_API_URL: ${{ secrets.SERVER_URL }}
+          REACT_APP_GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
           
-          
-      # Discord Notifications -- Deploy preview status
       - uses: sarisia/actions-status-discord@v1
         if: success()
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          title: "Deploy Preview"
+          title: "Deploy Preview Production on Netlify"
           color: 0x28a745
           username: Werewolf GitHub Actions
       
@@ -94,8 +115,6 @@ jobs:
         if: failure()
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          title: "Deploy Preview"
+          title: "Deploy Preview Production on Netlify"
           color: 0xd73a49
           username: Werewolf GitHub Actions
-          
-    
