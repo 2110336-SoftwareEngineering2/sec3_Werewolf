@@ -24,7 +24,7 @@ jobs:
         uses: actions/checkout@v2
         
       - name: Setup Node environment version @{{ matrix.node-version }}
-        uses: actions/setup-node@2.1.4
+        uses: actions/setup-node@v2.1.4
         with:
           node-version: ${{ matrix.node_version }}
           
@@ -107,7 +107,7 @@ jobs:
         if: success()
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          title: "Deploy Staging on Netlify"
+          title: "Deploy Production  on Netlify"
           color: 0x28a745
           username: Werewolf GitHub Actions
       
@@ -115,6 +115,6 @@ jobs:
         if: failure()
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          title: "Deploy Staging on Netlify"
+          title: "Deploy Production on Netlify"
           color: 0xd73a49
           username: Werewolf GitHub Actions

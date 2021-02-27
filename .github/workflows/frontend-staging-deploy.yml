@@ -1,4 +1,4 @@
-name: Frontend Automate Deploy
+name: Frontend Staging Deploy
 
 on:
 
@@ -51,7 +51,7 @@ jobs:
           production-branch: 'main'
           publish-dir: './maid-care-service-frontend/build/'
           deploy-message: "Deploy Staging ${{ github.event.head_commit.message }}"
-          alias: ${{ github.ref }}
+          alias: 'staging'
         env:
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
