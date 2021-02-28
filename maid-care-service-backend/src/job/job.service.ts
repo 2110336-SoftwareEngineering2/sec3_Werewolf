@@ -40,7 +40,7 @@ export class JobService {
     return await createdJob.save();
   }
 
-  async removeJob(id: string) {
+  async removeJob(id: string): Promise<Job> {
     const job = await this.findJob(id);
     if (!job) throw new NotFoundException('Job not valid');
     return await job.remove();

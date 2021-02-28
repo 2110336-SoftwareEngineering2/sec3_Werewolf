@@ -49,7 +49,7 @@ export class UsersService {
     }
   }
 
-  async register(createUserDto: CreateUserDto) {
+  async register(createUserDto: CreateUserDto): Promise<User> {
     // validate email
     if (!this.isValidEmail(createUserDto.email))
       throw new BadRequestException('Bad email');
@@ -104,7 +104,7 @@ export class UsersService {
     return userFromDb;
   }
 
-  async deleteUser(id: string) {
+  async deleteUser(id: string): Promise<User> {
     const user = await this.findUser(id);
     if (!user) throw new NotFoundException('Invalid user');
     if (user.role === 'customer') {

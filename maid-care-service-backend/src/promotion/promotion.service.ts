@@ -29,7 +29,7 @@ export class PromotionService {
     return await createdPromotion.save();
   }
 
-  async removePromotion(code: string) {
+  async removePromotion(code: string): Promise<Promotion> {
     const promotion = await this.findPromotion(code);
     if (!promotion) throw new NotFoundException('Promotion not valid');
     return await promotion.remove();

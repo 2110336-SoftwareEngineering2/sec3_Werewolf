@@ -12,6 +12,7 @@ import { ApiTags, ApiBearerAuth, ApiCreatedResponse } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/passport/jwt-auth.guard';
 import { MaidsService } from './maids.service';
 import { WorkDto } from './dto/work.dto';
+import { CerrentLocationDto } from './dto/location.dto';
 
 @Controller('maids')
 @ApiTags('maid')
@@ -36,6 +37,25 @@ export class MaidsController {
       const maid = await this.maidsService.updateWork(
         req.user._id,
         workDto.work,
+      );
+      return maid;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  @Put('update-location')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('acess-token')
+  async updateLocation(
+    @Request() req,
+    @Body() locationDto: CerrentLocationDto,
+  ) {
+    try {
+      const maid = await this.maidsService.updateLocation(
+        req.user._id,
+        locationDto.latitude,
+        locationDto.longitude,
       );
       return maid;
     } catch (error) {
