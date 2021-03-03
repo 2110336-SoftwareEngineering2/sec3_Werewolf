@@ -39,7 +39,10 @@ export class UsersController {
         email: user.email,
         firstname: user.firstname,
         lastname: user.lastname,
-        phone: user.phone,
+        birthdate: user.birthdate,
+        citizenId: user.citizenId,
+        nationality: user.nationality,
+        bankAccountNumber: user.bankAccountNumber,
         role: user.role,
       };
     } catch (error) {
@@ -52,13 +55,16 @@ export class UsersController {
     description: "return user's email, firstname, lastname, phone and role",
   })
   async getCustomer(@Param('id') id: string) {
-    const user = await this.usersService.findUserById(id);
+    const user = await this.usersService.findUser(id);
     if (!user) throw new NotFoundException('invalid user');
     const result = {
       email: user.email,
       firstname: user.firstname,
       lastname: user.lastname,
-      phone: user.phone,
+      birthdate: user.birthdate,
+      citizenId: user.citizenId,
+      nationality: user.nationality,
+      bankAccountNumber: user.bankAccountNumber,
       role: user.role,
     };
     return result;
@@ -76,7 +82,10 @@ export class UsersController {
       return {
         firstname: user.firstname,
         lastname: user.lastname,
-        phone: user.phone,
+        birthdate: user.birthdate,
+        citizenId: user.citizenId,
+        nationality: user.nationality,
+        bankAccountNumber: user.bankAccountNumber,
       };
     } catch (error) {
       throw error;
@@ -84,12 +93,16 @@ export class UsersController {
   }
 
   @Delete(':id')
-  async deleteUser(@Param('id') id: string) {
-    try {
-      return await this.usersService.deleteUser(id);
-    } catch (error) {
-      throw error;
-    }
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('acess-token')
+  async deleteUser(@Request() req, @Param('id') id: string) {
+    if (req.user.role === 'admin' || req.user._id == id) {
+      try {
+        return await this.usersService.deleteUser(id);
+      } catch (error) {
+        throw error;
+      }
+    } else throw new UnauthorizedException();
   }
 
   @Put('reset-password')

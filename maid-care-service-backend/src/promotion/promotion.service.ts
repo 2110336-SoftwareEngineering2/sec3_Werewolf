@@ -19,16 +19,17 @@ export class PromotionService {
   ): Promise<Promotion> {
     const createdPromotion = new this.promotionModel(createPromotionDto);
     createdPromotion.creater = creater;
+    // generate random code
     let code;
     while (true) {
-      code = this.randomCode(12);
+      code = this.randomCode(20);
       if (!(await this.findPromotion(code))) break;
     }
     createdPromotion.code = code;
     return await createdPromotion.save();
   }
 
-  async removePromotion(code: string) {
+  async removePromotion(code: string): Promise<Promotion> {
     const promotion = await this.findPromotion(code);
     if (!promotion) throw new NotFoundException('Promotion not valid');
     return await promotion.remove();

@@ -7,6 +7,7 @@ import { CustomerModule } from './customer/customer.module';
 import { MaidsModule } from './maids/maids.module';
 import { UsersModule } from './users/users.module';
 import { PromotionModule } from './promotion/promotion.module';
+import { JobModule } from './job/job.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { PromotionModule } from './promotion/promotion.module';
     UsersModule,
     MaidsModule,
     PromotionModule,
+    JobModule,
   ],
   controllers: [AppController],
   providers: [AppService],
