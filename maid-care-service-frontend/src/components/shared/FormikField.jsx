@@ -9,6 +9,7 @@ import {
   InputGroup,
   InputLeftElement,
   InputRightElement,
+  Stack,
   Text,
   Textarea,
 } from '@chakra-ui/react';
@@ -47,16 +48,34 @@ const TextareaFeild = ({ label, helperText, ...props }) => {
   );
 };
 
-const DateField = ({label, helperText,...props}) => {
-  const [field, meta] = useField(props)
-  return(<FormControl isInvalid={meta.touched && meta.error}>
-    <FormLabel>
-      <Text fontWeight="bold">{label}</Text>
-    </FormLabel>
-    <Input id={field.name} {...field} {...props} type="date" />
-    {meta.touched && meta.error && <FormErrorMessage>{meta.error}</FormErrorMessage>}
-    {helperText && <FormHelperText>{helperText}</FormHelperText>}
-  </FormControl>)
-}
+const DateField = ({ label, helperText, ...props }) => {
+  const [field, meta] = useField(props);
+  return (
+    <FormControl isInvalid={meta.touched && meta.error}>
+      <FormLabel>
+        <Text fontWeight="bold">{label}</Text>
+      </FormLabel>
+      <Input id={field.name} {...field} {...props} type="date" />
+      {meta.touched && meta.error && <FormErrorMessage>{meta.error}</FormErrorMessage>}
+      {helperText && <FormHelperText>{helperText}</FormHelperText>}
+    </FormControl>
+  );
+};
 
-export { TextInputField, TextareaFeild, DateField };
+const DatetimeField = ({ label, direction = ['column', 'row'], helperText, ...props }) => {
+  const [field, meta] = useField(props);
+  return (
+    <FormControl isInvalid={meta.touched && meta.error}>
+      <Stack direction={direction}>
+        <FormLabel>
+          <Text fontWeight="bold">{label}</Text>
+        </FormLabel>
+        <Input id={field.name} {...field} {...props} type="datetime-local" />
+      </Stack>
+      {meta.touched && meta.error && <FormErrorMessage>{meta.error}</FormErrorMessage>}
+      {helperText && <FormHelperText>{helperText}</FormHelperText>}
+    </FormControl>
+  );
+};
+
+export { TextInputField, TextareaFeild, DateField, DatetimeField };

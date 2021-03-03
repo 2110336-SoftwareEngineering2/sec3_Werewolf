@@ -1,31 +1,19 @@
-import {
-  Button,
-  Flex,
-  FormControl,
-  FormErrorMessage,
-  FormHelperText,
-  FormLabel,
-  HStack,
-  Input,
-  NumberInput,
-  NumberInputField,
-  Spacer,
-  Stack,
-  Text,
-} from '@chakra-ui/react';
-import { Form, Formik, Field } from 'formik';
 import React from 'react';
-import { TextareaFeild, TextInputField } from '../../shared/FormikField';
-import * as Yup from 'yup';
-import { Prompt, useHistory } from 'react-router-dom';
 import moment from 'moment';
+import * as Yup from 'yup';
+import { Button, Flex, HStack, Spacer, Stack, Text } from '@chakra-ui/react';
+import { Form, Formik } from 'formik';
 
-const FORMAT = `yyyy-MM-DDTHH:mm`;
+import { Prompt, useHistory } from 'react-router-dom';
+import { DatetimeField, TextareaFeild, TextInputField } from '../../shared/FormikField';
+import RateField from './components/RateField';
+
+const DATETIME_LOCAL_FORMAT = `yyyy-MM-DDTHH:mm`;
 
 const PromotionCreate = () => {
   const history = useHistory();
 
-  const today = moment(new Date()).format(FORMAT);
+  const today = moment(new Date()).format(DATETIME_LOCAL_FORMAT);
   const promotionSchema = Yup.object().shape(
     {
       code: Yup.string().required('This field is required'),
@@ -50,7 +38,10 @@ const PromotionCreate = () => {
   );
 
   const handleSubmit = (values, { setSubmitting }) => {
+    setSubmitting(true);
+    /**Start handle Submit logic here */
     console.log(values);
+    /**End handle Submit logic here */
     setSubmitting(false);
   };
 
@@ -85,7 +76,7 @@ const PromotionCreate = () => {
           }}
           onSubmit={handleSubmit}
           validationSchema={promotionSchema}>
-          {({ isSubmitting, dirty, values }) => (
+          {({ isSubmitting, dirty }) => (
             <Form style={{ width: '100%' }}>
               <Prompt when={dirty} message="Are you sure to discard?"></Prompt>
               <TextInputField
@@ -98,66 +89,19 @@ const PromotionCreate = () => {
               <Spacer margin={4} />
               <TextareaFeild label="Description" name="description" placeholder="Text here" />
               <Spacer margin={6} />
-              <Field name="rate">
-                {({ field, meta }) => (
-                  <FormControl isInvalid={meta.touched && meta.error}>
-                    <Flex flexDirection="row" justifyContent="flex-start" alignItems="center">
-                      <FormLabel htmlFor="startDate">
-                        <Text fontWeight="bold">Discount rate</Text>
-                      </FormLabel>
-                      <NumberInput {...field} max={100} min={0} clampValueOnBlur={true}>
-                        <NumberInputField {...field} placeholder={80} />
-                      </NumberInput>
-                      <Text ml={2}>% (percent)</Text>
-                    </Flex>
-                    <FormErrorMessage>{meta.error}</FormErrorMessage>
-                  </FormControl>
-                )}
-              </Field>
+              <RateField name="rate" label="Discount Rate" />
               <Spacer margin={6} />
               <Stack direction={['column', 'column', 'row']}>
-                <Field name="startDate">
-                  {({ field, meta }) => (
-                    <FormControl isInvalid={meta.touched && meta.error}>
-                      <Flex
-                        flexDirection="row"
-                        justifyContent={{
-                          sm: 'space-between',
-                        }}
-                        alignItems="center">
-                        <FormLabel htmlFor="endDate">
-                          <Text fontWeight="bold">Available date</Text>
-                        </FormLabel>
-                        <Input {...field} type="datetime-local" name="startDate" id="startDate" />
-                      </Flex>
-                      {meta.touched && meta.error && (
-                        <FormErrorMessage>{meta.error}</FormErrorMessage>
-                      )}
-                      <FormHelperText>Start date of the promotion.</FormHelperText>
-                    </FormControl>
-                  )}
-                </Field>
-                <Field name="endDate">
-                  {({ field, meta }) => (
-                    <FormControl isInvalid={meta.touched && meta.error}>
-                      <Flex
-                        flexDirection="row"
-                        justifyContent={{
-                          sm: 'space-between',
-                        }}
-                        alignItems="center">
-                        <FormLabel>
-                          <Text fontWeight="bold">Expired date</Text>
-                        </FormLabel>
-                        <Input {...field} type="datetime-local" name="endDate" id="endDate" />
-                      </Flex>
-                      {meta.touched && meta.error && (
-                        <FormErrorMessage>{meta.error}</FormErrorMessage>
-                      )}
-                      <FormHelperText>End date of the promotion.</FormHelperText>
-                    </FormControl>
-                  )}
-                </Field>
+                <DatetimeField
+                  name="startDate"
+                  label="Available date"
+                  helperText="Start date of the promotion"
+                />
+                <DatetimeField
+                  name="endDate"
+                  label="Expire date"
+                  helperText="End date of the promotion."
+                />
               </Stack>
               <Spacer margin={6} />
               <HStack justifyContent="flex-end">
