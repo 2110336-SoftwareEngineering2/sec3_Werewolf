@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { WorkType } from '../../job/work';
+import { WorkType } from '../../maids/workType';
 
 export class CreateUserDto {
   @ApiProperty({ type: String, format: 'email' })

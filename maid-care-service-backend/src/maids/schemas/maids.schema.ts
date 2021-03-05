@@ -1,7 +1,7 @@
 import * as mongoose from 'mongoose';
 
 export const MaidSchema = new mongoose.Schema({
-  work: { type: [String], default: [] },
+  work: [String],
   cerrentLocation: {
     latitude: { type: Number, default: null },
     longitude: { type: Number, default: null },

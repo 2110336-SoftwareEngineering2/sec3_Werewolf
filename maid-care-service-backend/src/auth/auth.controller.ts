@@ -13,7 +13,7 @@ import { ApiBearerAuth, ApiTags, ApiCreatedResponse } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/passport/jwt-auth.guard';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
-import { Login } from './dto/login';
+import { LoginDto } from './dto/login.dto';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 
 @Controller('auth')
@@ -25,7 +25,7 @@ export class AuthController {
   ) {}
 
   @Post('login')
-  async login(@Body() login: Login) {
+  async login(@Body() login: LoginDto) {
     login.email = login.email.toLowerCase();
     try {
       return await this.authService.validateLogin(login.email, login.password);

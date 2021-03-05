@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { WorkType } from '../../job/work';
+import { WorkType } from '../workType';
 
 export class WorkDto {
   @ApiProperty({

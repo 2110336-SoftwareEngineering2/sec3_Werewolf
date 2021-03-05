@@ -64,7 +64,7 @@ export class UsersService {
     // validate works
     if (createUserDto.role === 'maid' && createUserDto.work) {
       createUserDto.work.forEach((work) => {
-        if (!this.jobService.isValidTypeOfWork(work))
+        if (!this.maidsService.isValidTypeOfWork(work))
           throw new BadRequestException(work + ' is not valid type of work');
       });
     }

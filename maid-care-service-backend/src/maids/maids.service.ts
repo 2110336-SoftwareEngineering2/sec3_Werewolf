@@ -5,15 +5,14 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { Model } from 'mongoose';
+import { check } from 'prettier';
+import { Job } from 'src/job/interfaces/job.interface';
 import { Maid } from './interfaces/maids.interface';
-import { JobService } from '../job/job.service';
+import { WorkType } from './workType';
 
 @Injectable()
 export class MaidsService {
-  constructor(
-    @Inject('MAID_MODEL') private maidModel: Model<Maid>,
-    private jobService: JobService,
-  ) {}
+  constructor(@Inject('MAID_MODEL') private maidModel: Model<Maid>) {}
 
   async findMaid(id: string): Promise<Maid> {
     if (String(id).length === 24) {
@@ -39,7 +38,7 @@ export class MaidsService {
     // validate works
     if (!work) throw new BadRequestException('no work');
     work.forEach((work) => {
-      if (!this.jobService.isValidTypeOfWork(work))
+      if (!this.isValidTypeOfWork(work))
         throw new BadRequestException(work + ' is not valid type of work');
     });
     const maidFromDb = await this.findMaid(id);
@@ -75,20 +74,31 @@ export class MaidsService {
     return maidFromDb;
   }
 
-  async findNearestMaid(latitude: number, longitude: number): Promise<Maid> {
-    // validate latitude and Longitude
-    if (isNaN(latitude) || isNaN(longitude))
-      throw new ForbiddenException('Invalid latitude or Longitude');
+  async findNearestMaid(
+    latitude: number,
+    longitude: number,
+    job: Job,
+  ): Promise<Maid> {
     const maids = await this.findAvailableMaid();
     if (!maids) return null;
     let nearestMaid;
     let minDistance = 99999;
     maids.forEach((maid) => {
+      // check maid's cerrentLocation
       if (
         maid.cerrentLocation.latitude === null ||
         maid.cerrentLocation.longitude === null
       )
         return;
+      // check maid've already rejected
+      if (job.requestedMaid.includes(maid._id)) return;
+      // check maid's type of work
+      let canDoWork = true;
+      job.work.forEach((work) => {
+        if (!maid.work.includes(work.typeOfWork)) canDoWork = false;
+      });
+      if (!canDoWork) return;
+      // check distance
       const distance = this.findDistance(
         latitude,
         longitude,
@@ -105,5 +115,9 @@ export class MaidsService {
 
   findDistance(x1: number, y1: number, x2: number, y2: number) {
     return (x1 - x2) ** 2 + (y1 - y2) ** 2;
+  }
+
+  isValidTypeOfWork(workType: string) {
+    return (<any>Object).values(WorkType).includes(workType);
   }
 }
