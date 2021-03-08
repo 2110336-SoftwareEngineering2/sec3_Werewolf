@@ -8,6 +8,7 @@ import {
 } from '@nestjs/common';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
+import { NotificationService } from '../notification/notification.service';
 import { CustomerService } from '../customer/customer.service';
 import { MaidsService } from '../maids/maids.service';
 import { JobService } from '../job/job.service';
@@ -21,6 +22,7 @@ const saltRounds = 10;
 export class UsersService {
   constructor(
     @Inject('USER_MODEL') private userModel: Model<User>,
+    private notificationService: NotificationService,
     private customerService: CustomerService,
     private maidsService: MaidsService,
     private jobService: JobService,
@@ -107,6 +109,8 @@ export class UsersService {
   async deleteUser(id: string): Promise<User> {
     const user = await this.findUser(id);
     if (!user) throw new NotFoundException('Invalid user');
+    // delete subscription
+    await this.notificationService.unsubscribe(user._id);
     if (user.role === 'customer') {
       // delete customer and all jobs posted by this customer
       const customer = await this.customerService.findCustomer(user._id);

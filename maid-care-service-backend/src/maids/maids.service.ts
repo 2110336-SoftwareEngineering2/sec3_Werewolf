@@ -5,7 +5,6 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { Model } from 'mongoose';
-import { check } from 'prettier';
 import { Job } from 'src/job/interfaces/job.interface';
 import { Maid } from './interfaces/maids.interface';
 import { WorkType } from './workType';

@@ -8,6 +8,7 @@ import { MaidsModule } from './maids/maids.module';
 import { UsersModule } from './users/users.module';
 import { PromotionModule } from './promotion/promotion.module';
 import { JobModule } from './job/job.module';
+import { NotificationModule } from './notification/notification.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { JobModule } from './job/job.module';
     MaidsModule,
     PromotionModule,
     JobModule,
+    NotificationModule,
   ],
   controllers: [AppController],
   providers: [AppService],

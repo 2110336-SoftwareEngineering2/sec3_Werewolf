@@ -5,6 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Model } from 'mongoose';
+import { NotificationService } from '../notification/notification.service';
 import { MaidsService } from '../maids/maids.service';
 import { Job } from './interfaces/job.interface';
 import { Maid } from 'src/maids/interfaces/maids.interface';
@@ -14,6 +15,7 @@ import { CreateJobDto } from './dto/create-job.dto';
 export class JobService {
   constructor(
     @Inject('JOB_MODEL') private jobModel: Model<Job>,
+    private notificationService: NotificationService,
     private maidsService: MaidsService,
   ) {}
 
@@ -63,13 +65,21 @@ export class JobService {
       job.maidId = nearestMaid._id;
       job.requestedMaid.push(nearestMaid._id);
       await job.save();
+      //push notification to maid
+      await this.notificationService.sendNotification(
+        nearestMaid._id,
+        'new job',
+      );
       nearestMaid.availability = false;
       await nearestMaid.save();
-      console.log(nearestMaid._id); //TODO push notification to maid
     } else {
       job.maidId = null;
       await job.save();
-      console.log('can not find any maid'); //TODO push notification to maid
+      //push notification to customer
+      await this.notificationService.sendNotification(
+        job.customerId,
+        'can not find any maid',
+      );
     }
     return nearestMaid;
   }
