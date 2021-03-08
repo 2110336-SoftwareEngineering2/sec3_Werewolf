@@ -21,7 +21,7 @@ export class CustomerController {
   @Get('jobs')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('acess-token')
-  async findAllJob(@Request() req) {
+  async findAllJobs(@Request() req) {
     if (req.user.role === 'customer') {
       return await this.jobService.findByCustomer(req.user._id);
     } else throw new UnauthorizedException('user is not customer');

@@ -3,10 +3,9 @@ import { MaidsController } from './maids.controller';
 import { MaidsService } from './maids.service';
 import { MaidsProviders } from './maids.providers';
 import { DatabaseModule } from '../database/database.module';
-import { JobModule } from '../job/job.module';
 
 @Module({
-  imports: [DatabaseModule, JobModule],
+  imports: [DatabaseModule],
   controllers: [MaidsController],
   providers: [MaidsService, ...MaidsProviders],
   exports: [MaidsService],

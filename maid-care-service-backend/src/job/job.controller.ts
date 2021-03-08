@@ -5,6 +5,7 @@ import {
   Request,
   Get,
   Post,
+  Put,
   Delete,
   UseGuards,
   UnauthorizedException,
@@ -25,16 +26,28 @@ export class JobController {
   @ApiBearerAuth('acess-token')
   async postJob(@Request() req, @Body() createJobDto: CreateJobDto) {
     if (req.user.role === 'customer') {
-      const Job = await this.jobService.createJob(req.user._id, createJobDto);
-      return Job;
+      const job = await this.jobService.createJob(req.user._id, createJobDto);
+      return {
+        id: job._id,
+        customerId: job.customerId,
+        maidId: job.maidId,
+        workplaceId: job.workplaceId,
+        work: job.work,
+      };
     } else throw new UnauthorizedException('user is not customer');
   }
 
   @Get(':id')
   async findJob(@Param('id') id: string) {
     const job = await this.jobService.findJob(id);
-    if (!job) throw new NotFoundException('Job not valid');
-    return job;
+    if (!job) throw new NotFoundException('job not valid');
+    return {
+      id: job._id,
+      customerId: job.customerId,
+      maidId: job.maidId,
+      workplaceId: job.workplaceId,
+      work: job.work,
+    };
   }
 
   @Delete(':id')
@@ -48,5 +61,20 @@ export class JobController {
         throw error;
       }
     } else throw new UnauthorizedException('user is not admin');
+  }
+
+  @Get('maid/:id')
+  async findByMaid(@Param('id') id: string) {
+    return await this.jobService.findByMaid(id);
+  }
+
+  @Put(':id/reject')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('acess-token')
+  async reject(@Request() req, @Param('id') id: string) {
+    const job = await this.jobService.findJob(id);
+    if (job && req.user._id == job.maidId) {
+      return await this.jobService.reject(job);
+    } else throw new NotFoundException('job not valid');
   }
 }
