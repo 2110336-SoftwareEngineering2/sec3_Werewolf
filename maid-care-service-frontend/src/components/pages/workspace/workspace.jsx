@@ -26,6 +26,7 @@ import {
   AlertDialogHeader,
   AlertDialogContent,
   AlertDialogOverlay,
+  HStack,
 } from '@chakra-ui/react';
 
 import { GoogleMap, useLoadScript, Marker } from '@react-google-maps/api';
@@ -349,12 +350,12 @@ const SearchLocation = ({ panTo }) => {
   };
 
   return (
-    <Box>
+    <Box zIndex={1}>
       <PlacesAutocomplete value={address} onChange={setAddress} onSelect={handleSelect}>
         {({ getInputProps, suggestions, getSuggestionItemProps, loading }) => (
           <Box>
             <Input w="300px" {...getInputProps({ placeholder: 'Search your location....' })} />
-            <Box w="300px">
+            <Box w="300px" >
               {loading ? <div>...loading</div> : null}
               {suggestions.map(suggestion => {
                 const style = {
@@ -363,8 +364,16 @@ const SearchLocation = ({ panTo }) => {
                 return (
                   <Box
                     w="300px"
-                    bg="boxWhite"
-                    boxShadow="0px 4px 20px rgba(0, 0, 0, 0.25)"
+                    h="35px"
+                    lineHeight="35px"
+                    paddingLeft="15px"
+                    fontFamily="Roboto"
+                    fontSize="15px"
+                    color="gray.600"
+                    fontWeight= "300px"
+                    overflow="hidden"
+                    bg="#fff"
+                    boxShadow="0 2px 6px rgba(0, 0, 0, 0.3)"
                     {...getSuggestionItemProps(suggestion, { style })}>
                     {suggestion.description}
                   </Box>
