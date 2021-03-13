@@ -41,7 +41,7 @@ const Navbar = observer(() => {
 
     return isAuthenticated && user ? (
       <>
-        <LinkBox var to="/profile" color="black">
+        <LinkBox to="/profile" color="black">
           <LinkOverlay as={RouterLink} to="/profile">
             <HStack>
               <Avatar size="sm" name={`${user.firstname}`} />
@@ -127,7 +127,15 @@ const Navbar = observer(() => {
   };
 
   return (
-    <Flex bgColor="brandGreen" direction="row" alignItems="center" px={4} py={2}>
+    <Flex
+      position="sticky"
+      w="100%"
+      bgColor="brandGreen"
+      direction="row"
+      alignItems="center"
+      px={4}
+      py={2}
+      zIndex="sticky">
       {isMobile && renderDrawer()}
       <Link as={RouterLink} to="/">
         <Container w={[100, 120]} p={0}>
