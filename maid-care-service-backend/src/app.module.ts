@@ -9,6 +9,7 @@ import { UsersModule } from './users/users.module';
 import { PromotionModule } from './promotion/promotion.module';
 import { JobModule } from './job/job.module';
 import { NotificationModule } from './notification/notification.module';
+import { WorkspacesModule } from './workspaces/workspaces.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { NotificationModule } from './notification/notification.module';
     PromotionModule,
     JobModule,
     NotificationModule,
+    WorkspacesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
