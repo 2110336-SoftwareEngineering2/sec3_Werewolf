@@ -9,10 +9,12 @@ import EditProfile from './components/pages/editprofile/editprofile.jsx';
 import Workspace from './components/pages/workspace/workspace.jsx';
 import ProtectedRoute from './components/protectedRoute';
 import Promotion from './components/pages/promotion/promotion.jsx';
+import Navbar from './components/layouts/Navbar.jsx';
 
 export const App = () => {
   return (
     <ChakraProvider theme={theme}>
+      <Navbar />
       <Switch>
         <Route exact path="/">
           <Redirect to="/home" />

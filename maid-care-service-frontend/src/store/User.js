@@ -4,10 +4,14 @@ import { auth } from '../api';
 
 class UserStore {
   userData = null;
+  loading = true;
+  error = false;
 
   constructor() {
     makeObservable(this, {
       userData: observable,
+      loading: observable,
+      error: observable,
       login: action,
       logout: action,
       getUserData: action,
@@ -43,6 +47,9 @@ class UserStore {
   }
 
   async getUserData() {
+    this.loading = true;
+    this.error = false;
+
     axiosRetry(auth, { retries: 3 });
     return auth
       .get('/user')
@@ -53,12 +60,17 @@ class UserStore {
       })
       .catch(error => {
         console.log('get user err', error);
+        this.error = error;
         // throw error;
+      })
+      .finally(() => {
+        this.loading = false;
       });
   }
 
   logout() {
     localStorage.removeItem('token');
+    this.userData = null;
   }
 }
 
