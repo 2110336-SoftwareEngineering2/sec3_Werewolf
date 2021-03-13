@@ -27,8 +27,6 @@ import {
   AlertDialogOverlay,
 } from '@chakra-ui/react';
 
-
-
 import { GoogleMap, useLoadScript, Marker } from '@react-google-maps/api';
 
 // this package is for relocating when user enters the location in the search box
@@ -56,6 +54,7 @@ export const Workspace = () => {
     libraries,
   });
 
+  // this is useState of an user information.
   const [houseNo, setHouseNo] = React.useState('');
   const [address1, setAddress1] = React.useState('');
   const [address2, setAddress2] = React.useState('');
@@ -67,10 +66,10 @@ export const Workspace = () => {
   const handleCity = event => setCity(event.target.value);
   const handleState = event => setState(event.target.value);
 
-  // markers is variable that contain all the map marker that created by user when they click on the map.
+  // markers is variable that contain a map marker icon which created by user when they click on the map.
   const [markers, setMarkers] = React.useState([]);
 
-  // onMapClick is a function that create map marker when user click on the map.
+  // onMapClick is a function that create map marker icon when user click on the map.
   const onMapClick = React.useCallback(event => {
     setMarkers(() => [
       {
@@ -92,7 +91,7 @@ export const Workspace = () => {
   });
 
   if (isLoadError) return 'Error loading maps';
-  if (!isLoaded) return 'Loading Mpas';
+  if (!isLoaded) return 'Loading Maps';
   return (
     <Box bg="gray.200" h="100vh">
       <GrabmaidHeader />
@@ -109,7 +108,6 @@ export const Workspace = () => {
           handleCity={handleCity}
           handleState={handleState}
           panTo={panTo}
-          setMarkers = {setMarkers}
         />
         <GoogleMap
           id="map"
@@ -145,7 +143,6 @@ const InfoSidebar = ({
   handleCity,
   handleState,
   panTo,
-  setMarkers
 }) => {
   const [isOpen, setIsOpen] = React.useState(false);
   const onClose = () => setIsOpen(false);
@@ -156,7 +153,7 @@ const InfoSidebar = ({
         <Box fontSize="3xl" mb="15px" fontWeight="extrabold">
           New workspace
         </Box>
-        <SearchLocation panTo={panTo} setMarkers = {setMarkers}/>
+        <SearchLocation panTo={panTo} />
         <Box pos="absolute" top="250px">
           <FormControl id="house-no" width={{ sm: '270px', md: '368px' }}>
             <FormLabel mb="0">House no.</FormLabel>
@@ -252,7 +249,7 @@ const InfoSidebar = ({
   );
 };
 
-const SearchLocation = ({ panTo , setMarkers}) => {
+const SearchLocation = ({ panTo }) => {
   const [address, setAddress] = useState('');
   const [coordinates, setCoordinaates] = useState({
     lat: null,
@@ -260,42 +257,35 @@ const SearchLocation = ({ panTo , setMarkers}) => {
   });
 
   const handleSelect = async value => {
-
     try {
-        const result = await geocodeByAddress(value);
-        const latLng = await getLatLng(result[0]);
-        setAddress(value);
-        setCoordinaates(latLng);
-        panTo(latLng);
+      const result = await geocodeByAddress(value);
+      const latLng = await getLatLng(result[0]);
+      setAddress(value);
+      setCoordinaates(latLng);
+      panTo(latLng);
+    } catch (error) {
+      console.log('😱 Error: ', error);
     }
-    catch (error) {
-        console.log('😱 Error: ', error);
-      }
   };
-
 
   return (
     <Box>
-        <PlacesAutocomplete 
-            value={address}
-            onChange={setAddress}
-            onSelect={handleSelect}
-        >
-
+      <PlacesAutocomplete value={address} onChange={setAddress} onSelect={handleSelect}>
         {({ getInputProps, suggestions, getSuggestionItemProps, loading }) => (
           <Box>
-            <Input 
-                w="300px" 
-                {...getInputProps({ placeholder: 'Search your location....' })} 
-            />
-            <Box w="300px" >
+            <Input w="300px" {...getInputProps({ placeholder: 'Search your location....' })} />
+            <Box w="300px">
               {loading ? <div>...loading</div> : null}
               {suggestions.map(suggestion => {
                 const style = {
                   backgroundColor: suggestion.active ? '#41b6e6' : '#fff',
                 };
                 return (
-                  <Box w="300px"  {...getSuggestionItemProps(suggestion, { style })}>
+                  <Box
+                    w="300px"
+                    bg="boxWhite"
+                    boxShadow="0px 4px 20px rgba(0, 0, 0, 0.25)"
+                    {...getSuggestionItemProps(suggestion, { style })}>
                     {suggestion.description}
                   </Box>
                 );
@@ -308,6 +298,12 @@ const SearchLocation = ({ panTo , setMarkers}) => {
   );
 };
 
+// This is a function which locate user location by get latitude and longtitude from user GPS.
+// To make this function works, user must give permission in their browser.
+
+// This function get location by use navigator.geolocation.getCurrentPosition(...)
+// ,then pass latitude and longtitde as a parameter to panTo function which is a function that
+// pan a google map window to the latitude and longtitde.
 const LocateMe = ({ panTo }) => {
   return (
     <Button
@@ -335,6 +331,7 @@ const LocateMe = ({ panTo }) => {
   );
 };
 
+// This a grabmaidHeader (menu tap)
 const GrabmaidHeader = () => {
   return (
     <Box w="100%" h="40px" bg="brandGreen" color="white">
