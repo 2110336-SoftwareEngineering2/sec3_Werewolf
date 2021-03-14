@@ -10,6 +10,7 @@ import Workspace from './components/pages/workspace/workspace.jsx';
 import ProtectedRoute from './components/protectedRoute';
 import Promotion from './components/pages/promotion/promotion.jsx';
 import Navbar from './components/layouts/Navbar.jsx';
+import WorksPage from './components/pages/works/works.jsx';
 
 export const App = () => {
   return (
@@ -23,6 +24,7 @@ export const App = () => {
         <Route path="/promotion" component={Promotion} />
         <Route exact path="/profile/edit" component={EditProfile} />
         <Route exact path="/workspace" component={Workspace} />
+        <ProtectedRoute exact path="/works" component={WorksPage} />
         <ProtectedRoute exact path="/home" component={Home} />
       </Switch>
     </ChakraProvider>
