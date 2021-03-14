@@ -7,4 +7,5 @@ export interface Job extends Document {
   work: [Work];
   maidId: string;
   requestedMaid: [string];
+  expiryTime: Date;
 }

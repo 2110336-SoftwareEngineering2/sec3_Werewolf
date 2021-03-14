@@ -5,6 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Model } from 'mongoose';
+import { SchedulerRegistry } from '@nestjs/schedule';
 import { NotificationService } from '../notification/notification.service';
 import { MaidsService } from '../maids/maids.service';
 import { Job } from './interfaces/job.interface';
@@ -15,6 +16,7 @@ import { CreateJobDto } from './dto/create-job.dto';
 export class JobService {
   constructor(
     @Inject('JOB_MODEL') private jobModel: Model<Job>,
+    private schedulerRegistry: SchedulerRegistry,
     private notificationService: NotificationService,
     private maidsService: MaidsService,
   ) {}
@@ -64,7 +66,12 @@ export class JobService {
     if (nearestMaid) {
       job.maidId = nearestMaid._id;
       job.requestedMaid.push(nearestMaid._id);
+      const cerrentTime = new Date();
+      //expired in 30 seconds
+      const expiredIn = 30000;
+      job.expiryTime = new Date(cerrentTime.getTime() + expiredIn);
       await job.save();
+      this.addTimeout(job, expiredIn);
       //push notification to maid
       await this.notificationService.sendNotification(
         nearestMaid._id,
@@ -89,5 +96,18 @@ export class JobService {
     // find new maid
     await this.findMaid(job);
     return job;
+  }
+
+  addTimeout(job: Job, milliseconds: number) {
+    const callback = () => {
+      this.reject(job);
+    };
+
+    const timeout = setTimeout(callback, milliseconds);
+    this.schedulerRegistry.addTimeout(job.id, timeout);
+  }
+
+  deleteTimeout(job: Job) {
+    this.schedulerRegistry.deleteTimeout(job.id);
   }
 }

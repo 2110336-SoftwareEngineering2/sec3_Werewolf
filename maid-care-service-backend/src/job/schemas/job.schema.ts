@@ -6,4 +6,5 @@ export const JobSchema = new mongoose.Schema({
   work: [{ typeOfWork: String, description: String, quantity: Number }],
   maidId: { type: String, default: null },
   requestedMaid: [String],
+  expiryTime: Date,
 });

@@ -26,14 +26,7 @@ export class JobController {
   @ApiBearerAuth('acess-token')
   async postJob(@Request() req, @Body() createJobDto: CreateJobDto) {
     if (req.user.role === 'customer') {
-      const job = await this.jobService.createJob(req.user._id, createJobDto);
-      return {
-        id: job._id,
-        customerId: job.customerId,
-        maidId: job.maidId,
-        workplaceId: job.workplaceId,
-        work: job.work,
-      };
+      return await this.jobService.createJob(req.user._id, createJobDto);
     } else throw new UnauthorizedException('user is not customer');
   }
 
@@ -41,13 +34,7 @@ export class JobController {
   async findJob(@Param('id') id: string) {
     const job = await this.jobService.findJob(id);
     if (!job) throw new NotFoundException('job not valid');
-    return {
-      id: job._id,
-      customerId: job.customerId,
-      maidId: job.maidId,
-      workplaceId: job.workplaceId,
-      work: job.work,
-    };
+    return job;
   }
 
   @Delete(':id')
@@ -73,7 +60,8 @@ export class JobController {
   @ApiBearerAuth('acess-token')
   async reject(@Request() req, @Param('id') id: string) {
     const job = await this.jobService.findJob(id);
-    if (job && req.user._id == job.maidId) {
+    if (job && req.user._id == job.maidId && job.expiryTime > new Date()) {
+      this.jobService.deleteTimeout(job);
       return await this.jobService.reject(job);
     } else throw new NotFoundException('job not valid');
   }
