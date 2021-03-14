@@ -44,10 +44,10 @@ const SignupFormik = (props) => {
       onSubmit={handleSubmit}
       >
           <Form>
-          <VStack spacing="4" width={{ sm: '72', md: '96' }}>
-            {form()}
-          </VStack>
-           </Form>
+            <VStack spacing="4" width={{ sm: '72', md: '96' }}>
+              {form()}
+            </VStack>
+          </Form>
       </Formik>
   );
 };
