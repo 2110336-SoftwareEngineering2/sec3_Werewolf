@@ -1,9 +1,22 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
-import { Box, Flex, VStack, Button, HStack, Checkbox, FormControl, FormLabel, Select, Text} from '@chakra-ui/react';
+import {
+  Box,
+  Flex,
+  VStack,
+  Button,
+  HStack,
+  Checkbox,
+  FormControl,
+  FormLabel,
+  Select,
+  Text,
+  Textarea,
+} from '@chakra-ui/react';
 import { TextInputField } from '../../shared/FormikField';
+import { values } from 'mobx';
 
 const PostjobForm = props => {
   const yup = Yup.object({
@@ -30,13 +43,15 @@ const PostjobForm = props => {
   return (
     <Formik
       initialValues={{
+        isDishes: false,
         amountOfDishes: '',
         areaOfRooms: '',
         amountOfClothes: '',
       }}
       validationSchema={yup}
       onSubmit={handleSubmit}>
-      <Form>
+    <Form>
+      <div>{JSON.stringify(values,null, 4)}</div>
         <VStack spacing="4" width={{ sm: '72', md: '96' }}>
           {form()}
         </VStack>
@@ -46,28 +61,62 @@ const PostjobForm = props => {
 };
 
 const Page1 = () => {
+  const [isDishesinputDisable, setDishesinputDisable] = useState(true);
+  const [isAreainputDisable, setAreainputDisable] = useState(true);
+  const [isClothinputDisable, setClothinputDisable] = useState(true);
+
+  const handleDishesinputDisable = () => {
+    isDishesinputDisable == true ? setDishesinputDisable(false) : setDishesinputDisable(true);
+  };
+  const handleAreainputDisable = () => {
+    isAreainputDisable == true ? setAreainputDisable(false) : setAreainputDisable(true);
+  };
+
+  const handleClothinputDisable = () => {
+    isClothinputDisable == true ? setClothinputDisable(false) : setClothinputDisable(true);
+  };
+
   return (
     <>
       <Form>
-        <FormControl mb="20px"id="house-no" width={{ sm: '270px', md: '368px' }}>
+        <FormControl mb="20px" id="house-no" width={{ sm: '270px', md: '368px' }}>
           <FormLabel mb="0">Location</FormLabel>
-          <Select name="location" >
-          <option value="" selected>Select your workplace location</option>
-          {}
+          <Select name="location">
+            <option value="" selected>
+              Select your workplace location
+            </option>
+            {}
           </Select>
         </FormControl>
         <FormLabel mb="5px">Type of Work</FormLabel>
-        <FormControl id="city" width={{ sm: '270px', md: '368px' }}>
-          <Checkbox defaultIsChecked>Dish Washing</Checkbox>
-          <TextInputField label="" name="amountOfDishes" />
+        <FormControl id="dishes" width={{ sm: '270px', md: '368px' }}>
+          <Checkbox value="" onChange={handleDishesinputDisable}>
+            Dish Washing
+          </Checkbox>
+          <TextInputField
+            label=""
+            name="amountOfDishes"
+            placeHolder="Amount of dishes (e.g. 20)"
+            isDisabled={isDishesinputDisable}
+          />
         </FormControl>
-        <FormControl id="city" width={{ sm: '270px', md: '368px' }}>
-          <Checkbox defaultIsChecked>Room Cleaning</Checkbox>
-          <TextInputField label="" name="areaOfRooms" />
+        <FormControl id="rooms" width={{ sm: '270px', md: '368px' }}>
+          <Checkbox onChange={handleAreainputDisable}>Room Cleaning</Checkbox>
+          <TextInputField
+            label=""
+            name="areaOfRooms"
+            placeHolder="Amount of the room in square meter (e.g. 100)"
+            isDisabled={isAreainputDisable}
+          />
         </FormControl>
-        <FormControl id="city" width={{ sm: '270px', md: '368px' }}>
-          <Checkbox defaultIsChecked>Clothes Ironing</Checkbox>
-          <TextInputField label="" name="amountOfClothes" />
+        <FormControl id="clothes" width={{ sm: '270px', md: '368px' }}>
+          <Checkbox onChange={handleClothinputDisable}>Clothes Ironing</Checkbox>
+          <TextInputField
+            label=""
+            name="amountOfClothes"
+            placeHolder="Amount of clothes (e.g. 10)"
+            isDisabled={isClothinputDisable}
+          />
         </FormControl>
       </Form>
     </>
