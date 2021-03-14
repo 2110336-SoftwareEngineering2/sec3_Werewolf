@@ -1,7 +1,8 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import { Model } from 'mongoose';
 import * as webpush from 'web-push';
 import { Subscription } from './interfaces/subscription.interface';
+import { SubscriptionDto } from './dto/subscription.dto';
 
 @Injectable()
 export class NotificationService {
@@ -24,9 +25,9 @@ export class NotificationService {
     );
   }
 
-  async findSubscription(id: string): Promise<Subscription> {
-    if (String(id).length === 24) {
-      return this.subscriptionModel.findOne({ _id: id }).exec();
+  async findSubscription(userId: string): Promise<Subscription> {
+    if (String(userId).length === 24) {
+      return this.subscriptionModel.findOne({ _id: userId }).exec();
     } else return null;
   }
 
@@ -35,25 +36,25 @@ export class NotificationService {
   }
 
   async postSubscribe(
-    id: string,
-    subscription: webpush.PushSubscription,
-  ): Promise<any> {
-    return await this.subscriptionModel.findOneAndUpdate(
-      { _id: id },
+    userId: string,
+    subscription: SubscriptionDto,
+  ): Promise<Subscription> {
+    await this.subscriptionModel.findOneAndUpdate(
+      { _id: userId },
       {
-        _id: id,
+        _id: userId,
         endpoint: subscription.endpoint,
         keys: subscription.keys,
       },
       { upsert: true },
     );
+    return this.findSubscription(userId);
   }
 
-  async unsubscribe(id: string): Promise<any> {
-    const subscription = await this.findSubscription(id);
-    if (subscription) {
-      return await subscription.remove();
-    }
+  async unsubscribe(userId: string): Promise<Subscription> {
+    const subscription = await this.findSubscription(userId);
+    if (!subscription) throw new NotFoundException('no subscription');
+    return await subscription.remove();
   }
 
   async sendNotification(userId: string, message: string) {
