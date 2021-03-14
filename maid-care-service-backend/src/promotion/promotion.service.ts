@@ -13,19 +13,16 @@ export class PromotionService {
     return this.promotionModel.findOne({ code: code }).exec();
   }
 
+  async findAll(): Promise<Promotion[]> {
+    return this.promotionModel.find().exec();
+  }
+
   async createPromotion(
     creater: string,
     createPromotionDto: CreatePromotionDto,
   ): Promise<Promotion> {
     const createdPromotion = new this.promotionModel(createPromotionDto);
     createdPromotion.creater = creater;
-    // generate random code
-    let code;
-    while (true) {
-      code = this.randomCode(20);
-      if (!(await this.findPromotion(code))) break;
-    }
-    createdPromotion.code = code;
     return await createdPromotion.save();
   }
 

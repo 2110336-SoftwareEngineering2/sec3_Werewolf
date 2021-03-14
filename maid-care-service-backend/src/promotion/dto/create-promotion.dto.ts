@@ -2,6 +2,9 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class CreatePromotionDto {
   @ApiProperty({ type: String })
+  readonly code: string;
+
+  @ApiProperty({ type: String })
   readonly description: string;
 
   @ApiProperty({ type: Number })

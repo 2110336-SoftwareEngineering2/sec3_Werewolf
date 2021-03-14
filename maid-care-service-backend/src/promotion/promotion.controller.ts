@@ -43,6 +43,11 @@ export class PromotionController {
     return promotion;
   }
 
+  @Get()
+  async findAll() {
+    return await this.promotionService.findAll();
+  }
+
   @Delete(':code')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('acess-token')
