@@ -17,7 +17,7 @@ export class WorkspacesService {
   constructor(@Inject('WORKSPACE_MODEL') private workspaceModel: Model<Workspace>) {}
 
   async addNewWorkspace(newWorkspace: CreateWorkspaceDto): Promise<Workspace> {
-    const newWorkspaceRegister = await this.findExist(newWorkspace.userId, newWorkspace.description);
+    const newWorkspaceRegister = await this.findExist(newWorkspace.customerId, newWorkspace.latitude, newWorkspace.longitude);
     if (!newWorkspaceRegister) {
       //if workspace does not exist, create new one.
       const workspaceRegistered = new this.workspaceModel(newWorkspace);
@@ -27,15 +27,15 @@ export class WorkspacesService {
     }
   }
 
-  findAllWorkspaceByUserId(userid: string) : Promise<Workspace[]> {
-    //userid is the user id in the User class
-    if (String(userid).length === 24) {
-      return this.workspaceModel.find({ userid: userid }).exec();
+  findAllWorkspaceByCustomerId(customerid: string) : Promise<Workspace[]> {
+    //
+    if (String(customerid).length === 24) {
+      return this.workspaceModel.find({ customerid: customerid }).exec();
     } else return null;
   }
 
-  async findExist(userId: string, description: string): Promise<Workspace> {
-    return this.workspaceModel.findOne({userId: userId, description: description}).exec();
+  async findExist(customerId: string, latitude: number, longitude: number): Promise<Workspace> {
+    return this.workspaceModel.findOne({customerId: customerId, latitude: latitude, longitude: longitude}).exec();
   }
 
   async findOne(_id: string) : Promise<Workspace> {
@@ -43,11 +43,10 @@ export class WorkspacesService {
     return this.workspaceModel.findById(_id).exec();
   }
 
-  update(id: number, updateWorkspaceDto: UpdateWorkspaceDto) {
-    return `This action updates a #${id} workspace`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} workspace`;
+  async removeWorkspace(_id: string) : Promise<Workspace> {
+    const targetWorkspace = await this.findOne(_id);
+    //if targetWorkspace exist then remove targetWorkspace.
+    if (!targetWorkspace) throw new NotFoundException("This workspace doesn't exist!");
+    return await targetWorkspace.remove();
   }
 }

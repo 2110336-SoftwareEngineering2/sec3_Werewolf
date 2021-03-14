@@ -1,35 +1,85 @@
-import { Controller, Get, Post, Body, Put, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Body,
+  Param,
+  Request,
+  Get,
+  Post,
+  Put,
+  Delete,
+  UseGuards,
+  BadRequestException,
+  UnauthorizedException,
+  NotFoundException,
+} from '@nestjs/common'
+import { ApiBearerAuth, ApiTags, ApiCreatedResponse, ApiResponse } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../auth/passport/jwt-auth.guard';
 import { WorkspacesService } from './workspaces.service';
 import { CreateWorkspaceDto } from './dto/create-workspace.dto';
-import { UpdateWorkspaceDto } from './dto/update-workspace.dto';
 
 
 @Controller('workspaces')
+@ApiTags('workspace')
 export class WorkspacesController {
   constructor(private readonly workspacesService: WorkspacesService) {}
 
+
   @Post()
-  create(@Body() createWorkspaceDto: CreateWorkspaceDto) {
-    return this.workspacesService.create(createWorkspaceDto);
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
+  async createWorkspace(@Request() req, @Body() createWorkspaceDto: CreateWorkspaceDto) {
+    try {
+      await this.workspacesService.addNewWorkspace(createWorkspaceDto);
+    }
+    catch (error){
+      throw error;
+    }
   }
 
   @Get()
-  findAll() {
-    return this.workspacesService.findAll();
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
+  async findAllWorkspace(@Request() req) {
+    try {
+      const customerId = req.user._id;
+      return await this.workspacesService.findAllWorkspaceByCustomerId(customerId);
+    }
+    catch (error) {
+      throw error;
+    }
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.workspacesService.findOne(+id);
-  }
-
-  @Put(':id')
-  update(@Param('id') id: string, @Body() updateWorkspaceDto: UpdateWorkspaceDto) {
-    return this.workspacesService.update(+id, updateWorkspaceDto);
+  @ApiCreatedResponse({
+    description: 'Get workspace by workspace id'
+  })
+  async findWorkspacebyWorkspaceId(@Param('id') id: string) {
+    const foundWorkspace = await this.workspacesService.findOne(id);
+    if (!foundWorkspace) throw new NotFoundException('invalid id');
+    const result = {
+      customerId: foundWorkspace.customerId,
+      description: foundWorkspace.description,
+      latitude: foundWorkspace.latitude,
+      longitude: foundWorkspace.longitude 
+    };
+    return result;
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.workspacesService.remove(+id);
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
+  async removeWorkspaceByWorkspaceId(@Request() req, @Param('id') id: string) {
+    //Delete by workspaceId
+    try {
+      const requestCustomerId = req.user._id;
+      const targetWorkspace = await this.workspacesService.findOne(id);
+      if (requestCustomerId == targetWorkspace.customerId){
+        const result = await this.workspacesService.removeWorkspace(id);
+        return result
+      }
+    }
+    catch (error) {
+      throw error;
+    }
   }
 }
