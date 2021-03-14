@@ -27,4 +27,14 @@ auth.interceptors.request.use(
   }
 );
 
-export { auth };
+// Promotion API
+const promotion = axios.create({
+  baseURL: '/api/promotion',
+  headers: {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${localStorage.getItem('token').toString()}`,
+    secret: process.env.REACT_APP_SECRET,
+  },
+});
+
+export { auth, promotion };
