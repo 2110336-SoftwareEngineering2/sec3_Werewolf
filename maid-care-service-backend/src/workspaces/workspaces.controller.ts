@@ -25,11 +25,15 @@ export class WorkspacesController {
 
 
   @Post()
+  @ApiCreatedResponse({
+    description: 'Add Workspace',
+    type: CreateWorkspaceDto
+  })
   @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('access-token')
+  @ApiBearerAuth('acess-token')
   async createWorkspace(@Request() req, @Body() createWorkspaceDto: CreateWorkspaceDto) {
     try {
-      await this.workspacesService.addNewWorkspace(createWorkspaceDto);
+      return await this.workspacesService.addNewWorkspace(createWorkspaceDto);
     }
     catch (error){
       throw error;
@@ -37,8 +41,12 @@ export class WorkspacesController {
   }
 
   @Get()
+  @ApiCreatedResponse({
+    description: 'Get All Workspace By CustomerId from Request',
+    type: CreateWorkspaceDto
+  })
   @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('access-token')
+  @ApiBearerAuth('acess-token')
   async findAllWorkspace(@Request() req) {
     try {
       const customerId = req.user._id;
@@ -51,7 +59,8 @@ export class WorkspacesController {
 
   @Get(':id')
   @ApiCreatedResponse({
-    description: 'Get workspace by workspace id'
+    description: 'Get workspace by workspace id',
+    type: CreateWorkspaceDto
   })
   async findWorkspacebyWorkspaceId(@Param('id') id: string) {
     const foundWorkspace = await this.workspacesService.findOne(id);
@@ -66,8 +75,12 @@ export class WorkspacesController {
   }
 
   @Delete(':id')
+  @ApiCreatedResponse({
+    description: 'Delete Workspace By Workspace Id',
+    type: CreateWorkspaceDto
+  })
   @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('access-token')
+  @ApiBearerAuth('acess-token')
   async removeWorkspaceByWorkspaceId(@Request() req, @Param('id') id: string) {
     //Delete by workspaceId
     try {

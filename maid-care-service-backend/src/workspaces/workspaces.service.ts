@@ -24,18 +24,19 @@ export class WorkspacesService {
       return workspaceRegistered.save();
     } else {
       throw new ConflictException('Workspace of this Customer is already exist!');
+      //throw new ConflictException(newWorkspaceRegister);
     }
   }
 
-  findAllWorkspaceByCustomerId(customerid: string) : Promise<Workspace[]> {
+  async findAllWorkspaceByCustomerId(customerId: string) : Promise<Workspace[]> {
     //
-    if (String(customerid).length === 24) {
-      return this.workspaceModel.find({ customerid: customerid }).exec();
+    if (String(customerId).length === 24) {
+      return await this.workspaceModel.find({ customerId: customerId }).exec();
     } else return null;
   }
 
   async findExist(customerId: string, latitude: number, longitude: number): Promise<Workspace> {
-    return this.workspaceModel.findOne({customerId: customerId, latitude: latitude, longitude: longitude}).exec();
+    return await this.workspaceModel.findOne({customerId: customerId, latitude: latitude, longitude: longitude}).exec();
   }
 
   async findOne(_id: string) : Promise<Workspace> {
