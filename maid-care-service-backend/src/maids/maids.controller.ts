@@ -11,7 +11,7 @@ import {
 import { ApiTags, ApiBearerAuth, ApiCreatedResponse } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/passport/jwt-auth.guard';
 import { MaidsService } from './maids.service';
-import { WorkDto } from './dto/work.dto';
+import { UpdateMaidDto } from './dto/update-maid.dto';
 import { CerrentLocationDto } from './dto/location.dto';
 import { MaidDto } from './dto/maid.dto';
 
@@ -31,15 +31,16 @@ export class MaidsController {
     return new MaidDto(maid);
   }
 
-  @Put('update-work')
+  @Put('update')
   @ApiCreatedResponse({ type: MaidDto })
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('acess-token')
-  async updateWork(@Request() req, @Body() workDto: WorkDto) {
+  async updateWork(@Request() req, @Body() updateMaidDto: UpdateMaidDto) {
     try {
-      const maid = await this.maidsService.updateWork(
+      await this.maidsService.updateWork(req.user._id, updateMaidDto.work);
+      const maid = await this.maidsService.updateNote(
         req.user._id,
-        workDto.work,
+        updateMaidDto.note,
       );
       return new MaidDto(maid);
     } catch (error) {

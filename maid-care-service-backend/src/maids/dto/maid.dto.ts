@@ -1,13 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { WorkDto } from './work.dto';
+import { UpdateMaidDto } from './update-maid.dto';
 
-export class MaidDto extends WorkDto {
+export class MaidDto extends UpdateMaidDto {
   constructor(object: any) {
     super(object);
     this._id = object._id;
     this.availability = object.availability;
     this.avgRating = object.avgRating;
-    this.totalReviews = object.totalReviews;
   }
 
   @ApiProperty({ type: String })
@@ -18,7 +17,4 @@ export class MaidDto extends WorkDto {
 
   @ApiProperty({ type: Number })
   readonly avgRating: number;
-
-  @ApiProperty({ type: Number })
-  readonly totalReviews: number;
 }

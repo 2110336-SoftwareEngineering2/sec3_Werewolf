@@ -34,17 +34,28 @@ export class MaidsService {
   }
 
   async updateWork(id: string, work: [string]): Promise<Maid> {
-    // validate works
-    if (!work) throw new BadRequestException('no work');
-    work.forEach((work) => {
-      if (!this.isValidTypeOfWork(work))
-        throw new BadRequestException(work + ' is not valid type of work');
-    });
     const maidFromDb = await this.findMaid(id);
     if (!maidFromDb) throw new ForbiddenException('Invalid maid');
     // update works
-    maidFromDb.work = work;
-    await maidFromDb.save();
+    if (work) {
+      work.forEach((work) => {
+        if (!this.isValidTypeOfWork(work))
+          throw new BadRequestException(work + ' is not valid type of work');
+      });
+      maidFromDb.work = work;
+      await maidFromDb.save();
+    }
+    return maidFromDb;
+  }
+
+  async updateNote(id: string, note: string): Promise<Maid> {
+    const maidFromDb = await this.findMaid(id);
+    if (!maidFromDb) throw new ForbiddenException('Invalid maid');
+    // update note
+    if (note) {
+      maidFromDb.note = note;
+      await maidFromDb.save();
+    }
     return maidFromDb;
   }
 
