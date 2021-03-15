@@ -1,10 +1,28 @@
 import React, { useState } from 'react';
 import FlexBox from '../../shared/FlexBox';
-import { Box, Flex, VStack, Button, HStack } from '@chakra-ui/react';
+import { 
+  Box, 
+  Flex, 
+  VStack, 
+  Button, 
+  HStack,  
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogContent,
+  AlertDialogOverlay,
+} 
+  from '@chakra-ui/react';
 import PostjobForm from './form';
 
 export const Postjob = () => {
   const [steps, setSteps] = useState(1);
+
+  // This 3 variables is used for submit button.
+  const [isOpen, setIsOpen] = React.useState(false);
+  const onClose = () => setIsOpen(false);
+  const cancelRef = React.useRef();
 
   const handleIncrement = () => {
     if (steps < 3) {
@@ -68,7 +86,38 @@ export const Postjob = () => {
                 Next
               </Button>
             ) : null}
+            {steps == 3 ? (
+              <Button
+                width="100px"
+                className="button button-register"
+                bg="buttonGreen"
+                onClick={() => setIsOpen(true)}>
+                Summit
+              </Button>
+            ) : null}
           </HStack>
+          <AlertDialog isOpen={isOpen} leastDestructiveRef={cancelRef} onClose={onClose} isCentered>
+          <AlertDialogOverlay>
+            <AlertDialogContent>
+              <AlertDialogHeader fontSize="lg" fontWeight="bold">
+                Do you want to confirm ?
+              </AlertDialogHeader>
+
+              <AlertDialogBody>
+                The system will perform the match immediately after you have confirmed. 
+              </AlertDialogBody>
+
+              <AlertDialogFooter>
+                <Button ref={cancelRef} onClick={onClose}>
+                  Cancel
+                </Button>
+                <Button colorScheme="green" onClick={onClose} ml={3}>
+                  Confirm
+                </Button>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialogOverlay>
+        </AlertDialog>
         </VStack>
       </Flex>
     </Flex>
