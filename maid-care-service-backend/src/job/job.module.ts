@@ -6,9 +6,10 @@ import { SchedulerRegistry } from '@nestjs/schedule';
 import { DatabaseModule } from '../database/database.module';
 import { NotificationModule } from '../notification/notification.module';
 import { MaidsModule } from '../maids/maids.module';
+import { WorkspacesModule } from 'src/workspaces/workspaces.module';
 
 @Module({
-  imports: [DatabaseModule, NotificationModule, MaidsModule],
+  imports: [DatabaseModule, NotificationModule, MaidsModule, WorkspacesModule],
   controllers: [JobController],
   providers: [JobService, SchedulerRegistry, ...JobProviders],
   exports: [JobService],

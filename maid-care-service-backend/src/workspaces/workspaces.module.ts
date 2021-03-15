@@ -5,8 +5,9 @@ import { WorkspaceProviders } from './workspaces.providers';
 import { DatabaseModule } from 'src/database/database.module';
 
 @Module({
-  imports:[DatabaseModule],
+  imports: [DatabaseModule],
   controllers: [WorkspacesController],
-  providers: [WorkspacesService, ...WorkspaceProviders]
+  providers: [WorkspacesService, ...WorkspaceProviders],
+  exports: [WorkspacesService],
 })
 export class WorkspacesModule {}

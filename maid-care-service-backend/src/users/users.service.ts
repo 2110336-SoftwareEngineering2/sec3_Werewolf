@@ -12,6 +12,7 @@ import { NotificationService } from '../notification/notification.service';
 import { CustomerService } from '../customer/customer.service';
 import { MaidsService } from '../maids/maids.service';
 import { JobService } from '../job/job.service';
+import { WorkspacesService } from 'src/workspaces/workspaces.service';
 import { User } from './interfaces/users.interface';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ProfileDto } from './dto/profile.dto';
@@ -26,6 +27,7 @@ export class UsersService {
     private customerService: CustomerService,
     private maidsService: MaidsService,
     private jobService: JobService,
+    private workspacesService: WorkspacesService,
   ) {}
 
   async findUser(id: string): Promise<User> {
@@ -114,12 +116,18 @@ export class UsersService {
       await this.notificationService.unsubscribe(user._id);
     } catch (error) {}
     if (user.role === 'customer') {
-      // delete customer and all jobs posted by this customer
+      // delete customer and all jobs and workspaces posted by this customer
       const customer = await this.customerService.findCustomer(user._id);
       if (customer) {
         const jobs = await this.jobService.findByCustomer(id);
         jobs.forEach((job) => {
           job.remove();
+        });
+        const workspaces = await this.workspacesService.findAllWorkspaceByCustomerId(
+          id,
+        );
+        workspaces.forEach((workspace) => {
+          workspace.remove();
         });
         await customer.remove();
       }

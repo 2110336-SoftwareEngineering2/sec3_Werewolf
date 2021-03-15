@@ -1,5 +1,5 @@
 import { Connection } from 'mongoose';
-import {WorkspaceSchema} from './schemas/workspaces.schema';
+import { WorkspaceSchema } from './schemas/workspaces.schema';
 
 export const WorkspaceProviders = [
   {

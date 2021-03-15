@@ -11,6 +11,7 @@ import { MaidsService } from '../maids/maids.service';
 import { Job } from './interfaces/job.interface';
 import { Maid } from 'src/maids/interfaces/maids.interface';
 import { CreateJobDto } from './dto/create-job.dto';
+import { WorkspacesService } from 'src/workspaces/workspaces.service';
 
 @Injectable()
 export class JobService {
@@ -19,6 +20,7 @@ export class JobService {
     private schedulerRegistry: SchedulerRegistry,
     private notificationService: NotificationService,
     private maidsService: MaidsService,
+    private workspacesService: WorkspacesService,
   ) {}
 
   async findJob(id: string): Promise<Job> {
@@ -39,6 +41,14 @@ export class JobService {
     customerId: string,
     createJobDto: CreateJobDto,
   ): Promise<Job> {
+    // validate workspace
+    const workspace = await this.workspacesService.findOne(
+      createJobDto.workplaceId,
+    );
+    if (!workspace)
+      throw new BadRequestException(
+        createJobDto.workplaceId + ' is not valid id',
+      );
     // validate work
     createJobDto.work.forEach((work) => {
       if (!this.maidsService.isValidTypeOfWork(work.typeOfWork))
@@ -61,8 +71,12 @@ export class JobService {
   }
 
   async findMaid(job: Job): Promise<Maid> {
-    //TODO add workspace's latitude and longitude
-    const nearestMaid = await this.maidsService.findNearestMaid(0, 0, job);
+    const workspace = await this.workspacesService.findOne(job.workplaceId);
+    const nearestMaid = await this.maidsService.findNearestMaid(
+      workspace.latitude,
+      workspace.longitude,
+      job,
+    );
     if (nearestMaid) {
       job.maidId = nearestMaid._id;
       job.requestedMaid.push(nearestMaid._id);
