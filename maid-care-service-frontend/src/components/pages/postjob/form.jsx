@@ -20,12 +20,9 @@ import { values } from 'mobx';
 
 const PostjobForm = props => {
   const yup = Yup.object({
-    firstName: Yup.string().max(15, 'must be 15 characters or less').required('Required'),
-    lastName: Yup.string().max(15, 'must be 15 characters or less').required('Required'),
-    DOB: Yup.date().required('Required'),
-    nationality: Yup.string(),
-    citizenID: Yup.string().max(13, 'Citizen ID must be 13-digit long').required('Required'),
-    bankAccount: Yup.string().max(10, 'Bank account must be 10-digit long').required('Required'),
+    amountOfDishes: Yup.number("Amount of dishes must be number.").positive("Amount of dishes must be positive number."),
+    areaOfRooms: Yup.number("Area of room must be number.").positive("Area of room must be positive number."),
+    amountOfClothes: Yup.number("Amount of clothes must be number.").positive("Amount of clothes must be positive number.")
   });
 
   const handleSubmit = values => {
@@ -54,7 +51,6 @@ const PostjobForm = props => {
       validationSchema={yup}
       onSubmit={handleSubmit}>
       <Form>
-        <div>{JSON.stringify(values, null, 4)}</div>
         <VStack spacing="4" width={{ sm: '72', md: '96' }}>
           {form()}
         </VStack>

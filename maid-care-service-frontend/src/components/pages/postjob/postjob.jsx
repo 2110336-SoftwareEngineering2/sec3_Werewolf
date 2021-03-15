@@ -1,19 +1,18 @@
 import React, { useState } from 'react';
 import FlexBox from '../../shared/FlexBox';
-import { 
-  Box, 
-  Flex, 
-  VStack, 
-  Button, 
-  HStack,  
+import {
+  Box,
+  Flex,
+  VStack,
+  Button,
+  HStack,
   AlertDialog,
   AlertDialogBody,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogContent,
   AlertDialogOverlay,
-} 
-  from '@chakra-ui/react';
+} from '@chakra-ui/react';
 import PostjobForm from './form';
 
 export const Postjob = () => {
@@ -46,8 +45,8 @@ export const Postjob = () => {
         bg="boxWhite"
         borderRadius="24px"
         boxShadow="0px 4px 20px rgba(0, 0, 0, 0.25)">
-        <VStack spacing="3" mb="5" minHeight={{ sm: '80vh', md: '70vh' }} >
-          <HStack justify="space-between" width="100%" >
+        <VStack spacing="3" mb="5" minHeight={{ sm: '80vh', md: '70vh' }}>
+          <HStack justify="space-between" width="100%">
             <Box fontSize="1xl" mb="8">
               Grab
               <br />
@@ -59,15 +58,14 @@ export const Postjob = () => {
           </HStack>
           <Box
             fontSize={{ base: 'xl', md: '2xl' }}
-            width="100%" 
+            width="100%"
             fontWeight="bold"
-            textAlign="center"
-            >
+            textAlign="center">
             Task Description
           </Box>
 
-          <PostjobForm steps={steps}/>
-          <HStack justify="flex-end" width="100%"  bottom="1px" >
+          <PostjobForm steps={steps} />
+          <HStack justify="flex-end" width="100%" bottom="1px">
             {steps > 1 ? (
               <Button
                 width="100px"
@@ -91,33 +89,34 @@ export const Postjob = () => {
                 width="100px"
                 className="button button-register"
                 bg="buttonGreen"
+                type="summit"
                 onClick={() => setIsOpen(true)}>
                 Summit
               </Button>
             ) : null}
           </HStack>
           <AlertDialog isOpen={isOpen} leastDestructiveRef={cancelRef} onClose={onClose} isCentered>
-          <AlertDialogOverlay>
-            <AlertDialogContent>
-              <AlertDialogHeader fontSize="lg" fontWeight="bold">
-                Do you want to confirm ?
-              </AlertDialogHeader>
+            <AlertDialogOverlay>
+              <AlertDialogContent>
+                <AlertDialogHeader fontSize="lg" fontWeight="bold">
+                  Do you want to confirm ?
+                </AlertDialogHeader>
 
-              <AlertDialogBody>
-                The system will perform the match immediately after you have confirmed. 
-              </AlertDialogBody>
+                <AlertDialogBody>
+                  The system will perform the match immediately after you have confirmed.
+                </AlertDialogBody>
 
-              <AlertDialogFooter>
-                <Button ref={cancelRef} onClick={onClose}>
-                  Cancel
-                </Button>
-                <Button colorScheme="green" onClick={onClose} ml={3}>
-                  Confirm
-                </Button>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialogOverlay>
-        </AlertDialog>
+                <AlertDialogFooter>
+                  <Button ref={cancelRef} onClick={onClose}>
+                    Cancel
+                  </Button>
+                  <Button colorScheme="green" onClick={onClose} ml={3}>
+                    Confirm
+                  </Button>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialogOverlay>
+          </AlertDialog>
         </VStack>
       </Flex>
     </Flex>
