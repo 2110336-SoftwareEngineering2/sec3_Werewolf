@@ -77,4 +77,4 @@ promotion.interceptors.request.use(
     throw error;
   }
 );
-export { auth, promotion };
+export { promotion };
