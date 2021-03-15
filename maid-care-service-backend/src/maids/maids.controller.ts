@@ -20,12 +20,12 @@ import { MaidDto } from './dto/maid.dto';
 export class MaidsController {
   constructor(private readonly maidsService: MaidsService) {}
 
-  @Get(':id')
+  @Get(':uid')
   @ApiCreatedResponse({ type: MaidDto })
   @ApiCreatedResponse({
     description: "return maid's average rating and totalReviews",
   })
-  async getMaid(@Param('id') id: string) {
+  async getMaid(@Param('uid') id: string) {
     const maid = await this.maidsService.findMaid(id);
     if (!maid) throw new NotFoundException('invalid maid');
     return new MaidDto(maid);

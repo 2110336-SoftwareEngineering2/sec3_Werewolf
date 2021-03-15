@@ -42,9 +42,9 @@ export class UsersController {
     }
   }
 
-  @Get(':id')
+  @Get(':uid')
   @ApiCreatedResponse({ type: UserDto })
-  async getCustomer(@Param('id') id: string) {
+  async getCustomer(@Param('uid') id: string) {
     const user = await this.usersService.findUser(id);
     if (!user) throw new NotFoundException('invalid user');
     return new UserDto(user);
@@ -66,11 +66,11 @@ export class UsersController {
     }
   }
 
-  @Delete(':id')
+  @Delete(':uid')
   @ApiCreatedResponse({ type: UserDto })
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('acess-token')
-  async deleteUser(@Request() req, @Param('id') id: string) {
+  async deleteUser(@Request() req, @Param('uid') id: string) {
     if (req.user.role === 'admin' || req.user._id == id) {
       try {
         const user = await this.usersService.deleteUser(id);
