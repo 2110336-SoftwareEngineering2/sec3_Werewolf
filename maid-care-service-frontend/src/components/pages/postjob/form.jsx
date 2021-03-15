@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { Formik, Form, useFormikContext } from 'formik';
+import { Formik, Form, useFormikContext, Field } from 'formik';
 import * as Yup from 'yup';
 import {
   Box,
@@ -35,8 +35,8 @@ const PostjobForm = props => {
   const form = () => {
     if (props.steps === 1) {
       return <Page1 />;
-    } else if (props.steps === 2) {
-      return <Page2 />;
+    } else if (props.steps === 2 || props.steps === 3) {
+      return <Page2Page3 steps={props.steps} />;
     }
   };
 
@@ -44,10 +44,12 @@ const PostjobForm = props => {
     <Formik
       initialValues={{
         isDishes: false,
+        isRooms: false,
+        isClothes: false,
         amountOfDishes: '',
         areaOfRooms: '',
         amountOfClothes: '',
-        promotionCode:''
+        promotionCode: '',
       }}
       validationSchema={yup}
       onSubmit={handleSubmit}>
@@ -62,20 +64,7 @@ const PostjobForm = props => {
 };
 
 const Page1 = () => {
-  const [isDishesinputDisable, setDishesinputDisable] = useState(true);
-  const [isAreainputDisable, setAreainputDisable] = useState(true);
-  const [isClothinputDisable, setClothinputDisable] = useState(true);
-
-  const handleDishesinputDisable = () => {
-    isDishesinputDisable == true ? setDishesinputDisable(false) : setDishesinputDisable(true);
-  };
-  const handleAreainputDisable = () => {
-    isAreainputDisable == true ? setAreainputDisable(false) : setAreainputDisable(true);
-  };
-
-  const handleClothinputDisable = () => {
-    isClothinputDisable == true ? setClothinputDisable(false) : setClothinputDisable(true);
-  };
+  const { values } = useFormikContext();
 
   return (
     <>
@@ -94,32 +83,39 @@ const Page1 = () => {
         </FormControl>
         <FormLabel mb="5px">Type of Work</FormLabel>
         <FormControl id="dishes" width={{ sm: '270px', md: '368px' }}>
-          <Checkbox value="" onChange={handleDishesinputDisable}>
-            Dish Washing
-          </Checkbox>
+          <HStack>
+            <Field type="checkbox" name="isDishes"/>
+            <Text>Dish Washing</Text>
+          </HStack>
           <TextInputField
             label=""
             name="amountOfDishes"
             placeHolder="Amount of dishes (e.g. 20)"
-            isDisabled={isDishesinputDisable}
+            isDisabled={!values.isDishes}
           />
         </FormControl>
         <FormControl id="rooms" width={{ sm: '270px', md: '368px' }}>
-          <Checkbox onChange={handleAreainputDisable}>Room Cleaning</Checkbox>
+          <HStack>
+            <Field type="checkbox" name="isRooms"/>
+            <Text>Room cleaning</Text>
+          </HStack>
           <TextInputField
             label=""
             name="areaOfRooms"
             placeHolder="Amount of the room in square meter (e.g. 100)"
-            isDisabled={isAreainputDisable}
+            isDisabled={!values.isRooms}
           />
         </FormControl>
         <FormControl id="clothes" width={{ sm: '270px', md: '368px' }}>
-          <Checkbox onChange={handleClothinputDisable}>Clothes Ironing</Checkbox>
+          <HStack>
+            <Field type="checkbox" name="isClothes"/>
+            <Text>Clothes Ironing</Text>
+          </HStack>
           <TextInputField
             label=""
             name="amountOfClothes"
             placeHolder="Amount of clothes (e.g. 10)"
-            isDisabled={isClothinputDisable}
+            isDisabled={!values.isClothes}
           />
         </FormControl>
       </Form>
@@ -129,16 +125,55 @@ const Page1 = () => {
 
 export default PostjobForm;
 
-const Page2 = () => {
+const Page2Page3 = ({ steps }) => {
   const DISHPRICE = 100;
   const ROOMPRICE = 10;
   const CLOTHPRICE = 50;
+  const DISCOUNT = 100; // for Test only
 
   const { values } = useFormikContext();
-  const dishesPrice = () => values.amountOfDishes * DISHPRICE;
-  const roomsPrice = () => values.areaOfRooms * ROOMPRICE;
-  const clothedPrice = () => values.amountOfClothes * CLOTHPRICE;
+  const dishesPrice = () => values.isDishes === false ? 0 : values.amountOfDishes * DISHPRICE;
+  const roomsPrice = () => values.isRooms === false ? 0 : values.areaOfRooms * ROOMPRICE;
+  const clothedPrice = () => values.isClothes === false ? 0 : values.amountOfClothes * CLOTHPRICE;
   const totalPrice = () => dishesPrice() + roomsPrice() + clothedPrice();
+  const Discount = 0;
+
+  const promotionBox = () => {
+    if (steps == 2) {
+      return (
+        <FormControl id="clothes" width={{ sm: '270px', md: '368px' }} mt="40px">
+          <TextInputField
+            label="Promotion Code"
+            name="promotionCode"
+            placeHolder="Apply Your Promotion Code"
+          />
+        </FormControl>
+      );
+    }
+    else if (steps == 3){
+      return (
+        <>
+        <HStack justify="space-between" width="100%" mt="20px">
+          <Text fontFamily="body">
+            Promotion
+          </Text>
+          <Text fontFamily="body" fontWeight="bold">
+            -{DISCOUNT}
+          </Text>
+        </HStack>
+        <HStack justify="space-between" width="100%">
+          <Text fontFamily="body" fontWeight="bold">
+            Total price (Discount)
+          </Text>
+          <Text fontFamily="body" fontWeight="bold">
+            {totalPrice() - DISCOUNT}
+          </Text>
+        </HStack>
+        </>
+      );
+    }
+    return (<div></div>);
+  }
 
   return (
     <Form border="1px">
@@ -148,23 +183,23 @@ const Page2 = () => {
         </Text>
         <HStack justify="space-between" width="100%">
           <Text fontFamily="body">
-            {values.amountOfDishes == '' ? '0' : values.amountOfDishes} Dishes
+            {values.amountOfDishes == '' || values.isDishes ===false ? '0' : values.amountOfDishes} Dishes
           </Text>
           <Text fontFamily="body">{dishesPrice()}</Text>
         </HStack>
         <HStack justify="space-between" width="100%">
           <Text fontFamily="body">
-            {values.areaOfRooms == '' ? '0' : values.areaOfRooms} Square meters of Rooms
+            {values.areaOfRooms == '' || values.isRooms === false? '0' : values.areaOfRooms} Square meters of Rooms
           </Text>
           <Text fontFamily="body">{roomsPrice()}</Text>
         </HStack>
         <HStack justify="space-between" width="100%">
           <Text fontFamily="body">
-            {values.amountOfClothes == '' ? '0' : values.amountOfClothes} Clothes
+            {values.amountOfClothes == '' || values.isClothes === false ? '0' : values.amountOfClothes} Clothes
           </Text>
           <Text fontFamily="body">{clothedPrice()}</Text>
         </HStack>
-        <HStack justify="space-between" width="100%" mb="40px">
+        <HStack justify="space-between" width="100%">
           <Text fontFamily="body" fontWeight="bold">
             Total price
           </Text>
@@ -172,13 +207,7 @@ const Page2 = () => {
             {totalPrice()}{' '}
           </Text>
         </HStack>
-        <FormControl id="clothes" width={{ sm: '270px', md: '368px' }}>
-        <TextInputField
-            label="Promotion Code"
-            name="promotionCode"
-            placeHolder="Apply Your Promotion Code"
-          />
-        </FormControl>
+        {promotionBox()}
       </FormControl>
     </Form>
   );
