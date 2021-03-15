@@ -6,7 +6,7 @@ import {
   Delete,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags, ApiCreatedResponse } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/passport/jwt-auth.guard';
 import { NotificationService } from './notification.service';
 import { SubscriptionDto } from './dto/subscription.dto';
@@ -17,24 +17,27 @@ export class NotificationController {
   constructor(private readonly notificationService: NotificationService) {}
 
   @Post('subscribe')
+  @ApiCreatedResponse({ type: SubscriptionDto })
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('acess-token')
   async postSubscribe(
     @Request() req,
     @Body() subscriptionDto: SubscriptionDto,
-  ) {
-    return await this.notificationService.postSubscribe(
-      req.user._id,
-      subscriptionDto,
-    );
+  ): Promise<SubscriptionDto> {
+    await this.notificationService.postSubscribe(req.user._id, subscriptionDto);
+    return subscriptionDto;
   }
 
   @Delete('unsubscribe')
+  @ApiCreatedResponse({ type: SubscriptionDto })
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('acess-token')
-  async unsubscribe(@Request() req) {
+  async unsubscribe(@Request() req): Promise<SubscriptionDto> {
     try {
-      return await this.notificationService.unsubscribe(req.user._id);
+      const subscription = await this.notificationService.unsubscribe(
+        req.user._id,
+      );
+      return new SubscriptionDto(subscription);
     } catch (error) {
       throw error;
     }

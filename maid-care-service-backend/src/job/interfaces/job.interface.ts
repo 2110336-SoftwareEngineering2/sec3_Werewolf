@@ -8,4 +8,6 @@ export interface Job extends Document {
   maidId: string;
   requestedMaid: [string];
   expiryTime: Date;
+  state: string;
+  rating: number;
 }

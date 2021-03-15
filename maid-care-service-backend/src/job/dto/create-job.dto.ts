@@ -2,6 +2,11 @@ import { ApiProperty } from '@nestjs/swagger';
 import { WorkType } from '../../maids/workType';
 
 export class CreateJobDto {
+  constructor(object: any) {
+    this.workplaceId = object.workplaceId;
+    this.work = object.work;
+  }
+
   @ApiProperty({ type: String })
   readonly workplaceId: string;
 

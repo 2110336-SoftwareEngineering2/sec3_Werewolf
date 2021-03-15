@@ -1,6 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreatePromotionDto {
+  constructor(object: any) {
+    this.code = object.code;
+    this.description = object.description;
+    this.discountRate = object.discountRate;
+    this.availableDate = object.availableDate;
+    this.expiredDate = object.expiredDate;
+  }
+
   @ApiProperty({ type: String })
   readonly code: string;
 

@@ -1,4 +1,9 @@
-import { Injectable, Inject, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  Inject,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
 import { Model } from 'mongoose';
 import { Promotion } from './interfaces/promotion.interface';
 import { CreatePromotionDto } from './dto/create-promotion.dto';
@@ -21,6 +26,8 @@ export class PromotionService {
     creater: string,
     createPromotionDto: CreatePromotionDto,
   ): Promise<Promotion> {
+    const oldPromotion = await this.findPromotion(createPromotionDto.code);
+    if (oldPromotion) throw new ConflictException('duplicate promotion code');
     const createdPromotion = new this.promotionModel(createPromotionDto);
     createdPromotion.creater = creater;
     return await createdPromotion.save();

@@ -110,7 +110,9 @@ export class UsersService {
     const user = await this.findUser(id);
     if (!user) throw new NotFoundException('Invalid user');
     // delete subscription
-    await this.notificationService.unsubscribe(user._id);
+    try {
+      await this.notificationService.unsubscribe(user._id);
+    } catch (error) {}
     if (user.role === 'customer') {
       // delete customer and all jobs posted by this customer
       const customer = await this.customerService.findCustomer(user._id);

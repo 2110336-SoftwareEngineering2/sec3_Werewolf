@@ -9,6 +9,12 @@ class Keys {
 }
 
 export class SubscriptionDto {
+  constructor(object: any) {
+    this.endpoint = object.endpoint;
+    this.expirationTime = object.expirationTime;
+    this.keys = object.keys;
+  }
+
   @ApiProperty({ type: String })
   readonly endpoint: string;
 
