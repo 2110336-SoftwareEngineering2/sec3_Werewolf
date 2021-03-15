@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { Formik, Form } from 'formik';
+import { Formik, Form, useFormikContext } from 'formik';
 import * as Yup from 'yup';
 import {
   Box,
@@ -36,7 +36,7 @@ const PostjobForm = props => {
     if (props.steps === 1) {
       return <Page1 />;
     } else if (props.steps === 2) {
-      return <div>step == 2</div>;
+      return <Page2 />;
     }
   };
 
@@ -47,11 +47,12 @@ const PostjobForm = props => {
         amountOfDishes: '',
         areaOfRooms: '',
         amountOfClothes: '',
+        promotionCode:''
       }}
       validationSchema={yup}
       onSubmit={handleSubmit}>
-    <Form>
-      <div>{JSON.stringify(values,null, 4)}</div>
+      <Form>
+        <div>{JSON.stringify(values, null, 4)}</div>
         <VStack spacing="4" width={{ sm: '72', md: '96' }}>
           {form()}
         </VStack>
@@ -81,12 +82,15 @@ const Page1 = () => {
       <Form>
         <FormControl mb="20px" id="house-no" width={{ sm: '270px', md: '368px' }}>
           <FormLabel mb="0">Location</FormLabel>
-          <Select name="location">
+          <Select name="location" mb="5px">
             <option value="" selected>
               Select your workplace location
             </option>
             {}
           </Select>
+          <Button width="200px" className="button" bg="buttonGreen">
+            Add your workspace
+          </Button>
         </FormControl>
         <FormLabel mb="5px">Type of Work</FormLabel>
         <FormControl id="dishes" width={{ sm: '270px', md: '368px' }}>
@@ -124,3 +128,58 @@ const Page1 = () => {
 };
 
 export default PostjobForm;
+
+const Page2 = () => {
+  const DISHPRICE = 100;
+  const ROOMPRICE = 10;
+  const CLOTHPRICE = 50;
+
+  const { values } = useFormikContext();
+  const dishesPrice = () => values.amountOfDishes * DISHPRICE;
+  const roomsPrice = () => values.areaOfRooms * ROOMPRICE;
+  const clothedPrice = () => values.amountOfClothes * CLOTHPRICE;
+  const totalPrice = () => dishesPrice() + roomsPrice() + clothedPrice();
+
+  return (
+    <Form border="1px">
+      <FormControl mb="20px" id="house-no" width={{ sm: '270px', md: '368px' }}>
+        <Text mb="3px" fontWeight="3px" fontSize="20px" fontFamily="body">
+          Total Price
+        </Text>
+        <HStack justify="space-between" width="100%">
+          <Text fontFamily="body">
+            {values.amountOfDishes == '' ? '0' : values.amountOfDishes} Dishes
+          </Text>
+          <Text fontFamily="body">{dishesPrice()}</Text>
+        </HStack>
+        <HStack justify="space-between" width="100%">
+          <Text fontFamily="body">
+            {values.areaOfRooms == '' ? '0' : values.areaOfRooms} Square meters of Rooms
+          </Text>
+          <Text fontFamily="body">{roomsPrice()}</Text>
+        </HStack>
+        <HStack justify="space-between" width="100%">
+          <Text fontFamily="body">
+            {values.amountOfClothes == '' ? '0' : values.amountOfClothes} Clothes
+          </Text>
+          <Text fontFamily="body">{clothedPrice()}</Text>
+        </HStack>
+        <HStack justify="space-between" width="100%" mb="40px">
+          <Text fontFamily="body" fontWeight="bold">
+            Total price
+          </Text>
+          <Text fontFamily="body" fontWeight="bold">
+            {totalPrice()}{' '}
+          </Text>
+        </HStack>
+        <FormControl id="clothes" width={{ sm: '270px', md: '368px' }}>
+        <TextInputField
+            label="Promotion Code"
+            name="promotionCode"
+            placeHolder="Apply Your Promotion Code"
+          />
+        </FormControl>
+      </FormControl>
+    </Form>
+  );
+};
