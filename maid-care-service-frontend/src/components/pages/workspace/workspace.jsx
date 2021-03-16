@@ -9,6 +9,7 @@
 import React, { useState, useCallback, useRef } from 'react';
 import FlexBox from '../../shared/FlexBox';
 import MaidLogo from '../../../MaidLogo.svg';
+import * as Yup from 'yup';
 import { TextInputField } from '../../shared/FormikField';
 
 import {
@@ -111,8 +112,16 @@ export const Workspace = () => {
 export default Workspace;
 
 const InfoSidebar = ({ panTo, setMarkers }) => {
+const [isFormCorrect, setFormCorrect] = useState(false);
+
+  const yup = Yup.object({
+    houseNo: Yup.string().required('please fill your house No.'),
+    city: Yup.string().required('please fill your city.'),
+    state: Yup.string().required('please select your state/province.'),
+  });
+
   return (
-    <FlexBox >
+    <FlexBox>
       <VStack spacing="20x" h="850px" w="350px">
         <Box fontSize="3xl" mb="15px" fontWeight="extrabold">
           New workspace
@@ -126,29 +135,29 @@ const InfoSidebar = ({ panTo, setMarkers }) => {
             city: '',
             state: '',
             country: '',
-          }}>
+          }}
+          validationSchema={yup}
+          onSubmit={ () => setFormCorrect(true) }
+          >
           <Form>
             <Box pos="absolute" top="250px" left="25px" width="400px" justifyContent="center">
               <FormControl id="country" width={{ sm: '270px', md: '368px' }}>
                 <TextInputField
-                  mb="15px"
                   label="House NO."
                   placeholder="Text Here"
                   name="houseNo"
                 />
                 <TextInputField
-                  mb="15px"
                   label="Address 1"
                   name="address1"
                   placeholder="Text Here"
                 />
                 <TextInputField
-                  mb="15px"
                   placeholder="Text Here"
                   label="Address 1"
                   name="address2"
                 />
-                <TextInputField mb="15px" placeholder="Text Here" label="City" name="city" />
+                <TextInputField placeholder="Text Here" label="City" name="city" />
                 <FormLabel mb="0" fontWeight="bold">
                   State / Province
                 </FormLabel>
@@ -233,9 +242,15 @@ const InfoSidebar = ({ panTo, setMarkers }) => {
                   <option value="อ่างทอง">อ่างทอง </option>
                   <option value="อื่นๆ">อื่นๆ</option>
                 </Field>
-                <TextInputField mb="15px" placeholder="Text Here" label="Country" name="country" />
+                <TextInputField
+                  mb="15px"
+                  placeholder="Text Here"
+                  label="Country"
+                  name="country"
+                  value="ประเทศไทย"
+                />
               </FormControl>
-              <WorkspaceButton />
+              <WorkspaceButton isFormCorrect={isFormCorrect}/>
             </Box>
           </Form>
         </Formik>
@@ -244,9 +259,9 @@ const InfoSidebar = ({ panTo, setMarkers }) => {
   );
 };
 
-const WorkspaceButton = () => {
+const WorkspaceButton = ( {isFormCorrect} ) => {
   const { values } = useFormikContext();
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const onClose = () => setIsOpen(false);
   const cancelRef = React.useRef();
 
@@ -260,7 +275,9 @@ const WorkspaceButton = () => {
           mt="25px"
           mb="10px"
           bg="buttonGreen"
-          onClick={() => setIsOpen(true)}>
+          type="summit"
+          onClick={() => setIsOpen(isFormCorrect)}
+          >
           Add to saved places
         </Button>
       </Center>
@@ -273,8 +290,8 @@ const WorkspaceButton = () => {
 
             <AlertDialogBody>
               Your address : <br />
-              house no.{values.houseNo} {values.address1} {values.address2} {values.city} 
-              {values.state} {values.country}
+              house no.{values.houseNo} {values.address1} {values.address2} {values.city}
+               {values.state} ประเทศไทย
             </AlertDialogBody>
 
             <AlertDialogFooter>
