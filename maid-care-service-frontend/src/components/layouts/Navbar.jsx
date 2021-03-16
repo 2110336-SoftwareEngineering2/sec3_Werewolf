@@ -80,7 +80,7 @@ const Navbar = observer(() => {
           links = [...links, { name: 'Post', to: '/post/create' }];
           break;
         case 'maid':
-          links = [...links, { name: 'Works', to: '/works' }];
+          links = [...links, { name: 'Works', to: '/jobs' }];
           break;
         case 'admin':
           links = [...links, { name: 'Promotion', to: '/promotion' }];
