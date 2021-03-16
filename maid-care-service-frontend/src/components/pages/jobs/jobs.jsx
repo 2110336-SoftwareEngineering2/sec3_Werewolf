@@ -1,83 +1,29 @@
 import { Button } from '@chakra-ui/button';
-import {
-  Box,
-  Center,
-  Container,
-  Flex,
-  Heading,
-  HStack,
-  List,
-  ListItem,
-  VStack,
-  Wrap,
-} from '@chakra-ui/layout';
+import { Box, Center, Container, Flex, Heading, HStack, List, ListItem } from '@chakra-ui/layout';
 import { Modal, ModalCloseButton, ModalContent, ModalOverlay } from '@chakra-ui/modal';
 import { Spinner } from '@chakra-ui/spinner';
+import { toJS } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import React, { useEffect, useState } from 'react';
 import { useStores } from '../../../hooks/use-stores';
+
 import JobItem from './components/JobItem';
 
 const JobsPage = observer(() => {
-  const [jobs, setJobs] = useState([]);
-  const [isLoading, setLoading] = useState(true);
   const [currentJob, setCurrentJob] = useState(null);
 
   const { userStore, jobStore } = useStores();
 
-  const handleRefresh = (event) => {
+  const handleRefresh = () => {
     // TODO: re-fetch jobs data
-    console.log('refresh btn clicked!');
-    fetchJobs();
-  };
-
-  const fetchJobs = () => {
-    setLoading(true);
-    return setTimeout(() => {
-      setJobs([
-        {
-          id: 1,
-          works: [
-            {
-              typeOfWork: 'Work A',
-              description: 'Work for A Task',
-              quantity: 112,
-            },
-          ],
-        },
-        {
-          id: 2,
-          works: [
-            {
-              typeOfWork: 'Work A',
-              description: 'Work for A Task',
-              quantity: 102,
-            },
-            {
-              typeOfWork: 'Work B',
-              description: 'Work for B Task',
-              quantity: 102,
-            },
-          ],
-        },
-        {
-          id: 3,
-          works: [
-            {
-              typeOfWork: 'Work A',
-              description: 'Work for A Task',
-              quantity: 92,
-            },
-          ],
-        },
-      ]);
-      setLoading(false);
-    }, 1000);
+    console.log(toJS(jobStore.jobs));
+    jobStore.fetchAllJobs(userStore.userData._id);
   };
 
   useEffect(() => {
-    fetchJobs();
-  }, []);
+    if (userStore.userData) jobStore.fetchAllJobs(userStore.userData._id);
+    console.log(toJS(jobStore.jobs));
+  }, [userStore.userData, jobStore]);
 
   const renderModal = () => {
     return (
@@ -115,15 +61,15 @@ const JobsPage = observer(() => {
           </Button>
         </HStack>
         <List spacing={6} mt={4} p={3} justifyContent="center">
-          {isLoading ? (
+          {jobStore.loading ? (
             <Center>
               <Spinner size={`xl`} thickness={6} />
             </Center>
           ) : (
-            jobs.map((job) => {
+            jobStore.jobs.map((job) => {
               return (
-                <ListItem onClick={() => setCurrentJob(job)} my={2} minW={`90%`}>
-                  <JobItem key={job.id} job={job} />
+                <ListItem key={job._id} onClick={() => setCurrentJob(job)} my={2} minW={`90%`}>
+                  <JobItem job={job} />
                 </ListItem>
               );
             })
