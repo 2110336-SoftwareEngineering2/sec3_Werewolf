@@ -4,8 +4,6 @@ import { Formik, Form, useFormikContext, Field } from 'formik';
 import { Link as RouterLink, useHistory } from 'react-router-dom';
 import * as Yup from 'yup';
 import {
-  Box,
-  Flex,
   Link,
   VStack,
   Button,
@@ -82,7 +80,7 @@ const PostjobForm = props => {
         <VStack spacing="4" width={{ sm: '72', md: '96' }}>
           {form()}
         </VStack>
-          <ButtonField steps={props.steps} setSteps={props.setSteps}/>
+        <ButtonField steps={props.steps} setSteps={props.setSteps}/>
       </Form>
     </Formik>
   );
@@ -93,11 +91,10 @@ const Page1 = () => {
 
   return (
     <>
-      <Form>
         <FormControl mb="20px" id="house-no" width={{ sm: '270px', md: '368px' }}>
           <FormLabel mb="0">Location</FormLabel>
           <Select name="location" mb="5px">
-            <option value="" selected>
+            <option value="" >
               Select your workplace location
             </option>
             {}
@@ -116,7 +113,7 @@ const Page1 = () => {
             label=""
             name="amountOfDishes"
             type="number"
-            placeHolder="Amount of dishes (e.g. 20)"
+            placeholder="Amount of dishes (e.g. 20)"
             isDisabled={!values.isDishes}
           />
         </FormControl>
@@ -128,7 +125,7 @@ const Page1 = () => {
           <TextInputField
             label=""
             name="areaOfRooms"
-            placeHolder="Amount of the room in square meter (e.g. 100)"
+            placeholder="Amount of the room in square meter (e.g. 100)"
             isDisabled={!values.isRooms}
           />
         </FormControl>
@@ -140,11 +137,10 @@ const Page1 = () => {
           <TextInputField
             label=""
             name="amountOfClothes"
-            placeHolder="Amount of clothes (e.g. 10)"
+            placeholder="Amount of clothes (e.g. 10)"
             isDisabled={!values.isClothes}
           />
         </FormControl>
-      </Form>
     </>
   );
 };
@@ -163,7 +159,6 @@ const Page2Page3 = ({ steps }) => {
   const roomsPrice = () => (values.isRooms === false ? 0 : values.areaOfRooms * ROOMPRICE);
   const clothedPrice = () => (values.isClothes === false ? 0 : values.amountOfClothes * CLOTHPRICE);
   const totalPrice = () => dishesPrice() + roomsPrice() + clothedPrice();
-  const Discount = 0;
 
   const promotionBox = () => {
     if (steps == 2) {
@@ -172,7 +167,7 @@ const Page2Page3 = ({ steps }) => {
           <TextInputField
             label="Promotion Code"
             name="promotionCode"
-            placeHolder="Apply Your Promotion Code"
+            placeholder="Apply Your Promotion Code"
           />
         </FormControl>
       );
@@ -200,7 +195,6 @@ const Page2Page3 = ({ steps }) => {
   };
 
   return (
-    <Form border="1px">
       <FormControl mb="20px" id="house-no" width={{ sm: '270px', md: '368px' }}>
         <Text mb="3px" fontWeight="3px" fontSize="20px" fontFamily="body">
           Total Price
@@ -238,7 +232,6 @@ const Page2Page3 = ({ steps }) => {
         </HStack>
         {promotionBox()}
       </FormControl>
-    </Form>
   );
 };
 
