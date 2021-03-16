@@ -65,8 +65,9 @@ export class JobService {
     const createdJob = new this.jobModel(createJobDto);
     createdJob.customerId = customerId;
     await createdJob.save();
+    const copyJob = createdJob;
     await this.findMaid(createdJob);
-    return createdJob;
+    return copyJob;
   }
 
   async removeJob(id: string): Promise<Job> {
@@ -106,6 +107,7 @@ export class JobService {
         job.customerId,
         'can not find any maid',
       );
+      await job.delete();
     }
     return nearestMaid;
   }
