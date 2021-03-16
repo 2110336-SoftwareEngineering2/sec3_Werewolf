@@ -19,7 +19,7 @@ export class NotificationService {
 
   setupWebPush(): void {
     webpush.setVapidDetails(
-      'localhost:3000',
+      'mailto:' + process.env.MAIL_USERNAME,
       this.publicVapidKey,
       this.privateVapidKey,
     );
