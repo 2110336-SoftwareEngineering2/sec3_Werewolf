@@ -10,7 +10,7 @@ import {
   VStack,
 } from '@chakra-ui/layout';
 import { Link as RouterLink } from 'react-router-dom';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import logo from '../../assets/images/grab-white.png';
 import {
   Drawer,
@@ -76,7 +76,7 @@ const Navbar = observer(() => {
           links = [...links, { name: 'Post', to: '/post/create' }];
           break;
         case 'maid':
-          links = [...links, { name: 'Works', to: '/' }];
+          links = [...links, { name: 'Works', to: '/works' }];
           break;
         case 'admin':
           links = [...links, { name: 'Promotion', to: '/promotion' }];
@@ -87,7 +87,7 @@ const Navbar = observer(() => {
     }
 
     return links.map(route => (
-      <Link key={route.name} as={RouterLink} to={route.to}>
+      <Link key={route.name} as={RouterLink} to={route.to} mr={2}>
         <Text fontSize="lg" fontWeight="bold">
           {route.name}
         </Text>
