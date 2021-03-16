@@ -16,6 +16,7 @@ import { JwtAuthGuard } from '../auth/passport/jwt-auth.guard';
 import { JobService } from './job.service';
 import { CreateJobDto } from './dto/create-job.dto';
 import { JobDto } from './dto/job.dto';
+import { JobState } from './jobState';
 
 @Controller('job')
 @ApiTags('job')
@@ -56,9 +57,9 @@ export class JobController {
     } else throw new UnauthorizedException('user is not admin');
   }
 
-  @Get('maid/:id')
+  @Get('maid/:uid')
   @ApiCreatedResponse({ type: [JobDto] })
-  async findByMaid(@Param('id') id: string) {
+  async findByMaid(@Param('uid') id: string) {
     return await this.jobService.findByMaid(id);
   }
 
@@ -70,7 +71,7 @@ export class JobController {
     const job = await this.jobService.findJob(id);
     if (
       job &&
-      job.state === 'posted' &&
+      job.state === JobState.posted &&
       req.user._id == job.maidId &&
       job.expiryTime > new Date()
     ) {
@@ -88,12 +89,12 @@ export class JobController {
     const job = await this.jobService.findJob(id);
     if (
       job &&
-      job.state === 'posted' &&
+      job.state === JobState.posted &&
       req.user._id == job.maidId &&
       job.expiryTime > new Date()
     ) {
       this.jobService.deleteTimeout(job);
-      job.state = 'matched';
+      job.state = JobState.matched;
       await job.save();
       return new JobDto(job);
     } else throw new NotFoundException('job not found');

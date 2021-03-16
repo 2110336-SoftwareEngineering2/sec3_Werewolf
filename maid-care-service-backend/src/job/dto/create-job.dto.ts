@@ -23,4 +23,6 @@ export class Work {
 
   @ApiProperty({ type: Number })
   quantity: number;
+
+  unit: string;
 }

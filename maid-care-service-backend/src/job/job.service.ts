@@ -2,6 +2,7 @@ import {
   Injectable,
   Inject,
   BadRequestException,
+  ForbiddenException,
   NotFoundException,
 } from '@nestjs/common';
 import { Model } from 'mongoose';
@@ -12,6 +13,7 @@ import { Job } from './interfaces/job.interface';
 import { Maid } from 'src/maids/interfaces/maids.interface';
 import { CreateJobDto } from './dto/create-job.dto';
 import { WorkspacesService } from 'src/workspaces/workspaces.service';
+import { WorkType } from 'src/maids/workType';
 
 @Injectable()
 export class JobService {
@@ -51,10 +53,13 @@ export class JobService {
       );
     // validate work
     createJobDto.work.forEach((work) => {
-      if (!this.maidsService.isValidTypeOfWork(work.typeOfWork))
+      if (!this.maidsService.isValidTypeOfWork(work.typeOfWork)) {
         throw new BadRequestException(
           work.typeOfWork + ' is not valid type of work',
         );
+      } else {
+        work.unit = this.getUnit(work.typeOfWork);
+      }
     });
     // create new job
     const createdJob = new this.jobModel(createJobDto);
@@ -123,5 +128,25 @@ export class JobService {
 
   deleteTimeout(job: Job) {
     this.schedulerRegistry.deleteTimeout(job.id);
+  }
+
+  getUnit(workType: string) {
+    switch (workType) {
+      case WorkType.house_cleaning: {
+        return 'ตารางเมตร';
+      }
+      case WorkType.dish_washing: {
+        return 'จาน';
+      }
+      case WorkType.laundry: {
+        return 'ตัว';
+      }
+      case WorkType.gardening: {
+        return 'ตารางเมตร';
+      }
+      default: {
+        throw new ForbiddenException(workType + ' is not valid type of work');
+      }
+    }
   }
 }
