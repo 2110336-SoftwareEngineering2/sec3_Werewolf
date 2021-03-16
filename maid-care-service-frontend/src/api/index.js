@@ -14,7 +14,7 @@ const auth = axios.create({
 });
 
 auth.interceptors.request.use(
-  config => {
+  (config) => {
     const token = localStorage.getItem('token');
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;
@@ -23,7 +23,7 @@ auth.interceptors.request.use(
     console.log('interceptor conf', config);
     return config;
   },
-  error => {
+  (error) => {
     console.log('intercaptor err', error);
     throw error;
   }
@@ -51,9 +51,6 @@ workspace.interceptors.request.use(
   }
 );
 
-
-
-export { auth, workspace };
 // Promotion API
 const promotion = axios.create({
   baseURL: '/api/promotion',
@@ -63,7 +60,7 @@ const promotion = axios.create({
 });
 
 promotion.interceptors.request.use(
-  config => {
+  (config) => {
     const token = localStorage.getItem('token');
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;
@@ -72,9 +69,34 @@ promotion.interceptors.request.use(
     console.log('interceptor conf', config);
     return config;
   },
-  error => {
+  (error) => {
     console.log('intercaptor err', error);
     throw error;
   }
 );
-export { promotion };
+
+// Promotion API
+const job = axios.create({
+  baseURL: '/api/job',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+job.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers['Authorization'] = `Bearer ${token}`;
+      config.headers['secret'] = process.env.REACT_APP_SECRET;
+    }
+    console.log('interceptor conf', config);
+    return config;
+  },
+  (error) => {
+    console.log('intercaptor err', error);
+    throw error;
+  }
+);
+
+export { auth, promotion, job, workspace };
