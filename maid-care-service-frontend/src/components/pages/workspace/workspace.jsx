@@ -73,6 +73,8 @@ export const Workspace = () => {
 
   // onMapClick is a function that create map marker icon when user click on the map.
   const onMapClick = React.useCallback(event => {
+
+
     setMarkers(() => [
       {
         lat: event.latLng.lat(),
@@ -110,6 +112,7 @@ export const Workspace = () => {
           handleCity={handleCity}
           handleState={handleState}
           panTo={panTo}
+          setMarkers={setMarkers}
         />
         <GoogleMap
           id="map"
@@ -145,6 +148,7 @@ const InfoSidebar = ({
   handleCity,
   handleState,
   panTo,
+  setMarkers
 }) => {
   const [isOpen, setIsOpen] = React.useState(false);
   const onClose = () => setIsOpen(false);
@@ -156,7 +160,7 @@ const InfoSidebar = ({
         <Box fontSize="3xl" mb="15px" fontWeight="extrabold">
           New workspace
         </Box>
-        <SearchLocation panTo={panTo} />
+        <SearchLocation panTo={panTo} setMarkers={setMarkers}/>
         <Box pos="absolute" top="250px">
           <FormControl id="house-no" width={{ sm: '270px', md: '368px' }}>
             <FormLabel mb="0">House no.</FormLabel>
@@ -197,8 +201,8 @@ const InfoSidebar = ({
           <FormControl id="state" width={{ sm: '270px', md: '368px' }}>
             <FormLabel mb="0">State / Province</FormLabel>
 
-            <Select name="province" onChange={handleState}>
-              <option value="" selected>
+            <Select name="province" defaultValue="" onChange={handleState}>
+              <option value="">
                 --------- เลือกจังหวัด ---------
               </option>
               <option value="กรุงเทพมหานคร">กรุงเทพมหานคร</option>
@@ -330,7 +334,7 @@ const InfoSidebar = ({
   );
 };
 
-const SearchLocation = ({ panTo }) => {
+const SearchLocation = ({ panTo, setMarkers }) => {
   const [address, setAddress] = useState('');
   const [coordinates, setCoordinaates] = useState({
     lat: null,
@@ -344,6 +348,9 @@ const SearchLocation = ({ panTo }) => {
       setAddress(value);
       setCoordinaates(latLng);
       panTo(latLng);
+      setMarkers([
+          { ...latLng, time: new Date(),}
+      ]);
     } catch (error) {
       console.log('😱 Error: ', error);
     }
