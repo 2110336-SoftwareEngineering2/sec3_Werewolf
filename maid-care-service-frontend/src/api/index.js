@@ -18,3 +18,4 @@ export { workspace };
 export { promotion };
 export { job };
 export { maid };
+export { maid };
