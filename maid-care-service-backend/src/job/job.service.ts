@@ -10,8 +10,9 @@ import { NotificationService } from '../notification/notification.service';
 import { MaidsService } from '../maids/maids.service';
 import { Job } from './interfaces/job.interface';
 import { Maid } from 'src/maids/interfaces/maids.interface';
-import { CreateJobDto } from './dto/create-job.dto';
+import { CreateJobDto, Work } from './dto/create-job.dto';
 import { WorkspacesService } from 'src/workspaces/workspaces.service';
+import { WorkPrice } from './workPrice';
 
 @Injectable()
 export class JobService {
@@ -21,6 +22,7 @@ export class JobService {
     private notificationService: NotificationService,
     private maidsService: MaidsService,
     private workspacesService: WorkspacesService,
+    private workprice: WorkPrice
   ) {}
 
   async findJob(id: string): Promise<Job> {
@@ -123,5 +125,43 @@ export class JobService {
 
   deleteTimeout(job: Job) {
     this.schedulerRegistry.deleteTimeout(job.id);
+  }
+
+  calculateSumPrice(job: Job){
+    const allWork = job.work;
+    let sumCost = 0;
+    for ( var work of allWork){
+      const cost = this.calculatePrice(work);
+      sumCost += cost; 
+    }
+    return sumCost;
+  }
+
+  calculatePrice(work: Work): number{
+    const workType = work.typeOfWork;
+    const quantity = work.quantity;
+    let cost = 0;
+    switch(workType) {
+      case('House Cleaning'): {
+        cost = quantity * this.workprice.house_cleaningPrice;
+        break;
+      }
+      case('Dish Washing'): {
+        cost = quantity * this.workprice.dish_washingPrice;
+        break;
+      }
+      case('Laundry'): {
+        cost = quantity * this.workprice.laundryPrice;
+        break;
+      }
+      case('Gardening'): {
+        cost = quantity * this.workprice.gardeningPrice;
+        break;
+      }
+      default: {
+        break;
+      }
+    }
+    return cost;
   }
 }
