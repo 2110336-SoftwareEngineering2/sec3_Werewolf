@@ -9,10 +9,11 @@ import { Model } from 'mongoose';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { NotificationService } from '../notification/notification.service';
 import { MaidsService } from '../maids/maids.service';
+import { WorkspacesService } from 'src/workspaces/workspaces.service';
+import { PromotionService } from 'src/promotion/promotion.service';
 import { Job } from './interfaces/job.interface';
 import { Maid } from 'src/maids/interfaces/maids.interface';
 import { CreateJobDto } from './dto/create-job.dto';
-import { WorkspacesService } from 'src/workspaces/workspaces.service';
 import { WorkType } from 'src/maids/workType';
 
 @Injectable()
@@ -23,6 +24,7 @@ export class JobService {
     private notificationService: NotificationService,
     private maidsService: MaidsService,
     private workspacesService: WorkspacesService,
+    private promotionService: PromotionService,
   ) {}
 
   async findJob(id: string): Promise<Job> {
@@ -57,17 +59,24 @@ export class JobService {
         throw new BadRequestException(
           work.typeOfWork + ' is not valid type of work',
         );
-      } else {
-        work.unit = this.getUnit(work.typeOfWork);
       }
     });
     // create new job
     const createdJob = new this.jobModel(createJobDto);
     createdJob.customerId = customerId;
+    createdJob.work.forEach((work) => {
+      work.unit = this.getUnit(work.typeOfWork);
+    });
+    createdJob.cost = 1000;
     await createdJob.save();
-    const copyJob = createdJob;
-    await this.findMaid(createdJob);
-    return copyJob;
+    return createdJob;
+  }
+
+  async applyPromotion(job: Job, code: string): Promise<Job> {
+    const promotion = await this.promotionService.findPromotion(code);
+    if (!promotion) throw new NotFoundException('Promotion not valid');
+    job.cost = 1000 * (1 - promotion.discountRate);
+    return await job.save();
   }
 
   async removeJob(id: string): Promise<Job> {
@@ -87,8 +96,8 @@ export class JobService {
       job.maidId = nearestMaid._id;
       job.requestedMaid.push(nearestMaid._id);
       const cerrentTime = new Date();
-      //expired in 30 seconds
-      const expiredIn = 30000;
+      //expired in 60 seconds
+      const expiredIn = 60000;
       job.expiryTime = new Date(cerrentTime.getTime() + expiredIn);
       await job.save();
       this.addTimeout(job, expiredIn);

@@ -51,9 +51,13 @@ export class PromotionController {
   }
 
   @Get()
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('acess-token')
   @ApiCreatedResponse({ type: [PromotionDto] })
-  async findAll() {
-    return await this.promotionService.findAll();
+  async findAll(@Request() req) {
+    if (req.user.role === 'admin') {
+      return await this.promotionService.findAll();
+    }
   }
 
   @Delete(':code')
