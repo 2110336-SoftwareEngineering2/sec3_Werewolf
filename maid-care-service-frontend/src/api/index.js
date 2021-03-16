@@ -75,7 +75,7 @@ promotion.interceptors.request.use(
   }
 );
 
-// Promotion API
+// Job API
 const job = axios.create({
   baseURL: '/api/job',
   headers: {
