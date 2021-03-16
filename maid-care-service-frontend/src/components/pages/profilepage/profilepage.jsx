@@ -41,8 +41,10 @@ export const ProfilePage = () => {
             <Stack spacing={4}>
               <Box fontSize="2xl" >Mrs. Somying Yingsom</Box>
               <Box fontSize="2xl" >42 years old</Box>
-              <Box w="500px" h="200px" bg="White" p={5}>
-                <Text fontSize="xl">Bio xxxx</Text>
+              <Box w="500px" h="200px" bg="White" p={6}>
+                <Text fontSize="xl">
+                  Hi. I’m ok to do every job. But I prefer on ironing and I’m scared of roaches.
+                </Text>
               </Box>
             </Stack>
           </HStack>
