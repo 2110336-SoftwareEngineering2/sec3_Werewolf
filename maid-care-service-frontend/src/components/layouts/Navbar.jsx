@@ -1,15 +1,5 @@
-import {
-  Container,
-  Flex,
-  HStack,
-  Link,
-  LinkBox,
-  LinkOverlay,
-  Stack,
-  Text,
-  VStack,
-} from '@chakra-ui/layout';
-import { Link as RouterLink } from 'react-router-dom';
+import { Container, Flex, HStack, Link, Stack, Text, VStack } from '@chakra-ui/layout';
+import { Link as RouterLink, useHistory } from 'react-router-dom';
 import React, { useRef } from 'react';
 import logo from '../../assets/images/grab-white.png';
 import {
@@ -27,13 +17,20 @@ import { useBreakpointValue } from '@chakra-ui/media-query';
 import { Avatar } from '@chakra-ui/avatar';
 import { observer } from 'mobx-react-lite';
 import { useStores } from '../../hooks/use-stores';
+import { Menu, MenuButton, MenuDivider, MenuGroup, MenuItem, MenuList } from '@chakra-ui/menu';
 
 const Navbar = observer(() => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const btnRef = useRef();
   const isMobile = useBreakpointValue({ base: false, sm: true, md: true, lg: false });
+  const history = useHistory();
 
   const { userStore } = useStores();
+
+  const handleLogout = () => {
+    userStore.logout();
+    history.replace('/login');
+  };
 
   const renderUser = () => {
     const isAuthenticated = userStore.isAuthenticated;
@@ -41,16 +38,23 @@ const Navbar = observer(() => {
 
     return isAuthenticated && user ? (
       <>
-        <LinkBox to="/profile" color="black">
-          <LinkOverlay as={RouterLink} to="/profile">
+        <Menu>
+          <MenuButton>
             <HStack>
               <Avatar size="sm" name={`${user.firstname}`} />
               <Text fontSize="lg" fontWeight="bold">
                 {`${user.firstname}`}
               </Text>
             </HStack>
-          </LinkOverlay>
-        </LinkBox>
+          </MenuButton>
+          <MenuList>
+            <MenuGroup title="Profile">
+              <MenuItem onClick={() => history.push('/profile')}>My Account</MenuItem>
+            </MenuGroup>
+            <MenuDivider />
+            <MenuItem onClick={handleLogout}>Log out</MenuItem>
+          </MenuList>
+        </Menu>
       </>
     ) : (
       <>

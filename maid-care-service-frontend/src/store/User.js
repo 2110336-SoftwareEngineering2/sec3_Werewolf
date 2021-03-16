@@ -61,6 +61,7 @@ class UserStore {
       .catch(error => {
         console.log('get user err', error);
         this.error = error;
+        this.logout();
         // throw error;
       })
       .finally(() => {
