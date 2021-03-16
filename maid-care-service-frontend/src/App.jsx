@@ -23,7 +23,7 @@ export const App = () => {
         <Route path="/promotion" component={Promotion} />
         <Route exact path="/profile/edit" component={EditProfile} />
         <Route exact path="/workspace" component={Workspace} />
-        <ProtectedRoute exact path="/home" component={Home} />
+        <Route exact path="/home" component={Home} />
       </Switch>
     </ChakraProvider>
   );
