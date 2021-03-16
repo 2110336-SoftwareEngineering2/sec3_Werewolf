@@ -8,9 +8,11 @@ import {
 } from '@nestjs/common';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
+import { NotificationService } from '../notification/notification.service';
 import { CustomerService } from '../customer/customer.service';
 import { MaidsService } from '../maids/maids.service';
 import { JobService } from '../job/job.service';
+import { WorkspacesService } from 'src/workspaces/workspaces.service';
 import { User } from './interfaces/users.interface';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ProfileDto } from './dto/profile.dto';
@@ -21,9 +23,11 @@ const saltRounds = 10;
 export class UsersService {
   constructor(
     @Inject('USER_MODEL') private userModel: Model<User>,
+    private notificationService: NotificationService,
     private customerService: CustomerService,
     private maidsService: MaidsService,
     private jobService: JobService,
+    private workspacesService: WorkspacesService,
   ) {}
 
   async findUser(id: string): Promise<User> {
@@ -64,7 +68,7 @@ export class UsersService {
     // validate works
     if (createUserDto.role === 'maid' && createUserDto.work) {
       createUserDto.work.forEach((work) => {
-        if (!this.jobService.isValidTypeOfWork(work))
+        if (!this.maidsService.isValidTypeOfWork(work))
           throw new BadRequestException(work + ' is not valid type of work');
       });
     }
@@ -107,13 +111,23 @@ export class UsersService {
   async deleteUser(id: string): Promise<User> {
     const user = await this.findUser(id);
     if (!user) throw new NotFoundException('Invalid user');
+    // delete subscription
+    try {
+      await this.notificationService.unsubscribe(user._id);
+    } catch (error) {}
     if (user.role === 'customer') {
-      // delete customer and all jobs posted by this customer
+      // delete customer and all jobs and workspaces posted by this customer
       const customer = await this.customerService.findCustomer(user._id);
       if (customer) {
         const jobs = await this.jobService.findByCustomer(id);
         jobs.forEach((job) => {
           job.remove();
+        });
+        const workspaces = await this.workspacesService.findAllWorkspaceByCustomerId(
+          id,
+        );
+        workspaces.forEach((workspace) => {
+          workspace.remove();
         });
         await customer.remove();
       }

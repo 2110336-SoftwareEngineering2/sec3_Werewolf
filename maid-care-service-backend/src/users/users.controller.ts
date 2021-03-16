@@ -18,6 +18,7 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ProfileDto } from './dto/profile.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { UserDto } from './dto/user.dto';
 
 @Controller('users')
 @ApiTags('user')
@@ -27,6 +28,7 @@ export class UsersController {
   @Post()
   @ApiCreatedResponse({
     description: 'create new user without email verification',
+    type: UserDto,
   })
   async createUser(@Body() createUserDto: CreateUserDto) {
     createUserDto.email = createUserDto.email.toLowerCase();
@@ -34,43 +36,22 @@ export class UsersController {
       const user = await this.usersService.register(createUserDto);
       user.valid = true;
       await user.save();
-      return {
-        id: user.id,
-        email: user.email,
-        firstname: user.firstname,
-        lastname: user.lastname,
-        birthdate: user.birthdate,
-        citizenId: user.citizenId,
-        nationality: user.nationality,
-        bankAccountNumber: user.bankAccountNumber,
-        role: user.role,
-      };
+      return new UserDto(user);
     } catch (error) {
       throw error;
     }
   }
 
-  @Get(':id')
-  @ApiCreatedResponse({
-    description: "return user's email, firstname, lastname, phone and role",
-  })
-  async getCustomer(@Param('id') id: string) {
+  @Get(':uid')
+  @ApiCreatedResponse({ type: UserDto })
+  async getCustomer(@Param('uid') id: string) {
     const user = await this.usersService.findUser(id);
     if (!user) throw new NotFoundException('invalid user');
-    const result = {
-      email: user.email,
-      firstname: user.firstname,
-      lastname: user.lastname,
-      birthdate: user.birthdate,
-      citizenId: user.citizenId,
-      nationality: user.nationality,
-      bankAccountNumber: user.bankAccountNumber,
-      role: user.role,
-    };
-    return result;
+    return new UserDto(user);
   }
 
   @Put('update-profile')
+  @ApiCreatedResponse({ type: UserDto })
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('acess-token')
   async updateProfile(@Request() req, @Body() profileDto: ProfileDto) {
@@ -79,26 +60,21 @@ export class UsersController {
         req.user._id,
         profileDto,
       );
-      return {
-        firstname: user.firstname,
-        lastname: user.lastname,
-        birthdate: user.birthdate,
-        citizenId: user.citizenId,
-        nationality: user.nationality,
-        bankAccountNumber: user.bankAccountNumber,
-      };
+      return new UserDto(user);
     } catch (error) {
       throw error;
     }
   }
 
-  @Delete(':id')
+  @Delete(':uid')
+  @ApiCreatedResponse({ type: UserDto })
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('acess-token')
-  async deleteUser(@Request() req, @Param('id') id: string) {
+  async deleteUser(@Request() req, @Param('uid') id: string) {
     if (req.user.role === 'admin' || req.user._id == id) {
       try {
-        return await this.usersService.deleteUser(id);
+        const user = await this.usersService.deleteUser(id);
+        return new UserDto(user);
       } catch (error) {
         throw error;
       }
@@ -106,6 +82,7 @@ export class UsersController {
   }
 
   @Put('reset-password')
+  @ApiCreatedResponse({ type: Boolean })
   async resetPassord(
     @Body() resetPasswordDto: ResetPasswordDto,
   ): Promise<boolean> {

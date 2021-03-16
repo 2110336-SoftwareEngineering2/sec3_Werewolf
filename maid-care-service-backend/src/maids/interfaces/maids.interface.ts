@@ -1,6 +1,7 @@
 import { Document } from 'mongoose';
 
 export interface Maid extends Document {
+  note: string;
   work: [string];
   cerrentLocation: {
     latitude: number;

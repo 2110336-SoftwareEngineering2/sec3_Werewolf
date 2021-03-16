@@ -1,12 +1,23 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { WorkType } from '../../maids/workType';
 
-export class CreateUserDto {
-  @ApiProperty({ type: String, format: 'email' })
-  email: string;
+export class UserDto {
+  constructor(object: any) {
+    this._id = object._id;
+    this.email = object.email;
+    this.firstname = object.firstname;
+    this.lastname = object.lastname;
+    this.birthdate = object.birthdate;
+    this.citizenId = object.citizenId;
+    this.nationality = object.nationality;
+    this.bankAccountNumber = object.bankAccountNumber;
+    this.role = object.role;
+  }
 
   @ApiProperty({ type: String })
-  password: string;
+  readonly _id: string;
+
+  @ApiProperty({ type: String })
+  readonly email: string;
 
   @ApiProperty({ type: String })
   readonly firstname: string;
@@ -28,12 +39,4 @@ export class CreateUserDto {
 
   @ApiProperty({ enum: ['customer', 'maid', 'admin'] })
   readonly role: string;
-
-  @ApiProperty({
-    type: 'array',
-    items: {
-      enum: Object.values(WorkType),
-    },
-  })
-  readonly work: [string];
 }

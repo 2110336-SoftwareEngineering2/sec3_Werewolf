@@ -19,6 +19,8 @@ async function bootstrap() {
     .addTag('maid')
     .addTag('promotion')
     .addTag('job')
+    .addTag('notification')
+    .addTag('workspace')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);

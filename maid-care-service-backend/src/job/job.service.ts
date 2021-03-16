@@ -5,13 +5,23 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Model } from 'mongoose';
+import { SchedulerRegistry } from '@nestjs/schedule';
+import { NotificationService } from '../notification/notification.service';
+import { MaidsService } from '../maids/maids.service';
 import { Job } from './interfaces/job.interface';
+import { Maid } from 'src/maids/interfaces/maids.interface';
 import { CreateJobDto } from './dto/create-job.dto';
-import { WorkType } from './work';
+import { WorkspacesService } from 'src/workspaces/workspaces.service';
 
 @Injectable()
 export class JobService {
-  constructor(@Inject('JOB_MODEL') private jobModel: Model<Job>) {}
+  constructor(
+    @Inject('JOB_MODEL') private jobModel: Model<Job>,
+    private schedulerRegistry: SchedulerRegistry,
+    private notificationService: NotificationService,
+    private maidsService: MaidsService,
+    private workspacesService: WorkspacesService,
+  ) {}
 
   async findJob(id: string): Promise<Job> {
     if (String(id).length === 24) {
@@ -23,13 +33,25 @@ export class JobService {
     return this.jobModel.find({ customerId: id }).exec();
   }
 
+  async findByMaid(id: string): Promise<Job[]> {
+    return this.jobModel.find({ maidId: id }).exec();
+  }
+
   async createJob(
     customerId: string,
     createJobDto: CreateJobDto,
   ): Promise<Job> {
+    // validate workspace
+    const workspace = await this.workspacesService.findOne(
+      createJobDto.workplaceId,
+    );
+    if (!workspace)
+      throw new BadRequestException(
+        createJobDto.workplaceId + ' is not valid id',
+      );
     // validate work
     createJobDto.work.forEach((work) => {
-      if (!this.isValidTypeOfWork(work.typeOfWork))
+      if (!this.maidsService.isValidTypeOfWork(work.typeOfWork))
         throw new BadRequestException(
           work.typeOfWork + ' is not valid type of work',
         );
@@ -37,7 +59,9 @@ export class JobService {
     // create new job
     const createdJob = new this.jobModel(createJobDto);
     createdJob.customerId = customerId;
-    return await createdJob.save();
+    await createdJob.save();
+    await this.findMaid(createdJob);
+    return createdJob;
   }
 
   async removeJob(id: string): Promise<Job> {
@@ -46,7 +70,58 @@ export class JobService {
     return await job.remove();
   }
 
-  isValidTypeOfWork(workType: string) {
-    return (<any>Object).values(WorkType).includes(workType);
+  async findMaid(job: Job): Promise<Maid> {
+    const workspace = await this.workspacesService.findOne(job.workplaceId);
+    const nearestMaid = await this.maidsService.findNearestMaid(
+      workspace.latitude,
+      workspace.longitude,
+      job,
+    );
+    if (nearestMaid) {
+      job.maidId = nearestMaid._id;
+      job.requestedMaid.push(nearestMaid._id);
+      const cerrentTime = new Date();
+      //expired in 30 seconds
+      const expiredIn = 30000;
+      job.expiryTime = new Date(cerrentTime.getTime() + expiredIn);
+      await job.save();
+      this.addTimeout(job, expiredIn);
+      //push notification to maid
+      await this.notificationService.sendNotification(
+        nearestMaid._id,
+        'new job',
+      );
+      nearestMaid.availability = false;
+      await nearestMaid.save();
+    } else {
+      job.maidId = null;
+      await job.save();
+      //push notification to customer
+      await this.notificationService.sendNotification(
+        job.customerId,
+        'can not find any maid',
+      );
+    }
+    return nearestMaid;
+  }
+
+  async reject(job: Job): Promise<Job> {
+    this.maidsService.setAvailability(job.maidId, true);
+    // find new maid
+    await this.findMaid(job);
+    return job;
+  }
+
+  addTimeout(job: Job, milliseconds: number) {
+    const callback = () => {
+      this.reject(job);
+    };
+
+    const timeout = setTimeout(callback, milliseconds);
+    this.schedulerRegistry.addTimeout(job.id, timeout);
+  }
+
+  deleteTimeout(job: Job) {
+    this.schedulerRegistry.deleteTimeout(job.id);
   }
 }

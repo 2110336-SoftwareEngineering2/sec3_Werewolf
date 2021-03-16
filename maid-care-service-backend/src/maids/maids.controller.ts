@@ -11,40 +11,45 @@ import {
 import { ApiTags, ApiBearerAuth, ApiCreatedResponse } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/passport/jwt-auth.guard';
 import { MaidsService } from './maids.service';
-import { WorkDto } from './dto/work.dto';
+import { UpdateMaidDto } from './dto/update-maid.dto';
 import { CerrentLocationDto } from './dto/location.dto';
+import { MaidDto } from './dto/maid.dto';
 
 @Controller('maids')
 @ApiTags('maid')
 export class MaidsController {
   constructor(private readonly maidsService: MaidsService) {}
 
-  @Get(':id')
+  @Get(':uid')
+  @ApiCreatedResponse({ type: MaidDto })
   @ApiCreatedResponse({
     description: "return maid's average rating and totalReviews",
   })
-  async getMaid(@Param('id') id: string) {
+  async getMaid(@Param('uid') id: string) {
     const maid = await this.maidsService.findMaid(id);
     if (!maid) throw new NotFoundException('invalid maid');
-    return maid;
+    return new MaidDto(maid);
   }
 
-  @Put('update-work')
+  @Put('update')
+  @ApiCreatedResponse({ type: MaidDto })
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('acess-token')
-  async updateWork(@Request() req, @Body() workDto: WorkDto) {
+  async updateWork(@Request() req, @Body() updateMaidDto: UpdateMaidDto) {
     try {
-      const maid = await this.maidsService.updateWork(
+      await this.maidsService.updateWork(req.user._id, updateMaidDto.work);
+      const maid = await this.maidsService.updateNote(
         req.user._id,
-        workDto.work,
+        updateMaidDto.note,
       );
-      return maid;
+      return new MaidDto(maid);
     } catch (error) {
       throw error;
     }
   }
 
   @Put('update-location')
+  @ApiCreatedResponse({ type: Boolean })
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('acess-token')
   async updateLocation(
@@ -52,18 +57,19 @@ export class MaidsController {
     @Body() locationDto: CerrentLocationDto,
   ) {
     try {
-      const maid = await this.maidsService.updateLocation(
+      await this.maidsService.updateLocation(
         req.user._id,
         locationDto.latitude,
         locationDto.longitude,
       );
-      return maid;
+      return true;
     } catch (error) {
       throw error;
     }
   }
 
   @Put('availability/:availability')
+  @ApiCreatedResponse({ type: MaidDto })
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('acess-token')
   async setAvailability(
@@ -75,7 +81,7 @@ export class MaidsController {
         req.user._id,
         availability,
       );
-      return maid;
+      return new MaidDto(maid);
     } catch (error) {
       throw error;
     }
