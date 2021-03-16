@@ -74,7 +74,7 @@ const PostjobForm = props => {
       }}
       validationSchema={yup}
       onSubmit={ () => {
-        if (props.steps < 3) {
+        if ( props.steps < 3 ) {
           props.setSteps(previousStep => previousStep + 1);
         }
       }}>
@@ -152,10 +152,11 @@ const Page1 = () => {
 export default PostjobForm;
 
 const Page2Page3 = ({ steps }) => {
+  // this 4 constanct is only for test.
   const DISHPRICE = 100;
   const ROOMPRICE = 10;
   const CLOTHPRICE = 50;
-  const DISCOUNT = 100; // for Test only
+  const DISCOUNT = 100; 
 
   const { values } = useFormikContext();
   const dishesPrice = () => (values.isDishes === false ? 0 : values.amountOfDishes * DISHPRICE);
@@ -242,11 +243,6 @@ const Page2Page3 = ({ steps }) => {
 };
 
 const ButtonField = ( { steps, setSteps} ) => {
-  const handleIncrement = () => {
-    if (steps < 3) {
-      setSteps(previousStep => previousStep + 1);
-    }
-  };
 
   const handleDecrement = () => {
     if (steps > 1) {

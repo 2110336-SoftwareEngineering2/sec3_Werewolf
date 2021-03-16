@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import FlexBox from '../../shared/FlexBox';
 import LogoText from '../../../assets/images/logo-text.png';
 import {
   Box,
@@ -12,7 +11,6 @@ import {
 import PostjobForm from './form';
 
 export const Postjob = () => {
-  // this is a from steps.
   const [steps, setSteps] = useState(1);
 
   return (
