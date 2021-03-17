@@ -73,6 +73,7 @@ const PostjobForm = props => {
         areaOfRooms: '',
         amountOfClothes: '',
         promotionCode: '',
+        workspaceId:''
       }}
       validationSchema={yup}
       onSubmit={() => {
@@ -95,6 +96,8 @@ const Page1 = () => {
   const [error, setError] = useState(false);
   const [myWorkspaces, setMyWorkspaces] = useState([]);
 
+  // this function will get workspace from backend server and then
+  // set the value in myWorkspaces by perfrom setMyWorkspaces(response.data)
   const getWorkspace = () =>{
     workspace
     .get('/', {
@@ -109,6 +112,9 @@ const Page1 = () => {
       setError(error);
     });
   }
+
+  // this useEffec function will work only when page is reloaded.
+  // that mean it will get workspace every time when when page is reloaded.
   useEffect( () => {
     getWorkspace();
   }, []);
@@ -117,11 +123,11 @@ const Page1 = () => {
     <>
       <FormControl mb="20px" id="house-no" width={{ sm: '270px', md: '368px' }}>
         <FormLabel mb="0">Location</FormLabel>
-        <Select name="location" mb="5px">
+        <Select name="workspaceId" mb="5px">
           <option value="">Select your workplace location</option>
           { myWorkspaces.map( (myWorkspace) => {
             console.log(myWorkspace.description)
-            return (<option  value="">{myWorkspace.description}</option>);
+            return (<option  value={myWorkspace._id}>{myWorkspace.description}</option>);
           } )}
         </Select>
         <Link as={RouterLink} to="/workspace" mt="10px">
