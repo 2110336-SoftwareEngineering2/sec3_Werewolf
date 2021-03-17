@@ -6,15 +6,15 @@
             - enable Places API for recommended places based on the keywords you enter.
 */
 
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState } from 'react';
 import FlexBox from '../../shared/FlexBox';
-import MaidLogo from '../../../MaidLogo.svg';
 import * as Yup from 'yup';
 import { TextInputField } from '../../shared/FormikField';
+import { workspace } from '../../../api';
+import { useHistory } from 'react-router-dom';
 
 import {
   Box,
-  chakra,
   FormControl,
   FormLabel,
   Input,
@@ -28,7 +28,6 @@ import {
   AlertDialogHeader,
   AlertDialogContent,
   AlertDialogOverlay,
-  HStack,
 } from '@chakra-ui/react';
 
 import { GoogleMap, useLoadScript, Marker } from '@react-google-maps/api';
@@ -88,7 +87,7 @@ export const Workspace = () => {
   return (
     <Box bg="gray.200" h="100vh">
       <Center mt="20px">
-        <InfoSidebar panTo={panTo} setMarkers={setMarkers} />
+        <InfoSidebar panTo={panTo} markers={markers} setMarkers={setMarkers} />
         <GoogleMap
           id="map"
           mapContainerStyle={mapContainerStyle}
@@ -111,14 +110,47 @@ export const Workspace = () => {
 
 export default Workspace;
 
-const InfoSidebar = ({ panTo, setMarkers }) => {
-const [isFormCorrect, setFormCorrect] = useState(false);
+const InfoSidebar = ({ panTo, markers, setMarkers }) => {
+  const history = useHistory();
+  const [error, setError] = useState(false);
+  const [isFormCorrect, setFormCorrect] = useState(false);
 
   const yup = Yup.object({
     houseNo: Yup.string().required('please fill your house No.'),
     city: Yup.string().required('please fill your city.'),
     state: Yup.string().required('please select your state/province.'),
   });
+
+  const handleSubmei = ({ houseNo, address1, address2, city, state, country, coordinates }, {setSubmitting}) => {
+    setSubmitting(true);
+    
+    workspace
+      .post('/', {
+        houseNo: houseNo,
+        address1: address1,
+        address2: address2,
+        city: city,
+        state: state,
+        country: country,
+        coordinates: coordinates,
+      })
+      .then(response => {
+        console.log(response);
+        setSubmitting(false);
+        history.replace('/workspace'); // Go to promotion page
+      })
+      .catch(error => {
+        console.error(error);
+        setSubmitting(false);
+        setError(error);
+      });
+    /**End handle Submit logic here */
+    setSubmitting(false);
+  };
+
+  const handleCancel = () => {
+    history.push('/workspace');
+  };
 
   return (
     <FlexBox>
@@ -135,28 +167,20 @@ const [isFormCorrect, setFormCorrect] = useState(false);
             city: '',
             state: '',
             country: '',
+            coordinates: {},
           }}
           validationSchema={yup}
-          onSubmit={ () => setFormCorrect(true) }
-          >
+          onSubmit={async values => {
+            values.coordinates = markers;
+            setFormCorrect(true);
+            console.log(values);
+          }}>
           <Form>
             <Box pos="absolute" top="250px" left="25px" width="400px" justifyContent="center">
               <FormControl id="country" width={{ sm: '270px', md: '368px' }}>
-                <TextInputField
-                  label="House NO."
-                  placeholder="Text Here"
-                  name="houseNo"
-                />
-                <TextInputField
-                  label="Address 1"
-                  name="address1"
-                  placeholder="Text Here"
-                />
-                <TextInputField
-                  placeholder="Text Here"
-                  label="Address 1"
-                  name="address2"
-                />
+                <TextInputField label="House NO." placeholder="Text Here" name="houseNo" />
+                <TextInputField label="Address 1" name="address1" placeholder="Text Here" />
+                <TextInputField placeholder="Text Here" label="Address 2" name="address2" />
                 <TextInputField placeholder="Text Here" label="City" name="city" />
                 <FormLabel mb="0" fontWeight="bold">
                   State / Province
@@ -250,7 +274,7 @@ const [isFormCorrect, setFormCorrect] = useState(false);
                   value="ประเทศไทย"
                 />
               </FormControl>
-              <WorkspaceButton isFormCorrect={isFormCorrect}/>
+              <WorkspaceButton isFormCorrect={isFormCorrect} />
             </Box>
           </Form>
         </Formik>
@@ -259,7 +283,7 @@ const [isFormCorrect, setFormCorrect] = useState(false);
   );
 };
 
-const WorkspaceButton = ( {isFormCorrect} ) => {
+const WorkspaceButton = ({ isFormCorrect }) => {
   const { values } = useFormikContext();
   const [isOpen, setIsOpen] = useState(false);
   const onClose = () => setIsOpen(false);
@@ -276,8 +300,7 @@ const WorkspaceButton = ( {isFormCorrect} ) => {
           mb="10px"
           bg="buttonGreen"
           type="summit"
-          onClick={() => setIsOpen(isFormCorrect)}
-          >
+          onClick={() => setIsOpen(isFormCorrect)}>
           Add to saved places
         </Button>
       </Center>
@@ -290,8 +313,9 @@ const WorkspaceButton = ( {isFormCorrect} ) => {
 
             <AlertDialogBody>
               Your address : <br />
-              house no.{values.houseNo} {values.address1} {values.address2} {values.city}
-               {values.state} ประเทศไทย
+              บ้านเลขที่ {values.houseNo} {values.address1} {values.address2} {values.city}
+              {values.state} ประเทศไทย
+              <br />
             </AlertDialogBody>
 
             <AlertDialogFooter>
