@@ -27,7 +27,10 @@ export class AuthController {
   ) {}
 
   @Post('login')
-  @ApiCreatedResponse({ type: AccessTokenDto })
+  @ApiCreatedResponse({
+    description: 'Login with email and password to get access token',
+    type: AccessTokenDto,
+  })
   async login(@Body() login: LoginDto) {
     login.email = login.email.toLowerCase();
     try {
@@ -38,7 +41,10 @@ export class AuthController {
   }
 
   @Get('user')
-  @ApiCreatedResponse({ type: UserDto })
+  @ApiCreatedResponse({
+    description: 'Get user information',
+    type: UserDto,
+  })
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('acess-token')
   async getUser(@Request() req) {
@@ -48,7 +54,10 @@ export class AuthController {
   }
 
   @Post('register')
-  @ApiCreatedResponse({ type: UserDto })
+  @ApiCreatedResponse({
+    description: 'Create new user and send email verification',
+    type: UserDto,
+  })
   async register(@Body() createUserDto: CreateUserDto) {
     createUserDto.email = createUserDto.email.toLowerCase();
     try {
@@ -65,7 +74,10 @@ export class AuthController {
   }
 
   @Get('verify/:token')
-  @ApiCreatedResponse({ type: Boolean })
+  @ApiCreatedResponse({
+    description: 'verify email with received token',
+    type: Boolean,
+  })
   async verifyEmail(@Param() params): Promise<boolean> {
     try {
       return await this.authService.verifyEmail(params.token);

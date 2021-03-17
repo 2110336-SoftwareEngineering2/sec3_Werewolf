@@ -22,7 +22,10 @@ export class PromotionController {
   constructor(private readonly promotionService: PromotionService) {}
 
   @Post()
-  @ApiCreatedResponse({ type: PromotionDto })
+  @ApiCreatedResponse({
+    description: 'Admin create promotion',
+    type: PromotionDto,
+  })
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('acess-token')
   async createPromotion(
@@ -43,7 +46,10 @@ export class PromotionController {
   }
 
   @Get(':code')
-  @ApiCreatedResponse({ type: PromotionDto })
+  @ApiCreatedResponse({
+    description: 'Get promotion by promotion code',
+    type: PromotionDto,
+  })
   async findPromotion(@Param('code') code: string) {
     const promotion = await this.promotionService.findPromotion(code);
     if (!promotion) throw new NotFoundException('Promotion not valid');
@@ -51,9 +57,12 @@ export class PromotionController {
   }
 
   @Get()
+  @ApiCreatedResponse({
+    description: 'Admin get all promotions',
+    type: [PromotionDto],
+  })
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('acess-token')
-  @ApiCreatedResponse({ type: [PromotionDto] })
   async findAll(@Request() req) {
     if (req.user.role === 'admin') {
       return await this.promotionService.findAll();
@@ -61,7 +70,10 @@ export class PromotionController {
   }
 
   @Delete(':code')
-  @ApiCreatedResponse({ type: PromotionDto })
+  @ApiCreatedResponse({
+    description: 'Delete promotion by promotion code',
+    type: PromotionDto,
+  })
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('acess-token')
   async removePromotion(@Request() req, @Param('code') code: string) {

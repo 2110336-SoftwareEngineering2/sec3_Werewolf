@@ -14,6 +14,7 @@ import {
 import { ApiBearerAuth, ApiTags, ApiCreatedResponse } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/passport/jwt-auth.guard';
 import { JobService } from './job.service';
+import { NotificationService } from 'src/notification/notification.service';
 import { CreateJobDto } from './dto/create-job.dto';
 import { JobDto } from './dto/job.dto';
 import { JobState } from './jobState';
@@ -21,10 +22,16 @@ import { JobState } from './jobState';
 @Controller('job')
 @ApiTags('job')
 export class JobController {
-  constructor(private readonly jobService: JobService) {}
+  constructor(
+    private readonly jobService: JobService,
+    private readonly notificationService: NotificationService,
+  ) {}
 
   @Post()
-  @ApiCreatedResponse({ type: JobDto })
+  @ApiCreatedResponse({
+    description: 'Customer create new job',
+    type: JobDto,
+  })
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('acess-token')
   async postJob(@Request() req, @Body() createJobDto: CreateJobDto) {
@@ -35,7 +42,10 @@ export class JobController {
   }
 
   @Put(':id/apply-promotion/:code')
-  @ApiCreatedResponse({ type: JobDto })
+  @ApiCreatedResponse({
+    description: 'Apply promotion cost to a job to get discount',
+    type: JobDto,
+  })
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('acess-token')
   async applyPromotion(
@@ -59,7 +69,10 @@ export class JobController {
   }
 
   @Put(':id/find-maid')
-  @ApiCreatedResponse({ type: JobDto })
+  @ApiCreatedResponse({
+    description: 'Start finding maid for a job',
+    type: JobDto,
+  })
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('acess-token')
   async findMaid(@Request() req, @Param('id') id: string) {
@@ -77,7 +90,10 @@ export class JobController {
   }
 
   @Get(':id')
-  @ApiCreatedResponse({ type: JobDto })
+  @ApiCreatedResponse({
+    description: 'Get job by id',
+    type: JobDto,
+  })
   async findJob(@Param('id') id: string) {
     const job = await this.jobService.findJob(id);
     if (!job) throw new NotFoundException('job not valid');
@@ -85,7 +101,10 @@ export class JobController {
   }
 
   @Delete(':id')
-  @ApiCreatedResponse({ type: JobDto })
+  @ApiCreatedResponse({
+    description: 'Delete job by id',
+    type: JobDto,
+  })
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('acess-token')
   async removeJob(@Request() req, @Param('id') id: string) {
@@ -102,13 +121,19 @@ export class JobController {
   }
 
   @Get('maid/:uid')
-  @ApiCreatedResponse({ type: [JobDto] })
+  @ApiCreatedResponse({
+    description: 'Get all jobs that belong to a maid with uid',
+    type: [JobDto],
+  })
   async findByMaid(@Param('uid') id: string) {
     return await this.jobService.findByMaid(id);
   }
 
   @Put(':id/reject')
-  @ApiCreatedResponse({ type: JobDto })
+  @ApiCreatedResponse({
+    description: 'maid reject job',
+    type: JobDto,
+  })
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('acess-token')
   async reject(@Request() req, @Param('id') id: string) {
@@ -126,7 +151,10 @@ export class JobController {
   }
 
   @Put(':id/accept')
-  @ApiCreatedResponse({ type: JobDto })
+  @ApiCreatedResponse({
+    description: 'maid accept job',
+    type: JobDto,
+  })
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('acess-token')
   async accept(@Request() req, @Param('id') id: string) {
@@ -140,6 +168,12 @@ export class JobController {
       this.jobService.deleteTimeout(job);
       job.state = JobState.matched;
       await job.save();
+      // send nofication to customer
+      console.log('maid found');
+      await this.notificationService.sendNotification(
+        job.customerId,
+        'maid found',
+      );
       return new JobDto(job);
     } else throw new NotFoundException('job not found');
   }

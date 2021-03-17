@@ -21,9 +21,9 @@ export class MaidsController {
   constructor(private readonly maidsService: MaidsService) {}
 
   @Get(':uid')
-  @ApiCreatedResponse({ type: MaidDto })
   @ApiCreatedResponse({
-    description: "return maid's average rating and totalReviews",
+    description: 'Get maid infomation',
+    type: MaidDto,
   })
   async getMaid(@Param('uid') id: string) {
     const maid = await this.maidsService.findMaid(id);
@@ -32,7 +32,10 @@ export class MaidsController {
   }
 
   @Put('update')
-  @ApiCreatedResponse({ type: MaidDto })
+  @ApiCreatedResponse({
+    description: 'Update note or works of the maid',
+    type: MaidDto,
+  })
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('acess-token')
   async updateWork(@Request() req, @Body() updateMaidDto: UpdateMaidDto) {
@@ -49,7 +52,10 @@ export class MaidsController {
   }
 
   @Put('update-location')
-  @ApiCreatedResponse({ type: Boolean })
+  @ApiCreatedResponse({
+    description: 'Update cerrent location of the maid',
+    type: Boolean,
+  })
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('acess-token')
   async updateLocation(
@@ -69,7 +75,10 @@ export class MaidsController {
   }
 
   @Put('availability/:availability')
-  @ApiCreatedResponse({ type: MaidDto })
+  @ApiCreatedResponse({
+    description: 'Set availability to receive the job',
+    type: MaidDto,
+  })
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('acess-token')
   async setAvailability(
