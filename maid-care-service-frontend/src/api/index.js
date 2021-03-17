@@ -29,6 +29,24 @@ auth.interceptors.request.use(
   }
 );
 
+// User API
+const users = axios.create({
+  baseURL: '/api/users',
+  headers: {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
+    secret: process.env.REACT_APP_SECRET || 'secret',
+  },
+});
+
+/**
+ *
+ * @param {string} uid
+ * @returns Promise<user>
+ */
+export const fetchUserById = async (uid) => {
+  return users.get(`/${uid}`);
+};
 // Workspace api
 const workspace = axios.create({
   baseURL: '/api/workspaces',
