@@ -12,7 +12,8 @@ import { Job } from './interfaces/job.interface';
 import { Maid } from 'src/maids/interfaces/maids.interface';
 import { CreateJobDto, Work } from './dto/create-job.dto';
 import { WorkspacesService } from 'src/workspaces/workspaces.service';
-import { WorkPrice } from './workPrice';
+import { workCost } from './workCost';
+import { Promotion } from 'src/promotion/interfaces/promotion.interface';
 
 @Injectable()
 export class JobService {
@@ -22,7 +23,7 @@ export class JobService {
     private notificationService: NotificationService,
     private maidsService: MaidsService,
     private workspacesService: WorkspacesService,
-    private workprice: WorkPrice
+    private workcost: workCost
   ) {}
 
   async findJob(id: string): Promise<Job> {
@@ -127,35 +128,35 @@ export class JobService {
     this.schedulerRegistry.deleteTimeout(job.id);
   }
 
-  calculateSumPrice(job: Job){
+  calculateSumCost(job: Job){
     const allWork = job.work;
     let sumCost = 0;
     for ( var work of allWork){
-      const cost = this.calculatePrice(work);
+      const cost = this.calculateCost(work);
       sumCost += cost; 
     }
     return sumCost;
   }
 
-  calculatePrice(work: Work): number{
+  calculateCost(work: Work): number{
     const workType = work.typeOfWork;
     const quantity = work.quantity;
     let cost = 0;
     switch(workType) {
       case('House Cleaning'): {
-        cost = quantity * this.workprice.house_cleaningPrice;
+        cost = quantity * this.workcost.house_cleaningPrice;
         break;
       }
       case('Dish Washing'): {
-        cost = quantity * this.workprice.dish_washingPrice;
+        cost = quantity * this.workcost.dish_washingPrice;
         break;
       }
       case('Laundry'): {
-        cost = quantity * this.workprice.laundryPrice;
+        cost = quantity * this.workcost.laundryPrice;
         break;
       }
       case('Gardening'): {
-        cost = quantity * this.workprice.gardeningPrice;
+        cost = quantity * this.workcost.gardeningPrice;
         break;
       }
       default: {

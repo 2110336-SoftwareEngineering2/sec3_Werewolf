@@ -1,4 +1,4 @@
-export class WorkPrice{
+export class workCost{
     house_cleaningPrice = 100;
     dish_washingPrice = 10;
     laundryPrice = 20;
