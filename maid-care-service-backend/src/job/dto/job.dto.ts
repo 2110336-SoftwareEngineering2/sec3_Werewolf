@@ -26,7 +26,7 @@ export class JobDto {
   readonly work: [Work];
 
   @ApiProperty({ type: Number })
-  readonly cost: number;
+  cost: number;
 
   @ApiProperty({ type: String })
   readonly customerId: string;
@@ -59,4 +59,7 @@ export class Work {
 
   @ApiProperty({ enum: ['ตารางเมตร', 'จาน', 'ตัว'] })
   unit: string;
+
+  @ApiProperty({ type: Number })
+  cost: number;
 }

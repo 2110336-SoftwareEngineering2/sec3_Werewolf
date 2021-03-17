@@ -10,6 +10,7 @@ export const JobSchema = new mongoose.Schema({
       description: String,
       quantity: Number,
       unit: { type: String, default: null },
+      cost: { type: Number, default: 0 },
     },
   ],
   maidId: { type: String, default: null },

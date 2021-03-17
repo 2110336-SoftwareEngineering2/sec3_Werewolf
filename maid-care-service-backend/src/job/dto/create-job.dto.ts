@@ -7,6 +7,9 @@ export class CreateJobDto {
 
   @ApiProperty({ type: () => [CreateWork] })
   readonly work: [CreateWork];
+
+  @ApiProperty({ type: String })
+  readonly promotionCode: string;
 }
 
 class CreateWork {
