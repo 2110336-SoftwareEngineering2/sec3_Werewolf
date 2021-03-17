@@ -68,6 +68,23 @@ export class JobController {
     } else throw new NotFoundException('job not found');
   }
 
+  @Put('cost')
+  @ApiCreatedResponse({
+    description: 'Calculate cost of a job',
+    type: JobDto,
+  })
+  async calculateCost(@Body() createJobDto: CreateJobDto) {
+    const job = new JobDto(createJobDto);
+    job.cost = await this.jobService.calculateSumCost(createJobDto);
+    if (createJobDto.promotionCode) {
+      job.cost = await this.jobService.calculatePromotion(
+        job.cost,
+        createJobDto.promotionCode,
+      );
+    }
+    return job;
+  }
+
   @Put(':id/find-maid')
   @ApiCreatedResponse({
     description: 'Start finding maid for a job',

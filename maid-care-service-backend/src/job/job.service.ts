@@ -17,7 +17,6 @@ import { Maid } from 'src/maids/interfaces/maids.interface';
 import { CreateJobDto } from './dto/create-job.dto';
 import { WorkType } from 'src/maids/workType';
 import { WorkCost } from './workCost';
-import { Work } from './dto/job.dto';
 
 @Injectable()
 export class JobService {
@@ -71,11 +70,22 @@ export class JobService {
       work.unit = this.getUnit(work.typeOfWork);
     });
     createdJob.cost = this.calculateSumCost(createdJob);
+    if (createJobDto.promotionCode) {
+      createdJob.cost = await this.calculatePromotion(
+        createdJob.cost,
+        createJobDto.promotionCode,
+      );
+    }
     await createdJob.save();
     return createdJob;
   }
 
   async applyPromotion(job: Job, code: string): Promise<Job> {
+    job.cost = await this.calculatePromotion(this.calculateSumCost(job), code);
+    return await job.save();
+  }
+
+  async calculatePromotion(cost: number, code: string) {
     const promotion = await this.promotionService.findPromotion(code);
     if (!promotion) throw new NotFoundException('Promotion not valid');
     const cerrentDate = new Date();
@@ -84,8 +94,7 @@ export class JobService {
       promotion.availableDate > cerrentDate
     )
       throw new ConflictException('invalid promotion date');
-    job.cost = this.calculateSumCost(job) * (1 - promotion.discountRate / 100);
-    return await job.save();
+    return cost * (1 - promotion.discountRate / 100);
   }
 
   async removeJob(id: string): Promise<Job> {
@@ -172,17 +181,18 @@ export class JobService {
     }
   }
 
-  calculateSumCost(job: Job) {
+  calculateSumCost(job: any) {
     const allWork = job.work;
     let sumCost = 0;
     for (const work of allWork) {
       const cost = this.calculateCost(work);
+      work.cost = cost;
       sumCost += cost;
     }
     return sumCost;
   }
 
-  calculateCost(work: Work): number {
+  calculateCost(work: any): number {
     const workType = work.typeOfWork;
     const quantity = work.quantity;
     let cost = 0;
