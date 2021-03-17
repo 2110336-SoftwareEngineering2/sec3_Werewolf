@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { WorkType } from 'src/maids/workType';
+import { JobState } from '../jobState';
 
 export class JobDto {
   constructor(object: any) {
@@ -36,7 +37,7 @@ export class JobDto {
   @ApiProperty({ type: Date })
   readonly expiryTime: Date;
 
-  @ApiProperty({ type: String })
+  @ApiProperty({ enum: Object.values(JobState) })
   readonly state: string;
 
   @ApiProperty({ type: Number })
@@ -56,6 +57,6 @@ export class Work {
   @ApiProperty({ type: Number })
   quantity: number;
 
-  @ApiProperty({ type: String })
+  @ApiProperty({ enum: ['ตารางเมตร', 'จาน', 'ตัว'] })
   unit: string;
 }
