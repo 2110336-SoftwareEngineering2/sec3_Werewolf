@@ -43,7 +43,10 @@ export class UsersController {
   }
 
   @Get(':uid')
-  @ApiCreatedResponse({ type: UserDto })
+  @ApiCreatedResponse({
+    description: 'Get user with uid',
+    type: UserDto,
+  })
   async getCustomer(@Param('uid') id: string) {
     const user = await this.usersService.findUser(id);
     if (!user) throw new NotFoundException('invalid user');
@@ -51,7 +54,10 @@ export class UsersController {
   }
 
   @Put('update-profile')
-  @ApiCreatedResponse({ type: UserDto })
+  @ApiCreatedResponse({
+    description: 'Change password or profile information',
+    type: UserDto,
+  })
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('acess-token')
   async updateProfile(@Request() req, @Body() profileDto: ProfileDto) {
@@ -67,7 +73,10 @@ export class UsersController {
   }
 
   @Delete(':uid')
-  @ApiCreatedResponse({ type: UserDto })
+  @ApiCreatedResponse({
+    description: 'Delete user by uid',
+    type: UserDto,
+  })
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('acess-token')
   async deleteUser(@Request() req, @Param('uid') id: string) {
@@ -82,7 +91,10 @@ export class UsersController {
   }
 
   @Put('reset-password')
-  @ApiCreatedResponse({ type: Boolean })
+  @ApiCreatedResponse({
+    description: 'Change password by entering cerrent password and email',
+    type: Boolean,
+  })
   async resetPassord(
     @Body() resetPasswordDto: ResetPasswordDto,
   ): Promise<boolean> {

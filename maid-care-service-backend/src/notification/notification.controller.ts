@@ -17,7 +17,10 @@ export class NotificationController {
   constructor(private readonly notificationService: NotificationService) {}
 
   @Post('subscribe')
-  @ApiCreatedResponse({ type: SubscriptionDto })
+  @ApiCreatedResponse({
+    description: 'Subscribe to receive notification',
+    type: SubscriptionDto,
+  })
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('acess-token')
   async postSubscribe(
@@ -29,7 +32,10 @@ export class NotificationController {
   }
 
   @Delete('unsubscribe')
-  @ApiCreatedResponse({ type: SubscriptionDto })
+  @ApiCreatedResponse({
+    description: 'Unsubscribe web push',
+    type: SubscriptionDto,
+  })
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('acess-token')
   async unsubscribe(@Request() req): Promise<SubscriptionDto> {

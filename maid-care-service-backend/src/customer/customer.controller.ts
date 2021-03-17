@@ -20,7 +20,10 @@ export class CustomerController {
   ) {}
 
   @Get('jobs')
-  @ApiCreatedResponse({ type: [JobDto] })
+  @ApiCreatedResponse({
+    description: 'Get all jobs that belong to a customer',
+    type: [JobDto],
+  })
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('acess-token')
   async findAllJobs(@Request() req) {
