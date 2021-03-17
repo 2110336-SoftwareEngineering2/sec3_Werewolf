@@ -1,13 +1,17 @@
 import { observable, action, makeObservable, when } from 'mobx';
 import axiosRetry from 'axios-retry';
-import { auth } from '../api';
+import { auth, workspace } from '../api';
 
 class UserStore {
   userData = null;
+  loading = true;
+  error = false;
 
   constructor() {
     makeObservable(this, {
       userData: observable,
+      loading: observable,
+      error: observable,
       login: action,
       logout: action,
       getUserData: action,
@@ -43,6 +47,9 @@ class UserStore {
   }
 
   async getUserData() {
+    this.loading = true;
+    this.error = false;
+
     axiosRetry(auth, { retries: 3 });
     return auth
       .get('/user')
@@ -53,13 +60,21 @@ class UserStore {
       })
       .catch(error => {
         console.log('get user err', error);
+        this.error = error;
+        this.logout();
         // throw error;
+      })
+      .finally(() => {
+        this.loading = false;
       });
   }
 
   logout() {
     localStorage.removeItem('token');
+    this.userData = null;
   }
+
+  
 }
 
 export default UserStore;

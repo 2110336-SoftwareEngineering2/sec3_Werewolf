@@ -1,34 +1,35 @@
-import {Redirect} from 'react-router-dom'
-import { observable, action, makeObservable, autorun} from 'mobx';
+import { observable, action,makeObservable, autorun} from "mobx"
 
-class UserStore {
-  isLoggedIn = localStorage.getItem('isLoggedIn') === 'true'? true: false;
-  userData = JSON.parse(localStorage.getItem('userData'));
 
-  constructor() {
-    makeObservable(this, {
-      isLoggedIn: observable,
-      userData: observable,
-      toggleLogin:action,
-      setUser:action
-    });
-  }
+class UserStore{
 
-  setUser(data){
-      this.userData = data;
-  }
+    isLoggedIn = localStorage.getItem('isLoggedIn');
+    userData = JSON.parse(localStorage.getItem('userData'));
+    
+    constructor(){
+        makeObservable(this,{
+            isLoggedIn: observable,
+            userData: observable,
+            login: action,
+            setUser: action,
+        })
+    }
+    
+    login(){
+        this.isLoggedIn = true;
+    }
 
-  toggleLogin(){
-      this.isLoggedIn = !this.isLoggedIn;
-  }
-
+    setUser(data){
+        this.userData = data;
+    }
+    
 }
 
 const userStore = new UserStore();
 
 autorun(() => {
-  localStorage.setItem('userData', JSON.stringify(userStore.userData));
-  localStorage.setItem('isLoggedIn', userStore.isLoggedIn);
-});
+   localStorage.setItem("userData", JSON.stringify(userStore.userData));
+   localStorage.setItem("isLoggedIn",userStore.isLoggedIn);
+})
 
 export default userStore;

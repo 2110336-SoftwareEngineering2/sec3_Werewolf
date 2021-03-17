@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import moment from 'moment';
 import * as Yup from 'yup';
 import { Button, HStack, Spacer, Stack } from '@chakra-ui/react';
@@ -9,18 +9,21 @@ import { DatetimeField, TextareaFeild, TextInputField } from '../../../shared/Fo
 import RateField from '../components/RateField';
 import { observer } from 'mobx-react-lite';
 import { FORM_MODE } from '../constants/form-mode';
+import { promotion } from '../../../../api';
 
 const DATETIME_LOCAL_FORMAT = `yyyy-MM-DDTHH:mm`;
 
 const PromotionForm = observer(({ mode = FORM_MODE.CREATE }) => {
   const history = useHistory();
 
+  const [error, setError] = useState(false);
+
   const today = moment(new Date()).format(DATETIME_LOCAL_FORMAT);
   const promotionSchema = Yup.object().shape(
     {
       code: Yup.string().required('This field is required'),
       description: Yup.string().optional().ensure(),
-      rate: Yup.number()
+      discountRate: Yup.number()
         .min(0, 'Rate cannot be less than 0%')
         .max(100, 'Rate cannot be more than 100%')
         .required(),
@@ -39,10 +42,30 @@ const PromotionForm = observer(({ mode = FORM_MODE.CREATE }) => {
     [['startDate', 'endDate']]
   );
 
-  const handleSubmit = (values, { setSubmitting }) => {
+  const handleSubmit = (
+    { code, description, discountRate, startDate, endDate },
+    { setSubmitting }
+  ) => {
     setSubmitting(true);
     /**Start handle Submit logic here */
-    console.log(values);
+    promotion
+      .post('/', {
+        code: code,
+        description: description,
+        discountRate: discountRate,
+        availableDate: startDate,
+        expiredDate: endDate,
+      })
+      .then(response => {
+        console.log(response);
+        setSubmitting(false);
+        history.replace('/promotion'); // Go to promotion page
+      })
+      .catch(error => {
+        console.error(error);
+        setSubmitting(false);
+        setError(error);
+      });
     /**End handle Submit logic here */
     setSubmitting(false);
   };
@@ -56,7 +79,7 @@ const PromotionForm = observer(({ mode = FORM_MODE.CREATE }) => {
       initialValues={{
         code: '',
         description: '',
-        rate: 0,
+        discountRate: 0,
         startDate: today,
         endDate: today,
       }}
@@ -75,7 +98,7 @@ const PromotionForm = observer(({ mode = FORM_MODE.CREATE }) => {
           <Spacer margin={4} />
           <TextareaFeild label="Description" name="description" placeholder="Text here" />
           <Spacer margin={6} />
-          <RateField name="rate" label="Discount Rate" />
+          <RateField name="discountRate" label="Discount Rate" />
           <Spacer margin={6} />
           <Stack direction={['column', 'column', 'row']}>
             <DatetimeField
