@@ -78,3 +78,27 @@ promotion.interceptors.request.use(
   }
 );
 export { promotion };
+
+const postjob = axios.create({
+  baseURL: '/api/postjob',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+postjob.interceptors.request.use(
+  config => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers['Authorization'] = `Bearer ${token}`;
+      config.headers['secret'] = process.env.REACT_APP_SECRET;
+    }
+    console.log('interceptor conf', config);
+    return config;
+  },
+  error => {
+    console.log('intercaptor err', error);
+    throw error;
+  }
+);
+export { postjob };
