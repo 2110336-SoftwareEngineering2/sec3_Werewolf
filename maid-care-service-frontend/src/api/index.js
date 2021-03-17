@@ -31,7 +31,7 @@ auth.interceptors.request.use(
 
 // Workspace api
 const workspace = axios.create({
-  baseURL: '/api/workspace',
+  baseURL: '/api/workspaces',
   headers: { 'Content-Type': 'application/json' },
 });
 

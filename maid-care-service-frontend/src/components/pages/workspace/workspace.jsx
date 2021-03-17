@@ -12,6 +12,8 @@ import * as Yup from 'yup';
 import { TextInputField } from '../../shared/FormikField';
 import { workspace } from '../../../api';
 import { useHistory } from 'react-router-dom';
+import { useStores } from '../../../hooks/use-stores';
+import { observer } from 'mobx-react-lite';
 
 import {
   Box,
@@ -110,10 +112,13 @@ export const Workspace = () => {
 
 export default Workspace;
 
-const InfoSidebar = ({ panTo, markers, setMarkers }) => {
+const InfoSidebar = observer(({ panTo, markers, setMarkers }) => {
   const history = useHistory();
   const [error, setError] = useState(false);
   const [isFormCorrect, setFormCorrect] = useState(false);
+  const { userStore } = useStores();
+  
+  const user = userStore.userData;
 
   const yup = Yup.object({
     houseNo: Yup.string().required('please fill your house No.'),
@@ -121,23 +126,22 @@ const InfoSidebar = ({ panTo, markers, setMarkers }) => {
     state: Yup.string().required('please select your state/province.'),
   });
 
-  const handleSubmei = ({ houseNo, address1, address2, city, state, country, coordinates }, {setSubmitting}) => {
+  const handleSubmit = (
+    { houseNo, address1, address2, city, state, country },
+    { setSubmitting }
+  ) => {
     setSubmitting(true);
-    
+    setFormCorrect(true);
     workspace
       .post('/', {
-        houseNo: houseNo,
-        address1: address1,
-        address2: address2,
-        city: city,
-        state: state,
-        country: country,
-        coordinates: coordinates,
+        customerId: user._id,
+        description: `${houseNo} ${address1} ${address2} ${city} ${state} ${country}`,
+        latitude: markers[0].lat,
+        longitude: markers[0].lng
       })
       .then(response => {
         console.log(response);
         setSubmitting(false);
-        history.replace('/workspace'); // Go to promotion page
       })
       .catch(error => {
         console.error(error);
@@ -149,7 +153,7 @@ const InfoSidebar = ({ panTo, markers, setMarkers }) => {
   };
 
   const handleCancel = () => {
-    history.push('/workspace');
+    history.push('/workspaces');
   };
 
   return (
@@ -167,14 +171,9 @@ const InfoSidebar = ({ panTo, markers, setMarkers }) => {
             city: '',
             state: '',
             country: '',
-            coordinates: {},
           }}
           validationSchema={yup}
-          onSubmit={async values => {
-            values.coordinates = markers;
-            setFormCorrect(true);
-            console.log(values);
-          }}>
+          onSubmit={handleSubmit}>
           <Form>
             <Box pos="absolute" top="250px" left="25px" width="400px" justifyContent="center">
               <FormControl id="country" width={{ sm: '270px', md: '368px' }}>
@@ -281,7 +280,7 @@ const InfoSidebar = ({ panTo, markers, setMarkers }) => {
       </VStack>
     </FlexBox>
   );
-};
+});
 
 const WorkspaceButton = ({ isFormCorrect }) => {
   const { values } = useFormikContext();
