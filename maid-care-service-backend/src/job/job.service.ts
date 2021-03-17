@@ -4,6 +4,7 @@ import {
   BadRequestException,
   ForbiddenException,
   NotFoundException,
+  ConflictException,
 } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { SchedulerRegistry } from '@nestjs/schedule';
@@ -15,6 +16,8 @@ import { Job } from './interfaces/job.interface';
 import { Maid } from 'src/maids/interfaces/maids.interface';
 import { CreateJobDto } from './dto/create-job.dto';
 import { WorkType } from 'src/maids/workType';
+import { WorkCost } from './workCost';
+import { Work } from './dto/job.dto';
 
 @Injectable()
 export class JobService {
@@ -67,7 +70,7 @@ export class JobService {
     createdJob.work.forEach((work) => {
       work.unit = this.getUnit(work.typeOfWork);
     });
-    createdJob.cost = 1000;
+    createdJob.cost = this.calculateSumCost(createdJob);
     await createdJob.save();
     return createdJob;
   }
@@ -75,7 +78,13 @@ export class JobService {
   async applyPromotion(job: Job, code: string): Promise<Job> {
     const promotion = await this.promotionService.findPromotion(code);
     if (!promotion) throw new NotFoundException('Promotion not valid');
-    job.cost = 1000 * (1 - promotion.discountRate);
+    const cerrentDate = new Date();
+    if (
+      (promotion.expiredDate && promotion.expiredDate < cerrentDate) ||
+      promotion.availableDate > cerrentDate
+    )
+      throw new ConflictException('invalid promotion date');
+    job.cost = this.calculateSumCost(job) * (1 - promotion.discountRate / 100);
     return await job.save();
   }
 
@@ -102,6 +111,7 @@ export class JobService {
       await job.save();
       this.addTimeout(job, expiredIn);
       //push notification to maid
+      console.log('send request to maid ' + nearestMaid._id);
       await this.notificationService.sendNotification(
         nearestMaid._id,
         'new job',
@@ -112,6 +122,7 @@ export class JobService {
       job.maidId = null;
       await job.save();
       //push notification to customer
+      console.log('can not find any maid');
       await this.notificationService.sendNotification(
         job.customerId,
         'can not find any maid',
@@ -159,5 +170,43 @@ export class JobService {
         throw new ForbiddenException(workType + ' is not valid type of work');
       }
     }
+  }
+
+  calculateSumCost(job: Job) {
+    const allWork = job.work;
+    let sumCost = 0;
+    for (const work of allWork) {
+      const cost = this.calculateCost(work);
+      sumCost += cost;
+    }
+    return sumCost;
+  }
+
+  calculateCost(work: Work): number {
+    const workType = work.typeOfWork;
+    const quantity = work.quantity;
+    let cost = 0;
+    switch (workType) {
+      case WorkType.house_cleaning: {
+        cost = quantity * WorkCost.house_cleaningPrice;
+        break;
+      }
+      case WorkType.dish_washing: {
+        cost = quantity * WorkCost.dish_washingPrice;
+        break;
+      }
+      case WorkType.laundry: {
+        cost = quantity * WorkCost.laundryPrice;
+        break;
+      }
+      case WorkType.gardening: {
+        cost = quantity * WorkCost.gardeningPrice;
+        break;
+      }
+      default: {
+        break;
+      }
+    }
+    return cost;
   }
 }
