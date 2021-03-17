@@ -9,6 +9,7 @@ import EditProfile from './components/pages/editprofile/editprofile.jsx';
 import Workspace from './components/pages/workspace/workspace.jsx';
 import ProtectedRoute from './components/protectedRoute';
 import Promotion from './components/pages/promotion/promotion.jsx';
+import SignUp from './components/pages/signup/signup.jsx';
 
 export const App = () => {
   return (
@@ -19,6 +20,7 @@ export const App = () => {
         </Route>
         <Route exact path="/login" component={LogIn} />
         <Route path="/promotion" component={Promotion} />
+        <Route path="/signup" component={SignUp} />
         <Route exact path="/profile/edit" component={EditProfile} />
         <Route exact path="/workspace" component={Workspace} />
         <ProtectedRoute exact path="/home" component={Home} />
