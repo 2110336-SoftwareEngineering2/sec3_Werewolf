@@ -1,6 +1,6 @@
 import { Button } from '@chakra-ui/button';
+import { CloseButton } from '@chakra-ui/close-button';
 import { Box, Center, Container, Flex, Heading, HStack, List, ListItem } from '@chakra-ui/layout';
-import { Modal, ModalCloseButton, ModalContent, ModalOverlay } from '@chakra-ui/modal';
 import { Spinner } from '@chakra-ui/spinner';
 import { toJS } from 'mobx';
 import { observer } from 'mobx-react-lite';
@@ -15,7 +15,6 @@ const JobsPage = observer(() => {
   const { userStore, jobStore } = useStores();
 
   const handleRefresh = () => {
-    // TODO: re-fetch jobs data
     console.log(toJS(jobStore.jobs));
     jobStore.fetchAllJobs(userStore.userData._id);
   };
@@ -24,26 +23,6 @@ const JobsPage = observer(() => {
     if (userStore.userData) jobStore.fetchAllJobs(userStore.userData._id);
     console.log(toJS(jobStore.jobs));
   }, [userStore.userData, jobStore]);
-
-  const renderModal = () => {
-    return (
-      <Modal
-        size={`xl`}
-        isCentered
-        onClose={() => setCurrentJob(null)}
-        isOpen={currentJob}
-        motionPreset={`slideInBottom`}
-        scrollBehavior={`outside`}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalCloseButton />
-          <Box>
-            <JobItem isExpanded={true} job={currentJob} />
-          </Box>
-        </ModalContent>
-      </Modal>
-    );
-  };
 
   return (
     <Flex
@@ -67,15 +46,26 @@ const JobsPage = observer(() => {
             </Center>
           ) : (
             jobStore.jobs.map((job) => {
+              const isExpanded = currentJob && currentJob._id === job._id;
               return (
-                <ListItem key={job._id} onClick={() => setCurrentJob(job)} my={2} minW={`90%`}>
-                  <JobItem job={job} />
+                <ListItem position="relative" key={job._id} my={2} minW={`90%`}>
+                  {isExpanded && (
+                    <CloseButton
+                      position="absolute"
+                      top={2}
+                      right={2}
+                      onClick={() => setCurrentJob(null)}
+                      zIndex="tooltip"
+                    />
+                  )}
+                  <Box onClick={() => setCurrentJob(job)}>
+                    <JobItem isExpanded={isExpanded} job={job} />
+                  </Box>
                 </ListItem>
               );
             })
           )}
         </List>
-        {renderModal()}
       </Container>
     </Flex>
   );

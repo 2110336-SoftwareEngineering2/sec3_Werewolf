@@ -19,10 +19,10 @@ import { Modal, ModalBody, ModalContent, ModalHeader, ModalOverlay } from '@chak
 import { Spinner } from '@chakra-ui/spinner';
 import { Collapse } from '@chakra-ui/transition';
 import { observer } from 'mobx-react-lite';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { FaClock, FaTshirt } from 'react-icons/fa';
-import axios from 'axios';
 import { Skeleton } from '@chakra-ui/skeleton';
+import { fetchUserById } from '../../../../api';
 
 const JobItem = observer(
   ({ job: { _id, customerId, work, expiryTime }, isExpanded = false, ...props }) => {
@@ -31,33 +31,33 @@ const JobItem = observer(
     const [isLoading, setLoading] = useState(true);
     const [remainingTime, setRemainingTime] = useState(null);
 
-    const fetchCustomer = () => {
-      setLoading(true);
-      axios
-        .get(`/api/users/${customerId}`)
-        .then((response) => {
-          const { data: cus } = response;
-          console.log(cus);
-          setCustomer(cus);
-          setLoading(false);
-        })
-        .catch((error) => {
-          console.error(error);
-          setCustomer(null);
-          setLoading(false);
-        });
-    };
+    const fetchCustomer = useCallback(async () => {
+      try {
+        setLoading(true);
+        const { data: cust } = await fetchUserById(customerId);
+        setCustomer(cust);
+        setLoading(false);
+      } catch (error) {
+        console.error(error);
+        setLoading(false);
+      }
+    }, [customerId]);
 
     useEffect(() => {
       fetchCustomer();
-    }, []);
+    }, [fetchCustomer]);
 
     useEffect(() => {
       const interval = setInterval(() => {
         const exp = new Date(expiryTime);
         const cur = new Date();
         const diff = (exp.getTime() - cur.getTime()) / 1000;
-        setRemainingTime(diff);
+        console.log('diff', diff);
+        setRemainingTime(new Date(diff * 1000).toISOString().substr(11, 8)); //HH:mm:ss
+        if (diff < 0) {
+          setRemainingTime('Time out');
+          clearInterval(interval);
+        }
       }, 1000);
       return () => {
         clearInterval(interval);
@@ -141,7 +141,7 @@ const JobItem = observer(
             <HStack>
               <Icon as={FaClock} w={6} h={6}></Icon>
               <Text as="p" fontSize={`xl`}>
-                {remainingTime > 0 ? `${remainingTime} second` : `Time out`}
+                {remainingTime}
               </Text>
             </HStack>
           </VStack>
