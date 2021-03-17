@@ -1,7 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { Formik, Form, useFormikContext, Field } from 'formik';
 import { Link as RouterLink, useHistory } from 'react-router-dom';
+import { postjob } from '../../../api';
+import { useStores } from '../../../hooks/use-stores';
+import { workspace } from '../../../api';
+import { observer } from 'mobx-react-lite';
 import * as Yup from 'yup';
 import {
   Link,
@@ -55,7 +59,7 @@ const PostjobForm = props => {
     if (props.steps === 1) {
       return <Page1 />;
     } else if (props.steps === 2 || props.steps === 3) {
-      return <Page2Page3 steps={props.steps}/>;
+      return <Page2Page3 steps={props.steps} />;
     }
   };
 
@@ -71,8 +75,8 @@ const PostjobForm = props => {
         promotionCode: '',
       }}
       validationSchema={yup}
-      onSubmit={ () => {
-        if ( props.steps < 3 ) {
+      onSubmit={() => {
+        if (props.steps < 3) {
           props.setSteps(previousStep => previousStep + 1);
         }
       }}>
@@ -80,7 +84,7 @@ const PostjobForm = props => {
         <VStack spacing="4" width={{ sm: '72', md: '96' }}>
           {form()}
         </VStack>
-        <ButtonField steps={props.steps} setSteps={props.setSteps}/>
+        <ButtonField steps={props.steps} setSteps={props.setSteps} />
       </Form>
     </Formik>
   );
@@ -88,59 +92,80 @@ const PostjobForm = props => {
 
 const Page1 = () => {
   const { values } = useFormikContext();
+  const [error, setError] = useState(false);
+  const [myWorkspaces, setMyWorkspaces] = useState([]);
+
+  const getWorkspace = () =>{
+    workspace
+    .get('/', {
+      timeout: 5000,
+    })
+    .then(response => {
+      setMyWorkspaces(response.data);
+      console.log(response.data);
+    })
+    .catch(error => {
+      console.error(error);
+      setError(error);
+    });
+  }
+  useEffect( () => {
+    getWorkspace();
+  }, []);
 
   return (
     <>
-        <FormControl mb="20px" id="house-no" width={{ sm: '270px', md: '368px' }}>
-          <FormLabel mb="0">Location</FormLabel>
-          <Select name="location" mb="5px">
-            <option value="" >
-              Select your workplace location
-            </option>
-            {}
-          </Select>
-          <Link as={RouterLink} to="/workspace" mt="10px">
-            Add new workspace
-          </Link>
-        </FormControl>
-        <FormLabel mb="5px">Type of Work</FormLabel>
-        <FormControl id="dishes" width={{ sm: '270px', md: '368px' }}>
-          <HStack>
-            <Field type="checkbox" name="isDishes" />
-            <Text>Dish Washing</Text>
-          </HStack>
-          <TextInputField
-            label=""
-            name="amountOfDishes"
-            type="number"
-            placeholder="Amount of dishes (e.g. 20)"
-            isDisabled={!values.isDishes}
-          />
-        </FormControl>
-        <FormControl id="rooms" width={{ sm: '270px', md: '368px' }}>
-          <HStack>
-            <Field type="checkbox" name="isRooms" />
-            <Text>Room cleaning</Text>
-          </HStack>
-          <TextInputField
-            label=""
-            name="areaOfRooms"
-            placeholder="Amount of the room in square meter (e.g. 100)"
-            isDisabled={!values.isRooms}
-          />
-        </FormControl>
-        <FormControl id="clothes" width={{ sm: '270px', md: '368px' }}>
-          <HStack>
-            <Field type="checkbox" name="isClothes" />
-            <Text>Clothes Ironing</Text>
-          </HStack>
-          <TextInputField
-            label=""
-            name="amountOfClothes"
-            placeholder="Amount of clothes (e.g. 10)"
-            isDisabled={!values.isClothes}
-          />
-        </FormControl>
+      <FormControl mb="20px" id="house-no" width={{ sm: '270px', md: '368px' }}>
+        <FormLabel mb="0">Location</FormLabel>
+        <Select name="location" mb="5px">
+          <option value="">Select your workplace location</option>
+          { myWorkspaces.map( (myWorkspace) => {
+            console.log(myWorkspace.description)
+            return (<option  value="">{myWorkspace.description}</option>);
+          } )}
+        </Select>
+        <Link as={RouterLink} to="/workspace" mt="10px">
+          Add new workspace
+        </Link>
+      </FormControl>
+      <FormLabel mb="5px">Type of Work</FormLabel>
+      <FormControl id="dishes" width={{ sm: '270px', md: '368px' }}>
+        <HStack>
+          <Field type="checkbox" name="isDishes" />
+          <Text>Dish Washing</Text>
+        </HStack>
+        <TextInputField
+          label=""
+          name="amountOfDishes"
+          type="number"
+          placeholder="Amount of dishes (e.g. 20)"
+          isDisabled={!values.isDishes}
+        />
+      </FormControl>
+      <FormControl id="rooms" width={{ sm: '270px', md: '368px' }}>
+        <HStack>
+          <Field type="checkbox" name="isRooms" />
+          <Text>Room cleaning</Text>
+        </HStack>
+        <TextInputField
+          label=""
+          name="areaOfRooms"
+          placeholder="Amount of the room in square meter (e.g. 100)"
+          isDisabled={!values.isRooms}
+        />
+      </FormControl>
+      <FormControl id="clothes" width={{ sm: '270px', md: '368px' }}>
+        <HStack>
+          <Field type="checkbox" name="isClothes" />
+          <Text>Clothes Ironing</Text>
+        </HStack>
+        <TextInputField
+          label=""
+          name="amountOfClothes"
+          placeholder="Amount of clothes (e.g. 10)"
+          isDisabled={!values.isClothes}
+        />
+      </FormControl>
     </>
   );
 };
@@ -152,7 +177,7 @@ const Page2Page3 = ({ steps }) => {
   const DISHPRICE = 100;
   const ROOMPRICE = 10;
   const CLOTHPRICE = 50;
-  const DISCOUNT = 100; 
+  const DISCOUNT = 100;
 
   const { values } = useFormikContext();
   const dishesPrice = () => (values.isDishes === false ? 0 : values.amountOfDishes * DISHPRICE);
@@ -195,48 +220,47 @@ const Page2Page3 = ({ steps }) => {
   };
 
   return (
-      <FormControl mb="20px" id="house-no" width={{ sm: '270px', md: '368px' }}>
-        <Text mb="3px" fontWeight="3px" fontSize="20px" fontFamily="body">
-          Total Price
+    <FormControl mb="20px" id="house-no" width={{ sm: '270px', md: '368px' }}>
+      <Text mb="3px" fontWeight="3px" fontSize="20px" fontFamily="body">
+        Total Price
+      </Text>
+      <HStack justify="space-between" width="100%">
+        <Text fontFamily="body">
+          {values.amountOfDishes == '' || values.isDishes === false ? '0' : values.amountOfDishes}{' '}
+          Dishes
         </Text>
-        <HStack justify="space-between" width="100%">
-          <Text fontFamily="body">
-            {values.amountOfDishes == '' || values.isDishes === false ? '0' : values.amountOfDishes}{' '}
-            Dishes
-          </Text>
-          <Text fontFamily="body">{dishesPrice()}</Text>
-        </HStack>
-        <HStack justify="space-between" width="100%">
-          <Text fontFamily="body">
-            {values.areaOfRooms == '' || values.isRooms === false ? '0' : values.areaOfRooms} Square
-            meters of Rooms
-          </Text>
-          <Text fontFamily="body">{roomsPrice()}</Text>
-        </HStack>
-        <HStack justify="space-between" width="100%">
-          <Text fontFamily="body">
-            {values.amountOfClothes == '' || values.isClothes === false
-              ? '0'
-              : values.amountOfClothes}{' '}
-            Clothes
-          </Text>
-          <Text fontFamily="body">{clothedPrice()}</Text>
-        </HStack>
-        <HStack justify="space-between" width="100%">
-          <Text fontFamily="body" fontWeight="bold">
-            Total price
-          </Text>
-          <Text fontFamily="body" fontWeight="bold">
-            {totalPrice()}{' '}
-          </Text>
-        </HStack>
-        {promotionBox()}
-      </FormControl>
+        <Text fontFamily="body">{dishesPrice()}</Text>
+      </HStack>
+      <HStack justify="space-between" width="100%">
+        <Text fontFamily="body">
+          {values.areaOfRooms == '' || values.isRooms === false ? '0' : values.areaOfRooms} Square
+          meters of Rooms
+        </Text>
+        <Text fontFamily="body">{roomsPrice()}</Text>
+      </HStack>
+      <HStack justify="space-between" width="100%">
+        <Text fontFamily="body">
+          {values.amountOfClothes == '' || values.isClothes === false
+            ? '0'
+            : values.amountOfClothes}{' '}
+          Clothes
+        </Text>
+        <Text fontFamily="body">{clothedPrice()}</Text>
+      </HStack>
+      <HStack justify="space-between" width="100%">
+        <Text fontFamily="body" fontWeight="bold">
+          Total price
+        </Text>
+        <Text fontFamily="body" fontWeight="bold">
+          {totalPrice()}{' '}
+        </Text>
+      </HStack>
+      {promotionBox()}
+    </FormControl>
   );
 };
 
-const ButtonField = ( { steps, setSteps} ) => {
-
+const ButtonField = ({ steps, setSteps }) => {
   const handleDecrement = () => {
     if (steps > 1) {
       setSteps(previousStep => previousStep - 1);
@@ -261,12 +285,7 @@ const ButtonField = ( { steps, setSteps} ) => {
           </Button>
         ) : null}
         {steps < 3 ? (
-          <Button
-            width="100px"
-            className="button button-register"
-            bg="buttonGreen"
-            type="summit"
-            >
+          <Button width="100px" className="button button-register" bg="buttonGreen" type="summit">
             Next
           </Button>
         ) : null}
