@@ -1,10 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { CreateJobDto } from './create-job.dto';
+import { WorkType } from 'src/maids/workType';
+import { JobState } from '../jobState';
 
-export class JobDto extends CreateJobDto {
+export class JobDto {
   constructor(object: any) {
-    super(object);
     this._id = object._id;
+    this.workplaceId = object.workplaceId;
+    this.work = object.work;
+    this.cost = object.cost;
     this.customerId = object.customerId;
     this.maidId = object.maidId;
     this.expiryTime = object.expiryTime;
@@ -17,6 +20,15 @@ export class JobDto extends CreateJobDto {
   readonly _id: string;
 
   @ApiProperty({ type: String })
+  readonly workplaceId: string;
+
+  @ApiProperty({ type: () => [Work] })
+  readonly work: [Work];
+
+  @ApiProperty({ type: Number })
+  readonly cost: number;
+
+  @ApiProperty({ type: String })
   readonly customerId: string;
 
   @ApiProperty({ type: String })
@@ -25,7 +37,7 @@ export class JobDto extends CreateJobDto {
   @ApiProperty({ type: Date })
   readonly expiryTime: Date;
 
-  @ApiProperty({ type: String })
+  @ApiProperty({ enum: Object.values(JobState) })
   readonly state: string;
 
   @ApiProperty({ type: Number })
@@ -33,4 +45,18 @@ export class JobDto extends CreateJobDto {
 
   @ApiProperty({ type: String })
   readonly review: string;
+}
+
+export class Work {
+  @ApiProperty({ enum: Object.values(WorkType) })
+  typeOfWork: string;
+
+  @ApiProperty({ type: String })
+  description: string;
+
+  @ApiProperty({ type: Number })
+  quantity: number;
+
+  @ApiProperty({ enum: ['ตารางเมตร', 'จาน', 'ตัว'] })
+  unit: string;
 }

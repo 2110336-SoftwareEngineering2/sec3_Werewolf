@@ -13,9 +13,10 @@ export const JobSchema = new mongoose.Schema({
     },
   ],
   maidId: { type: String, default: null },
+  cost: { type: Number, default: 0 },
   requestedMaid: [String],
-  expiryTime: Date,
-  state: { type: String, default: JobState.posted },
+  expiryTime: { type: Date, default: null },
+  state: { type: String, default: JobState.creating },
   rating: { type: Number, default: 0 },
   review: { type: String, default: null },
 });

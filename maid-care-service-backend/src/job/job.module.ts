@@ -7,9 +7,16 @@ import { DatabaseModule } from '../database/database.module';
 import { NotificationModule } from '../notification/notification.module';
 import { MaidsModule } from '../maids/maids.module';
 import { WorkspacesModule } from 'src/workspaces/workspaces.module';
+import { PromotionModule } from 'src/promotion/promotion.module';
 
 @Module({
-  imports: [DatabaseModule, NotificationModule, MaidsModule, WorkspacesModule],
+  imports: [
+    DatabaseModule,
+    NotificationModule,
+    MaidsModule,
+    WorkspacesModule,
+    PromotionModule,
+  ],
   controllers: [JobController],
   providers: [JobService, SchedulerRegistry, ...JobProviders],
   exports: [JobService],

@@ -34,6 +34,48 @@ export class JobController {
     } else throw new UnauthorizedException('user is not customer');
   }
 
+  @Put(':id/apply-promotion/:code')
+  @ApiCreatedResponse({ type: JobDto })
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('acess-token')
+  async applyPromotion(
+    @Request() req,
+    @Param('id') id: string,
+    @Param('code') code: string,
+  ) {
+    const job = await this.jobService.findJob(id);
+    if (
+      job &&
+      job.state === JobState.creating &&
+      req.user._id == job.customerId
+    ) {
+      try {
+        await this.jobService.applyPromotion(job, code);
+      } catch (error) {
+        throw error;
+      }
+      return new JobDto(job);
+    } else throw new NotFoundException('job not found');
+  }
+
+  @Put(':id/find-maid')
+  @ApiCreatedResponse({ type: JobDto })
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('acess-token')
+  async findMaid(@Request() req, @Param('id') id: string) {
+    const job = await this.jobService.findJob(id);
+    if (
+      job &&
+      job.state === JobState.creating &&
+      req.user._id == job.customerId
+    ) {
+      job.state = JobState.posted;
+      await job.save();
+      this.jobService.findMaid(job);
+      return new JobDto(job);
+    } else throw new NotFoundException('job not found');
+  }
+
   @Get(':id')
   @ApiCreatedResponse({ type: JobDto })
   async findJob(@Param('id') id: string) {
@@ -47,14 +89,16 @@ export class JobController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('acess-token')
   async removeJob(@Request() req, @Param('id') id: string) {
-    if (req.user.role === 'admin') {
+    const job = await this.jobService.findJob(id);
+    if (!job) throw new NotFoundException('job not found');
+    if (req.user.role === 'admin' || req.user._id == job.customerId) {
       try {
-        const job = await this.jobService.removeJob(id);
+        await this.jobService.removeJob(id);
         return new JobDto(job);
       } catch (error) {
         throw error;
       }
-    } else throw new UnauthorizedException('user is not admin');
+    } else throw new UnauthorizedException();
   }
 
   @Get('maid/:uid')
