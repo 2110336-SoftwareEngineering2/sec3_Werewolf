@@ -9,12 +9,13 @@ const SignUp = () => {
 
   return (
     <Flex bg="brandGreen" align="center" justify="center" minH="100vh">
-      <FlexBox>
+      <FlexBox width={{xs:"90vw"}}>
         <VStack
-          spacing="3"
+          spacing="1"
           mb="5"
-          minHeight={{sm:"75vh",md:"70vh"}}>
-          <HStack justify="space-between" width="100%">
+          minHeight={{sm:"75vh",md:"70vh"}}
+        >
+          <HStack width="100%" justifyContent="flex-start">
             <Box fontSize="1xl" mb="8">
               Grab
               <br />

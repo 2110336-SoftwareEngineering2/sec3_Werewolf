@@ -1,74 +1,130 @@
 import React, { useState } from 'react';
-
-import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
-import { VStack } from '@chakra-ui/react';
 
-import Wizard from '../../shared/MultiplePageForm/Wizard';
-import PersonalInfo from './PersonalInfo';
-import IDCardInfo from './IDCardInfo';
-import Job from './Job';
+import { auth } from '../../../api';
+
+import { VStack, Text, Image, Stack,Box,Flex } from '@chakra-ui/react';
+import {ErrorMessage} from 'formik';
+
+import Wizard from './Wizard/Wizard';
+import {TextInputField, DateField, CheckField} from "../../shared/FormikField";
 
 const SignupFormik = () => {
-
   const WizardStep = ({ children }) => children;
   const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+  const [submitted, setSubmit] = useState(false);
+
+  const work_choices = ['House Cleaning', 'Dish Washing', 'Laundry', 'Gardening', 'Decluttering'];
+
+  function signup(values) {
+    let confirm = window.confirm('Confirm form submission. This cannot be undone.');
+    if(confirm == true){
+      setSubmit(true);
+      auth.post('/register',values)
+      .then(response => console.log(response))
+    }
+  }
+
+  if (submitted) {
+    return (
+      <VStack justifyContent="center">
+        <Image src="/assets/images/mail.png" alt="verification email" mb="2" boxSize="10rem" />
+        <Text fontSize="lg">A verfication email has been sent</Text>
+        <Text fontSize="md" color="gray">
+          Please follow the verification link provided in your email
+        </Text>
+      </VStack>
+    );
+  }
 
   return (
+    <VStack spacing="1" width="100%">
       <Wizard
-        initialValues={{
-          firstName: '',
-          lastName: '',
-          DOB: '',
-          nationality: '',
-          citizenID: '',
-          bankAccount: '',
-          jobs: [],
-        }}
-        onSubmit={async values => sleep(300).then(() => console.log('Wizard submit', values))}>
-          <WizardStep
-            onSubmit={() => console.log('submit 1')}
-            validationSchema={Yup.object({
-              firstName: Yup.string().max(15, 'must be 15 characters or less').required('Required'),
-              lastName: Yup.string().max(15, 'must be 15 characters or less').required('Required'),
-              DOB: Yup.date()
-                .required('Required')
-                .test('age', 'You must be 18 or older', function (birthdate) {
-                  const min_age = new Date();
-                  min_age.setFullYear(min_age.getFullYear() - 18);
-                  return birthdate <= min_age;
-                })
-                .test('age', 'You must be younger than 80', function (birthdate) {
-                  const max_age = new Date();
-                  max_age.setFullYear(max_age.getFullYear() - 80);
-                  return birthdate >= max_age;
-                }),
-            })}>
-            <PersonalInfo />
-          </WizardStep>
-          <WizardStep
-            onSubmit={() => console.log('submit 2')}
-            validationSchema={Yup.object({
-              nationality: Yup.string().required(),
-              citizenID: Yup.string()
-                .matches(/^[0-9]+$/, 'Must be only digits')
-                .length(13, 'Citizen ID must be 13-digit long')
-                .required('Required'),
-              bankAccount: Yup.string()
-                .matches(/^[0-9]+$/, 'Must be only digits')
-                .length(10, 'Bank account must be 10-digit long')
-                .required('Required'),
-            })}>
-            <IDCardInfo />
-          </WizardStep>
-          <WizardStep
-            onSubmit={() => console.log('submit 3')}
-            validationSchema={Yup.object({
-              jobs: Yup.array().min(1, 'Please select at least 1 job option').required(),
-            })}>
-            <Job />
-          </WizardStep>
-      </Wizard>
+      initialValues={{
+        email: '',
+        password: '',
+        firstName: '',
+        lastName: '',
+        birthdate: '',
+        nationality: '',
+        citizenID: '',
+        bankAccountNumber: '',
+        role: 'maid',
+        work: [],
+      }}
+      onSubmit={async values => sleep(300).then(() => signup(values))}>
+      {/*step0*/}
+      <WizardStep validationSchema={Yup.object({
+        email: Yup.string().email().required(),
+        password: Yup.string().required(),
+        firstName: Yup.string()
+            .matches(/^[aA-zZ\s]+$/, 'Only alphabets are allowed for this field ')
+            .required('Required'),
+          lastName: Yup.string()
+            .matches(/^[aA-zZ\s]+$/, 'Only alphabets are allowed for this field ')
+            .required('Required'),
+      })}>
+        <Box width="80%">
+        <TextInputField name="email" label="Email Address" placeholder="example@mail.com"/>
+        <TextInputField name="password" label="Password" type="password"/>
+        <Stack direction={["column","row"]} mt="1">
+          <TextInputField name="firstName" label="First Name" placeholder="First Name"/>
+          <TextInputField name="lastName" label="Last Name" placeholder="Last Name"/>
+        </Stack>
+        </Box>
+      </WizardStep>
+
+
+      {/*step1*/}
+      <WizardStep
+        onSubmit={() => console.log('submit 1')}
+        validationSchema={Yup.object({
+          birthdate: Yup.date()
+            .required('Required')
+            .test('age', 'You must be 18 or older', function (birthdate) {
+              const min_age = new Date();
+              min_age.setFullYear(min_age.getFullYear() - 18);
+              return birthdate <= min_age;
+            })
+            .test('age', 'You must be younger than 80', function (birthdate) {
+              const max_age = new Date();
+              max_age.setFullYear(max_age.getFullYear() - 80);
+              return birthdate >= max_age;
+            }),
+          citizenID: Yup.string()
+            .matches(/^[0-9]+$/, 'Must be only digits')
+            .length(13, 'Citizen ID must be 13-digit long')
+            .required('Required'),
+          bankAccountNumber: Yup.string()
+            .matches(/^[0-9]+$/, 'Must be only digits')
+            .length(10, 'Bank account must be 10-digit long')
+            .required('Required'),
+        })}>
+          <DateField name="birthdate" label="Date of Birth" helperText="Maid can only be 18-80 years old" />
+          <TextInputField name="citizenID" label="Citizen ID" placeholder="Citizen ID" />
+          <TextInputField name="bankAccountNumber" label="Bank Account Number" placeholder="Bank Account Number" />
+      </WizardStep>
+
+
+      {/*step3*/}
+      <WizardStep
+        onSubmit={() => console.log('submit 3')}
+        validationSchema={Yup.object({
+          work: Yup.array().min(1, 'Please select at least 1 job').required(),
+        })}>
+        <Flex flexDir="column" justify="left" width="100%">
+      <Box fontSize="1xl" mb="10px">
+        <Text fontWeight="bold">Capability Job(s)</Text>
+      </Box>
+        {work_choices.map((c,index) => {
+          return(
+            <Box marginBottom="2" key={index}><CheckField name="work" label={c} value={c} /></Box>)
+        })}
+      <ErrorMessage name="work">{msg => <Box color="red">{msg}</Box>}</ErrorMessage>
+    </Flex>
+      </WizardStep>
+    </Wizard>
+    </VStack>
   );
 };
 

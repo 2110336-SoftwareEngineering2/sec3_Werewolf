@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {Form, Formik } from 'formik';
-import { Debug } from './Debug';
+import { Debug } from './Debug'; // use this for viewing form internal state as <Debug /> component
 
 import {HStack,VStack,Button,Flex} from "@chakra-ui/react";
 
@@ -35,7 +35,7 @@ const Wizard = ({ children, initialValues, onSubmit }) => {
       await step.props.onSubmit(values, bag);
     }
     if (isLastStep) {
-      return onSubmit(values, bag);
+      onSubmit(values)
     } else {
       bag.setTouched({});
       next(values);

@@ -66,7 +66,6 @@ const CheckField = ({label,...props}) => {
   return(
     <FormControl>
     <Checkbox id={field.name} {...field} {...props} type="checkbox">{label}</Checkbox>
-    {meta.touched && meta.error && <FormErrorMessage>{meta.error}</FormErrorMessage>}
     </FormControl>
     
   )
