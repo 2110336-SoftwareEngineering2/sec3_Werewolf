@@ -12,7 +12,7 @@ import {
  */
 const pushNotificationSupported = isPushNotificationSupported();
 
-const usePushNotification = () => {
+export const usePushNotification = () => {
   // indicate user permission
   const [userConsent, setUserConsent] = useState(Notification.permission);
   // to manage the use push notification subscription
@@ -66,6 +66,7 @@ const usePushNotification = () => {
       })
       .catch((err) => {
         console.error('create subscription', err);
+        setError(err);
       })
       .finally(() => {
         setLoading(false);
@@ -79,7 +80,7 @@ const usePushNotification = () => {
     setLoading(true);
     setError(false);
     axios
-      .post('/subscription', userSubscription)
+      .post('/api/notification/subscribe', userSubscription)
       .then((res) => {
         setPushServerSubscriptionId(res.data.id);
       })
@@ -103,5 +104,3 @@ const usePushNotification = () => {
     loading,
   };
 };
-
-export default usePushNotification;
