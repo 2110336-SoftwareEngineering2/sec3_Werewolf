@@ -1,23 +1,37 @@
-import React from "react";
-
-import { Flex, VStack, Image,Text} from '@chakra-ui/react';
-import FlexBox from '../../shared/FlexBox';
+import React,{useState} from "react";
+import {useParams,Redirect} from "react-router-dom";
+import { auth } from '../../../api';
 
 const Verification = () => {
-    return(<Flex bg="brandGreen" align="center" justify="center" minH="100vh">
-        <FlexBox>
-            <VStack
-                spacing="3"
-                mb="5"
-                minHeight={{sm:"75vh",md:"70vh"}}
-                justifyContent="center"
-            >
-                <Image src="/assets/images/mail.png" alt="verification email" mb="2" boxSize="10rem" />
-                <Text fontSize="xl">A verfication email has been sent</Text>
-                <Text fontSize="sm" color="gray">Please follow the verification link provided in your email</Text>
-            </VStack>
-        </FlexBox>
-    </Flex>)
+    const [verified,setVerified] = useState(false)
+    const [error,setError] = useState(false)
+    let {token} = useParams()
+    
+    function verify(){
+        auth.get('/verify/' + token)
+        .then(response => {
+            console.log(response)
+            setVerified(true);
+        })
+        .catch(err => {
+            setError(err.message)
+        })
+    }
+
+    verify()
+
+    if(!error && verified){
+        return(<Redirect to="/login" />)
+    }
+    else{
+        return(<div>
+            Sorry, we cannot verify your account
+            <br/>
+            {error}
+        </div>)
+    }
+    
+    
 }
 
 export default Verification;
