@@ -44,7 +44,7 @@ const PromotionForm = observer(({ mode = FORM_MODE.CREATE }) => {
 
   const handleSubmit = (
     { code, description, discountRate, startDate, endDate },
-    { setSubmitting }
+    { setSubmitting, resetForm }
   ) => {
     setSubmitting(true);
     /**Start handle Submit logic here */
@@ -59,6 +59,7 @@ const PromotionForm = observer(({ mode = FORM_MODE.CREATE }) => {
       .then(response => {
         console.log(response);
         setSubmitting(false);
+
         history.replace('/promotion'); // Go to promotion page
       })
       .catch(error => {

@@ -1,11 +1,33 @@
 import { Box, Center, Flex } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
-import React from 'react';
-import { useHistory } from 'react-router-dom';
-import { useStores } from '../../../hooks/use-stores';
+import React, { useEffect } from 'react';
 import logo from '../../../assets/svgs/logo.svg';
+import { usePushNotification } from '../../../hooks/use-push-notification';
 
 const Home = observer(() => {
+  const {
+    toAskUserPermission,
+    subscribeToPushNotification,
+    sendSubscriptionToPushServer,
+    pushNotificationSupported,
+    userConsent,
+    pushServerSubscriptionId,
+  } = usePushNotification();
+
+  // subscription to push service
+  useEffect(() => {
+    (() => {
+      if (pushNotificationSupported) {
+        if (userConsent !== 'granted') {
+          toAskUserPermission();
+        }
+        subscribeToPushNotification();
+        sendSubscriptionToPushServer();
+        console.log(pushServerSubscriptionId);
+      }
+    })();
+  }, []);
+
   return (
     <Flex direction="column">
       <Box w="100%" h="100vh" position="relative" overflow="hidden" bgColor="gray.300">
