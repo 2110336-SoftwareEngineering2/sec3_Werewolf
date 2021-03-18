@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 import { Formik, Form, useFormikContext, Field } from 'formik';
 import { Link as RouterLink, useHistory } from 'react-router-dom';
-import { postjob } from '../../../api';
+import { job } from '../../../api';
 import { useStores } from '../../../hooks/use-stores';
 import { workspace } from '../../../api';
 import { observer } from 'mobx-react-lite';
@@ -30,6 +30,8 @@ import { values } from 'mobx';
 import { FaYoutube } from 'react-icons/fa';
 
 const PostjobForm = props => {
+  const [putResponse, setPutResponse] = useState();
+
   const yup = Yup.object({
     amountOfDishes: Yup.mixed().when('isDishes', {
       is: true,
@@ -52,14 +54,56 @@ const PostjobForm = props => {
   });
 
   const handleSubmit = values => {
-    console.log(values);
+    if (props.steps < 3) {
+      if (props.steps == 1) {
+        putFormToServer(values={values});
+      }
+      props.setSteps(previousStep => previousStep + 1);
+    }
   };
+
+  const  putFormToServer = ( {values} ) => {
+    const n_dishes = () => (values.isDishes === false ? 0 : values.amountOfDishes);
+    const n_rooms = () => (values.isRooms === false ? 0 : values.areaOfRooms);
+    const n_clothes = () => (values.isClothes === false ? 0 : values.amountOfClothes);
+  
+    job
+      .put('/cost', {
+        workspaceId: values.workspaceId,
+        work: [
+          {
+          typeOfWork:"Dish Washing",
+          description:"None",
+          quantity: parseInt(n_dishes()),
+        },
+        {
+          typeOfWork:"House Cleaning",
+          description:"None",
+          quantity: parseInt(n_rooms()),
+        },
+        {
+          typeOfWork:"Laundry",
+          description:"None",
+          quantity: parseInt(n_clothes()),
+        }
+      ],
+        promotionCode: values.promotionCode
+      })
+      .then(response => {
+        setPutResponse(response.data);
+        console.log(putResponse);
+      })
+      .catch(error => {
+        console.error(error);
+        return error;
+      });
+  }
 
   const form = () => {
     if (props.steps === 1) {
       return <Page1 />;
     } else if (props.steps === 2 || props.steps === 3) {
-      return <Page2Page3 steps={props.steps} />;
+      return <Page2Page3 steps={props.steps} putResponse={putResponse}/>;
     }
   };
 
@@ -76,11 +120,7 @@ const PostjobForm = props => {
         workspaceId:''
       }}
       validationSchema={yup}
-      onSubmit={() => {
-        if (props.steps < 3) {
-          props.setSteps(previousStep => previousStep + 1);
-        }
-      }}>
+      onSubmit={handleSubmit}>
       <Form>
         <VStack spacing="4" width={{ sm: '72', md: '96' }}>
           {form()}
@@ -91,6 +131,9 @@ const PostjobForm = props => {
   );
 };
 
+export default PostjobForm;
+
+
 const Page1 = () => {
   const { values } = useFormikContext();
   const [error, setError] = useState(false);
@@ -98,7 +141,7 @@ const Page1 = () => {
 
   // this function will get workspace from backend server and then
   // set the value in myWorkspaces by perfrom setMyWorkspaces(response.data)
-  const getWorkspace = () =>{
+  const getWorkspaceFromServer = () =>{
     workspace
     .get('/', {
       timeout: 5000,
@@ -116,17 +159,17 @@ const Page1 = () => {
   // this useEffec function will work only when page is reloaded.
   // that mean it will get workspace every time when when page is reloaded.
   useEffect( () => {
-    getWorkspace();
+    getWorkspaceFromServer();
   }, []);
 
   return (
     <>
       <FormControl mb="20px" id="house-no" width={{ sm: '270px', md: '368px' }}>
         <FormLabel mb="0">Location</FormLabel>
-        <Select name="workspaceId" mb="5px">
+        <Select id="selectButton" name="workspaceId" mb="5px">
           <option value="">Select your workplace location</option>
+          {/* Note : this option tag will render every time when user click something on the screen */}
           { myWorkspaces.map( (myWorkspace) => {
-            console.log(myWorkspace.description)
             return (<option  value={myWorkspace._id}>{myWorkspace.description}</option>);
           } )}
         </Select>
@@ -176,20 +219,12 @@ const Page1 = () => {
   );
 };
 
-export default PostjobForm;
 
-const Page2Page3 = ({ steps }) => {
+const Page2Page3 = ({ steps, putResponse}) => {
   // this 4 constanct is only for test.
-  const DISHPRICE = 100;
-  const ROOMPRICE = 10;
-  const CLOTHPRICE = 50;
-  const DISCOUNT = 100;
 
   const { values } = useFormikContext();
-  const dishesPrice = () => (values.isDishes === false ? 0 : values.amountOfDishes * DISHPRICE);
-  const roomsPrice = () => (values.isRooms === false ? 0 : values.areaOfRooms * ROOMPRICE);
-  const clothedPrice = () => (values.isClothes === false ? 0 : values.amountOfClothes * CLOTHPRICE);
-  const totalPrice = () => dishesPrice() + roomsPrice() + clothedPrice();
+
 
   const promotionBox = () => {
     if (steps == 2) {
@@ -208,7 +243,7 @@ const Page2Page3 = ({ steps }) => {
           <HStack justify="space-between" width="100%" mt="20px">
             <Text fontFamily="body">Promotion</Text>
             <Text fontFamily="body" fontWeight="bold">
-              -{DISCOUNT}
+              --
             </Text>
           </HStack>
           <HStack justify="space-between" width="100%">
@@ -216,7 +251,7 @@ const Page2Page3 = ({ steps }) => {
               Total price (Discount)
             </Text>
             <Text fontFamily="body" fontWeight="bold">
-              {totalPrice() - DISCOUNT}
+              totalPriceHere
             </Text>
           </HStack>
         </>
@@ -235,14 +270,14 @@ const Page2Page3 = ({ steps }) => {
           {values.amountOfDishes == '' || values.isDishes === false ? '0' : values.amountOfDishes}{' '}
           Dishes
         </Text>
-        <Text fontFamily="body">{dishesPrice()}</Text>
+        <Text fontFamily="body">{putResponse.work[0].cost}</Text>
       </HStack>
       <HStack justify="space-between" width="100%">
         <Text fontFamily="body">
           {values.areaOfRooms == '' || values.isRooms === false ? '0' : values.areaOfRooms} Square
           meters of Rooms
         </Text>
-        <Text fontFamily="body">{roomsPrice()}</Text>
+        <Text fontFamily="body">{putResponse.work[1].cost}</Text>
       </HStack>
       <HStack justify="space-between" width="100%">
         <Text fontFamily="body">
@@ -251,14 +286,14 @@ const Page2Page3 = ({ steps }) => {
             : values.amountOfClothes}{' '}
           Clothes
         </Text>
-        <Text fontFamily="body">{clothedPrice()}</Text>
+        <Text fontFamily="body">{putResponse.work[2].cost}</Text>
       </HStack>
       <HStack justify="space-between" width="100%">
         <Text fontFamily="body" fontWeight="bold">
           Total price
         </Text>
         <Text fontFamily="body" fontWeight="bold">
-          {totalPrice()}{' '}
+          {putResponse.cost}
         </Text>
       </HStack>
       {promotionBox()}
@@ -300,7 +335,6 @@ const ButtonField = ({ steps, setSteps }) => {
             width="100px"
             className="button button-register"
             bg="buttonGreen"
-            type="summit"
             onClick={() => setIsOpen(true)}>
             Summit
           </Button>
