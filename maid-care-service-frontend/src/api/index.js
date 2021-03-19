@@ -79,14 +79,14 @@ promotion.interceptors.request.use(
 );
 export { promotion };
 
-const postjob = axios.create({
-  baseURL: '/api/postjob',
+const job = axios.create({
+  baseURL: '/api/job',
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-postjob.interceptors.request.use(
+job.interceptors.request.use(
   config => {
     const token = localStorage.getItem('token');
     if (token) {
@@ -101,4 +101,4 @@ postjob.interceptors.request.use(
     throw error;
   }
 );
-export { postjob };
+export { job };

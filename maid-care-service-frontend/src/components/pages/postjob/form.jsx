@@ -2,9 +2,8 @@ import React, { useState, useEffect } from 'react';
 
 import { Formik, Form, useFormikContext, Field } from 'formik';
 import { Link as RouterLink, useHistory } from 'react-router-dom';
-import { job } from '../../../api';
+import { job, workspace } from '../../../api';
 import { useStores } from '../../../hooks/use-stores';
-import { workspace } from '../../../api';
 import { observer } from 'mobx-react-lite';
 import * as Yup from 'yup';
 import {
@@ -29,8 +28,10 @@ import { TextInputField } from '../../shared/FormikField';
 import { values } from 'mobx';
 import { FaYoutube } from 'react-icons/fa';
 
-const PostjobForm = props => {
+const PostjobForm = observer(props => {
   const [putResponse, setPutResponse] = useState();
+  const { userStore } = useStores();
+  const user = userStore.userData;
 
   const yup = Yup.object({
     amountOfDishes: Yup.mixed().when('isDishes', {
@@ -54,9 +55,12 @@ const PostjobForm = props => {
   });
 
   const handleSubmit = values => {
-    if (props.steps < 3) {
+    if (props.steps < 5) {
       if (props.steps == 1) {
         putFormToServer(values={values});
+      }
+      else if (props.steps == 2) {
+        putPromotionToServer(values={values});
       }
       props.setSteps(previousStep => previousStep + 1);
     }
@@ -87,9 +91,10 @@ const PostjobForm = props => {
           quantity: parseInt(n_clothes()),
         }
       ],
-        promotionCode: values.promotionCode
+        promotionCode: "test001"
       })
       .then(response => {
+        console.log(response);
         setPutResponse(response.data);
         console.log(putResponse);
       })
@@ -97,6 +102,24 @@ const PostjobForm = props => {
         console.error(error);
         return error;
       });
+  }
+
+  const  putPromotionToServer = ( {values} ) => {
+    const n_dishes = () => (values.isDishes === false ? 0 : values.amountOfDishes);
+    const n_rooms = () => (values.isRooms === false ? 0 : values.areaOfRooms);
+    const n_clothes = () => (values.isClothes === false ? 0 : values.amountOfClothes);
+
+    job
+    .put(`/${user._id}/apply-promotion/${values.promotionCode}`)
+    .then(response => {
+      setPutResponse(response.data);
+      console.log(putResponse);
+    })
+    .catch(error => {
+      console.error(error);
+      return error;
+    });
+
   }
 
   const form = () => {
@@ -129,12 +152,15 @@ const PostjobForm = props => {
       </Form>
     </Formik>
   );
-};
+});
+
+
+
 
 export default PostjobForm;
 
 
-const Page1 = () => {
+const Page1 = observer(() => {
   const { values } = useFormikContext();
   const [error, setError] = useState(false);
   const [myWorkspaces, setMyWorkspaces] = useState([]);
@@ -217,7 +243,7 @@ const Page1 = () => {
       </FormControl>
     </>
   );
-};
+});
 
 
 const Page2Page3 = ({ steps, putResponse}) => {
@@ -270,14 +296,14 @@ const Page2Page3 = ({ steps, putResponse}) => {
           {values.amountOfDishes == '' || values.isDishes === false ? '0' : values.amountOfDishes}{' '}
           Dishes
         </Text>
-        <Text fontFamily="body">{putResponse.work[0].cost}</Text>
+        <Text fontFamily="body">{putResponse === undefined ? '' : putResponse.work[0].cost}</Text>
       </HStack>
       <HStack justify="space-between" width="100%">
         <Text fontFamily="body">
           {values.areaOfRooms == '' || values.isRooms === false ? '0' : values.areaOfRooms} Square
           meters of Rooms
         </Text>
-        <Text fontFamily="body">{putResponse.work[1].cost}</Text>
+        <Text fontFamily="body">{putResponse === undefined ? '' : putResponse.work[1].cost}</Text>
       </HStack>
       <HStack justify="space-between" width="100%">
         <Text fontFamily="body">
@@ -286,14 +312,14 @@ const Page2Page3 = ({ steps, putResponse}) => {
             : values.amountOfClothes}{' '}
           Clothes
         </Text>
-        <Text fontFamily="body">{putResponse.work[2].cost}</Text>
+        <Text fontFamily="body">{putResponse === undefined ? '' : putResponse.work[2].cost}</Text>
       </HStack>
       <HStack justify="space-between" width="100%">
         <Text fontFamily="body" fontWeight="bold">
           Total price
         </Text>
         <Text fontFamily="body" fontWeight="bold">
-          {putResponse.cost}
+          {putResponse === undefined ? '' : putResponse.cost }
         </Text>
       </HStack>
       {promotionBox()}
@@ -308,6 +334,12 @@ const ButtonField = ({ steps, setSteps }) => {
     }
   };
 
+  const handleIncrement = () => {
+    if (steps <= 5 ) {
+      setSteps(previousStep => previousStep + 1);
+    }
+  };
+
   // This 3 variables is used for submit button.
   const [isOpen, setIsOpen] = React.useState(false);
   const onClose = () => setIsOpen(false);
@@ -316,7 +348,7 @@ const ButtonField = ({ steps, setSteps }) => {
   return (
     <>
       <HStack justify="flex-end" width="100%" bottom="1px">
-        {steps > 1 ? (
+        {steps > 1 && steps < 4 ? (
           <Button
             width="100px"
             className="button button-register"
@@ -353,7 +385,11 @@ const ButtonField = ({ steps, setSteps }) => {
               <Button ref={cancelRef} onClick={onClose}>
                 Cancel
               </Button>
-              <Button colorScheme="green" onClick={onClose} ml={3}>
+              <Button colorScheme="green" onClick={ () => {
+                onClose();
+                handleIncrement();
+              }} 
+              ml={3}>
                 Confirm
               </Button>
             </AlertDialogFooter>
