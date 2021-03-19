@@ -125,7 +125,6 @@ export class JobService {
         nearestMaid._id,
         'new job',
       );
-      nearestMaid.availability = false;
       await nearestMaid.save();
     } else {
       job.maidId = null;
@@ -142,7 +141,6 @@ export class JobService {
   }
 
   async reject(job: Job): Promise<Job> {
-    this.maidsService.setAvailability(job.maidId, true);
     // find new maid
     await this.findMaid(job);
     return job;

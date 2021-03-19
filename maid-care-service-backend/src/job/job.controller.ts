@@ -10,6 +10,7 @@ import {
   UseGuards,
   UnauthorizedException,
   NotFoundException,
+  ConflictException,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags, ApiCreatedResponse } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/passport/jwt-auth.guard';
@@ -17,6 +18,7 @@ import { JobService } from './job.service';
 import { NotificationService } from 'src/notification/notification.service';
 import { CreateJobDto } from './dto/create-job.dto';
 import { JobDto } from './dto/job.dto';
+import { MaidsService } from 'src/maids/maids.service';
 import { JobState } from './jobState';
 
 @Controller('job')
@@ -24,6 +26,7 @@ import { JobState } from './jobState';
 export class JobController {
   constructor(
     private readonly jobService: JobService,
+    private maidsService: MaidsService,
     private readonly notificationService: NotificationService,
   ) {}
 
@@ -175,6 +178,9 @@ export class JobController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('acess-token')
   async accept(@Request() req, @Param('id') id: string) {
+    const maid = await this.maidsService.findMaid(req.user._id);
+    if (!maid || !maid.availability)
+      throw new ConflictException('cannot accept');
     const job = await this.jobService.findJob(id);
     if (
       job &&
@@ -185,6 +191,7 @@ export class JobController {
       this.jobService.deleteTimeout(job);
       job.state = JobState.matched;
       await job.save();
+      this.maidsService.setAvailability(req.user._id, false);
       // send nofication to customer
       console.log('maid found');
       await this.notificationService.sendNotification(
