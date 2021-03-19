@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 import { Formik, Form, useFormikContext, Field } from 'formik';
 import { Link as RouterLink, useHistory } from 'react-router-dom';
-import { job, workspace } from '../../../api';
+import { job, workspace, promotion } from '../../../api';
 import { useStores } from '../../../hooks/use-stores';
 import { observer } from 'mobx-react-lite';
 import * as Yup from 'yup';
@@ -58,8 +58,6 @@ const PostjobForm = observer(props => {
     if (props.steps < 5) {
       if (props.steps == 1) {
         putFormToServer((values = { values }));
-      } else if (props.steps == 2) {
-        putFormToServer((values = { values }));
       }
       props.setSteps(previousStep => previousStep + 1);
     }
@@ -90,25 +88,8 @@ const PostjobForm = observer(props => {
             quantity: parseInt(n_clothes()),
           },
         ],
-        promotionCode: values.promotionCode,
+        promotionCode: '',
       })
-      .then(response => {
-        setPutResponse(response.data);
-        console.log(putResponse);
-      })
-      .catch(error => {
-        console.error(error);
-        return error;
-      });
-  };
-
-  const putPromotionToServer = ({ values }) => {
-    const n_dishes = () => (values.isDishes === false ? 0 : values.amountOfDishes);
-    const n_rooms = () => (values.isRooms === false ? 0 : values.areaOfRooms);
-    const n_clothes = () => (values.isClothes === false ? 0 : values.amountOfClothes);
-
-    job
-      .put(`/${user._id}/apply-promotion/${values.promotionCode}`)
       .then(response => {
         setPutResponse(response.data);
         console.log(putResponse);
@@ -240,8 +221,28 @@ const Page1 = observer(() => {
 
 const Page2Page3 = ({ steps, putResponse }) => {
   // this 4 constanct is only for test.
+  const [isPromoAvailable, setPromoAvailable] = useState(null);
+  const [promoData, setPromoData] = useState();
 
   const { values } = useFormikContext();
+
+  const getPromotioncodeFromServer = () => {
+    promotion
+      .get(`/${values.promotionCode}`, {
+        timeout: 5000,
+      })
+      .then(response => {
+        setPromoAvailable("true");
+        setPromoData(response.data);
+        console.log(promoData);
+      })
+      .catch(error => {
+        console.error(error);
+        setPromoAvailable("false");
+      });
+  }
+
+  const calTotalWithPromo = () => putResponse.cost - ( putResponse.cost * ( isPromoAvailable === 'true' ?  promoData.discountRate : 0 )/ 100 );
 
   const promotionBox = () => {
     if (steps == 2) {
@@ -252,8 +253,19 @@ const Page2Page3 = ({ steps, putResponse }) => {
             name="promotionCode"
             placeholder="Apply Your Promotion Code"
           />
-          <HStack>
-            <Button width="100px">Verify</Button>
+          <HStack mt="5px">
+            <Button 
+            onClick={getPromotioncodeFromServer}
+            width="100px"
+            >Verify
+            </Button>
+            <Text 
+              color={isPromoAvailable === 'true' ? 'green' :
+              isPromoAvailable === 'false' ? 'red' : 'white'}
+              >
+              {isPromoAvailable === 'true' ? 'Your promotion code is available' :
+              isPromoAvailable === 'false' ? 'Your promotion code is unavailable' : ''
+              }</Text>
           </HStack>
         </FormControl>
       );
@@ -261,17 +273,17 @@ const Page2Page3 = ({ steps, putResponse }) => {
       return (
         <>
           <HStack justify="space-between" width="100%" mt="20px">
-            <Text fontFamily="body">Promotion</Text>
+            <Text fontFamily="body">Promotion (Discount Rate)</Text>
             <Text fontFamily="body" fontWeight="bold">
-              --
+             {isPromoAvailable === 'true' ?  `${promoData.discountRate}%` : '0%' }
             </Text>
           </HStack>
           <HStack justify="space-between" width="100%">
             <Text fontFamily="body" fontWeight="bold">
-              Total price (Discount)
+              Total price
             </Text>
             <Text fontFamily="body" fontWeight="bold">
-              totalPriceHere
+              {calTotalWithPromo()}
             </Text>
           </HStack>
         </>
