@@ -91,7 +91,7 @@ const PostjobForm = observer(props => {
           quantity: parseInt(n_clothes()),
         }
       ],
-        promotionCode: "test001"
+        promotionCode: ""
       })
       .then(response => {
         console.log(response);
@@ -296,14 +296,14 @@ const Page2Page3 = ({ steps, putResponse}) => {
           {values.amountOfDishes == '' || values.isDishes === false ? '0' : values.amountOfDishes}{' '}
           Dishes
         </Text>
-        <Text fontFamily="body">{putResponse === undefined ? '' : putResponse.work[0].cost}</Text>
+        <Text fontFamily="body">{putResponse === undefined ? 'Loading...' : putResponse.work[0].cost}</Text>
       </HStack>
       <HStack justify="space-between" width="100%">
         <Text fontFamily="body">
           {values.areaOfRooms == '' || values.isRooms === false ? '0' : values.areaOfRooms} Square
           meters of Rooms
         </Text>
-        <Text fontFamily="body">{putResponse === undefined ? '' : putResponse.work[1].cost}</Text>
+        <Text fontFamily="body">{putResponse === undefined ? 'Loading...' : putResponse.work[1].cost}</Text>
       </HStack>
       <HStack justify="space-between" width="100%">
         <Text fontFamily="body">
@@ -312,7 +312,7 @@ const Page2Page3 = ({ steps, putResponse}) => {
             : values.amountOfClothes}{' '}
           Clothes
         </Text>
-        <Text fontFamily="body">{putResponse === undefined ? '' : putResponse.work[2].cost}</Text>
+        <Text fontFamily="body">{putResponse === undefined ? 'Loading...' : putResponse.work[2].cost}</Text>
       </HStack>
       <HStack justify="space-between" width="100%">
         <Text fontFamily="body" fontWeight="bold">
