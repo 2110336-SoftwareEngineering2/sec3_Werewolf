@@ -57,44 +57,42 @@ const PostjobForm = observer(props => {
   const handleSubmit = values => {
     if (props.steps < 5) {
       if (props.steps == 1) {
-        putFormToServer(values={values});
-      }
-      else if (props.steps == 2) {
-        putPromotionToServer(values={values});
+        putFormToServer((values = { values }));
+      } else if (props.steps == 2) {
+        putFormToServer((values = { values }));
       }
       props.setSteps(previousStep => previousStep + 1);
     }
   };
 
-  const  putFormToServer = ( {values} ) => {
+  const putFormToServer = ({ values }) => {
     const n_dishes = () => (values.isDishes === false ? 0 : values.amountOfDishes);
     const n_rooms = () => (values.isRooms === false ? 0 : values.areaOfRooms);
     const n_clothes = () => (values.isClothes === false ? 0 : values.amountOfClothes);
-  
+
     job
       .put('/cost', {
         workspaceId: values.workspaceId,
         work: [
           {
-          typeOfWork:"Dish Washing",
-          description:"None",
-          quantity: parseInt(n_dishes()),
-        },
-        {
-          typeOfWork:"House Cleaning",
-          description:"None",
-          quantity: parseInt(n_rooms()),
-        },
-        {
-          typeOfWork:"Laundry",
-          description:"None",
-          quantity: parseInt(n_clothes()),
-        }
-      ],
-        promotionCode: ""
+            typeOfWork: 'Dish Washing',
+            description: 'None',
+            quantity: parseInt(n_dishes()),
+          },
+          {
+            typeOfWork: 'House Cleaning',
+            description: 'None',
+            quantity: parseInt(n_rooms()),
+          },
+          {
+            typeOfWork: 'Laundry',
+            description: 'None',
+            quantity: parseInt(n_clothes()),
+          },
+        ],
+        promotionCode: values.promotionCode,
       })
       .then(response => {
-        console.log(response);
         setPutResponse(response.data);
         console.log(putResponse);
       })
@@ -102,31 +100,30 @@ const PostjobForm = observer(props => {
         console.error(error);
         return error;
       });
-  }
+  };
 
-  const  putPromotionToServer = ( {values} ) => {
+  const putPromotionToServer = ({ values }) => {
     const n_dishes = () => (values.isDishes === false ? 0 : values.amountOfDishes);
     const n_rooms = () => (values.isRooms === false ? 0 : values.areaOfRooms);
     const n_clothes = () => (values.isClothes === false ? 0 : values.amountOfClothes);
 
     job
-    .put(`/${user._id}/apply-promotion/${values.promotionCode}`)
-    .then(response => {
-      setPutResponse(response.data);
-      console.log(putResponse);
-    })
-    .catch(error => {
-      console.error(error);
-      return error;
-    });
-
-  }
+      .put(`/${user._id}/apply-promotion/${values.promotionCode}`)
+      .then(response => {
+        setPutResponse(response.data);
+        console.log(putResponse);
+      })
+      .catch(error => {
+        console.error(error);
+        return error;
+      });
+  };
 
   const form = () => {
     if (props.steps === 1) {
       return <Page1 />;
     } else if (props.steps === 2 || props.steps === 3) {
-      return <Page2Page3 steps={props.steps} putResponse={putResponse}/>;
+      return <Page2Page3 steps={props.steps} putResponse={putResponse} />;
     }
   };
 
@@ -140,7 +137,7 @@ const PostjobForm = observer(props => {
         areaOfRooms: '',
         amountOfClothes: '',
         promotionCode: '',
-        workspaceId:''
+        workspaceId: '',
       }}
       validationSchema={yup}
       onSubmit={handleSubmit}>
@@ -154,11 +151,7 @@ const PostjobForm = observer(props => {
   );
 });
 
-
-
-
 export default PostjobForm;
-
 
 const Page1 = observer(() => {
   const { values } = useFormikContext();
@@ -167,24 +160,24 @@ const Page1 = observer(() => {
 
   // this function will get workspace from backend server and then
   // set the value in myWorkspaces by perfrom setMyWorkspaces(response.data)
-  const getWorkspaceFromServer = () =>{
+  const getWorkspaceFromServer = () => {
     workspace
-    .get('/', {
-      timeout: 5000,
-    })
-    .then(response => {
-      setMyWorkspaces(response.data);
-      console.log(response.data);
-    })
-    .catch(error => {
-      console.error(error);
-      setError(error);
-    });
-  }
+      .get('/', {
+        timeout: 5000,
+      })
+      .then(response => {
+        setMyWorkspaces(response.data);
+        console.log(response.data);
+      })
+      .catch(error => {
+        console.error(error);
+        setError(error);
+      });
+  };
 
   // this useEffec function will work only when page is reloaded.
   // that mean it will get workspace every time when when page is reloaded.
-  useEffect( () => {
+  useEffect(() => {
     getWorkspaceFromServer();
   }, []);
 
@@ -195,9 +188,9 @@ const Page1 = observer(() => {
         <Select id="selectButton" name="workspaceId" mb="5px">
           <option value="">Select your workplace location</option>
           {/* Note : this option tag will render every time when user click something on the screen */}
-          { myWorkspaces.map( (myWorkspace) => {
-            return (<option  value={myWorkspace._id}>{myWorkspace.description}</option>);
-          } )}
+          {myWorkspaces.map(myWorkspace => {
+            return <option value={myWorkspace._id}>{myWorkspace.description}</option>;
+          })}
         </Select>
         <Link as={RouterLink} to="/workspace" mt="10px">
           Add new workspace
@@ -245,12 +238,10 @@ const Page1 = observer(() => {
   );
 });
 
-
-const Page2Page3 = ({ steps, putResponse}) => {
+const Page2Page3 = ({ steps, putResponse }) => {
   // this 4 constanct is only for test.
 
   const { values } = useFormikContext();
-
 
   const promotionBox = () => {
     if (steps == 2) {
@@ -261,6 +252,9 @@ const Page2Page3 = ({ steps, putResponse}) => {
             name="promotionCode"
             placeholder="Apply Your Promotion Code"
           />
+          <HStack>
+            <Button width="100px">Verify</Button>
+          </HStack>
         </FormControl>
       );
     } else if (steps == 3) {
@@ -296,14 +290,18 @@ const Page2Page3 = ({ steps, putResponse}) => {
           {values.amountOfDishes == '' || values.isDishes === false ? '0' : values.amountOfDishes}{' '}
           Dishes
         </Text>
-        <Text fontFamily="body">{putResponse === undefined ? 'Loading...' : putResponse.work[0].cost}</Text>
+        <Text fontFamily="body">
+          {putResponse === undefined ? 'Loading...' : putResponse.work[0].cost}
+        </Text>
       </HStack>
       <HStack justify="space-between" width="100%">
         <Text fontFamily="body">
           {values.areaOfRooms == '' || values.isRooms === false ? '0' : values.areaOfRooms} Square
           meters of Rooms
         </Text>
-        <Text fontFamily="body">{putResponse === undefined ? 'Loading...' : putResponse.work[1].cost}</Text>
+        <Text fontFamily="body">
+          {putResponse === undefined ? 'Loading...' : putResponse.work[1].cost}
+        </Text>
       </HStack>
       <HStack justify="space-between" width="100%">
         <Text fontFamily="body">
@@ -312,14 +310,18 @@ const Page2Page3 = ({ steps, putResponse}) => {
             : values.amountOfClothes}{' '}
           Clothes
         </Text>
-        <Text fontFamily="body">{putResponse === undefined ? 'Loading...' : putResponse.work[2].cost}</Text>
+        <Text fontFamily="body">
+          {putResponse === undefined ? 'Loading...' : putResponse.work[2].cost}
+        </Text>
       </HStack>
       <HStack justify="space-between" width="100%">
         <Text fontFamily="body" fontWeight="bold">
           Total price
         </Text>
         <Text fontFamily="body" fontWeight="bold">
-          {putResponse === undefined ? '' : putResponse.cost }
+          {putResponse === undefined
+            ? ''
+            : putResponse.work[0].cost + putResponse.work[1].cost + putResponse.work[2].cost}
         </Text>
       </HStack>
       {promotionBox()}
@@ -335,7 +337,7 @@ const ButtonField = ({ steps, setSteps }) => {
   };
 
   const handleIncrement = () => {
-    if (steps <= 5 ) {
+    if (steps <= 5) {
       setSteps(previousStep => previousStep + 1);
     }
   };
@@ -385,11 +387,13 @@ const ButtonField = ({ steps, setSteps }) => {
               <Button ref={cancelRef} onClick={onClose}>
                 Cancel
               </Button>
-              <Button colorScheme="green" onClick={ () => {
-                onClose();
-                handleIncrement();
-              }} 
-              ml={3}>
+              <Button
+                colorScheme="green"
+                onClick={() => {
+                  onClose();
+                  handleIncrement();
+                }}
+                ml={3}>
                 Confirm
               </Button>
             </AlertDialogFooter>
