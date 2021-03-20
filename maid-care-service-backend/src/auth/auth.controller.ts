@@ -9,7 +9,12 @@ import {
   UnprocessableEntityException,
   ForbiddenException,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags, ApiCreatedResponse } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiTags,
+  ApiCreatedResponse,
+  ApiResponse,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/passport/jwt-auth.guard';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
@@ -30,6 +35,10 @@ export class AuthController {
   @ApiCreatedResponse({
     description: 'Login with email and password to get access token',
     type: AccessTokenDto,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'email or password is incorrect or email is not verified',
   })
   async login(@Body() login: LoginDto) {
     login.email = login.email.toLowerCase();
@@ -58,6 +67,11 @@ export class AuthController {
     description: 'Create new user and send email verification',
     type: UserDto,
   })
+  @ApiResponse({
+    status: 400,
+    description: 'email, password or role is wrong',
+  })
+  @ApiResponse({ status: 409, description: 'user already registered' })
   async register(@Body() createUserDto: CreateUserDto) {
     createUserDto.email = createUserDto.email.toLowerCase();
     try {
@@ -77,6 +91,14 @@ export class AuthController {
   @ApiCreatedResponse({
     description: 'verify email with received token',
     type: Boolean,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'token not existed or have changed',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'invalid user, something wrong',
   })
   async verifyEmail(@Param() params): Promise<boolean> {
     try {

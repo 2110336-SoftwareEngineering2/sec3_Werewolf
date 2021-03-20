@@ -3,7 +3,6 @@ import {
   Inject,
   UnauthorizedException,
   ForbiddenException,
-  UnprocessableEntityException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import * as nodemailer from 'nodemailer';
@@ -86,7 +85,7 @@ export class AuthService {
       });
       return sent;
     } else {
-      throw new UnprocessableEntityException();
+      throw new ForbiddenException('can not find token');
     }
   }
 
@@ -101,12 +100,12 @@ export class AuthService {
       // remove the email verification token in 5 minutes
       this.addTimeout(emailVerification, 300000);
       // validate user
-      if (!user) throw new ForbiddenException('Invalid user');
+      if (!user) throw new ForbiddenException('invalid user');
       user.valid = true;
       const savedUser = await user.save();
       return !!savedUser;
     } else {
-      throw new UnauthorizedException('Code not valid');
+      throw new UnauthorizedException('token not valid');
     }
   }
 

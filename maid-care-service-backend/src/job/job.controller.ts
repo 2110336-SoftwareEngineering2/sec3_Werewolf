@@ -12,10 +12,14 @@ import {
   NotFoundException,
   ConflictException,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags, ApiCreatedResponse } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiTags,
+  ApiCreatedResponse,
+  ApiResponse,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/passport/jwt-auth.guard';
 import { JobService } from './job.service';
-import { NotificationService } from 'src/notification/notification.service';
 import { CreateJobDto } from './dto/create-job.dto';
 import { JobDto } from './dto/job.dto';
 import { MaidsService } from 'src/maids/maids.service';
@@ -27,13 +31,14 @@ export class JobController {
   constructor(
     private readonly jobService: JobService,
     private maidsService: MaidsService,
-    private readonly notificationService: NotificationService,
   ) {}
 
   @Post()
-  @ApiCreatedResponse({
-    description: 'Customer create new job',
-    type: JobDto,
+  @ApiCreatedResponse({ description: 'Customer create new job', type: JobDto })
+  @ApiResponse({ status: 400, description: 'wrong workplaceId or typeOfWork' })
+  @ApiResponse({
+    status: 401,
+    description: 'user is not customer, only customer can post job',
   })
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('acess-token')
@@ -49,6 +54,7 @@ export class JobController {
     description: 'Apply promotion cost to a job to get discount',
     type: JobDto,
   })
+  @ApiResponse({ status: 404, description: 'job not found or wrong state' })
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('acess-token')
   async applyPromotion(
@@ -76,6 +82,11 @@ export class JobController {
     description: 'Calculate cost of a job',
     type: JobDto,
   })
+  @ApiResponse({ status: 404, description: 'promotion not found' })
+  @ApiResponse({
+    status: 409,
+    description: 'promotion already expired or not start yet',
+  })
   async calculateCost(@Body() createJobDto: CreateJobDto) {
     const job = new JobDto(createJobDto);
     job.cost = await this.jobService.calculateSumCost(createJobDto);
@@ -93,6 +104,7 @@ export class JobController {
     description: 'Start finding maid for a job',
     type: JobDto,
   })
+  @ApiResponse({ status: 404, description: 'job not found or wrong state' })
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('acess-token')
   async findMaid(@Request() req, @Param('id') id: string) {
@@ -110,21 +122,21 @@ export class JobController {
   }
 
   @Get(':id')
-  @ApiCreatedResponse({
-    description: 'Get job by id',
-    type: JobDto,
-  })
+  @ApiCreatedResponse({ description: 'Get job by id', type: JobDto })
+  @ApiResponse({ status: 404, description: 'job not found' })
   async findJob(@Param('id') id: string) {
     const job = await this.jobService.findJob(id);
-    if (!job) throw new NotFoundException('job not valid');
+    if (!job) throw new NotFoundException('job not found');
     return new JobDto(job);
   }
 
   @Delete(':id')
-  @ApiCreatedResponse({
-    description: 'Delete job by id',
-    type: JobDto,
+  @ApiCreatedResponse({ description: 'Delete job by id', type: JobDto })
+  @ApiResponse({
+    status: 401,
+    description: 'can only delete your own job unless user is admin',
   })
+  @ApiResponse({ status: 404, description: 'job not found' })
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('acess-token')
   async removeJob(@Request() req, @Param('id') id: string) {
@@ -150,9 +162,10 @@ export class JobController {
   }
 
   @Put(':id/reject')
-  @ApiCreatedResponse({
-    description: 'maid reject job',
-    type: JobDto,
+  @ApiCreatedResponse({ description: 'maid reject job', type: JobDto })
+  @ApiResponse({
+    status: 404,
+    description: 'job not found or already timed out',
   })
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('acess-token')
@@ -164,16 +177,22 @@ export class JobController {
       req.user._id == job.maidId &&
       job.expiryTime > new Date()
     ) {
-      this.jobService.deleteTimeout(job);
+      await this.jobService.deleteTimeout(job);
       await this.jobService.reject(job);
       return new JobDto(job);
     } else throw new NotFoundException('job not found');
   }
 
   @Put(':id/accept')
-  @ApiCreatedResponse({
-    description: 'maid accept job',
-    type: JobDto,
+  @ApiCreatedResponse({ description: 'maid accept job', type: JobDto })
+  @ApiResponse({
+    status: 404,
+    description: 'job not found or already timed out',
+  })
+  @ApiResponse({
+    status: 409,
+    description:
+      'cannot accept job because maid have unfinished job or their availability is false',
   })
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('acess-token')
@@ -188,16 +207,58 @@ export class JobController {
       req.user._id == job.maidId &&
       job.expiryTime > new Date()
     ) {
-      this.jobService.deleteTimeout(job);
-      job.state = JobState.matched;
-      await job.save();
       this.maidsService.setAvailability(req.user._id, false);
-      // send nofication to customer
-      console.log('maid found');
-      await this.notificationService.sendNotification(
-        job.customerId,
-        'maid found',
-      );
+      await this.jobService.accept(job);
+      return new JobDto(job);
+    } else throw new NotFoundException('job not found');
+  }
+
+  @Put(':id/customer-cancel')
+  @ApiCreatedResponse({
+    description: 'customer cancel job in 60 seconds',
+    type: JobDto,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'job not found or already confirmed automatically',
+  })
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('acess-token')
+  async cancel(@Request() req, @Param('id') id: string) {
+    const job = await this.jobService.findJob(id);
+    if (
+      job &&
+      job.state === JobState.matched &&
+      req.user._id == job.customerId &&
+      job.expiryTime > new Date()
+    ) {
+      await this.jobService.cancel(job);
+      return new JobDto(job);
+    } else throw new NotFoundException('job not found');
+  }
+
+  @Put(':id/customer-confirm')
+  @ApiCreatedResponse({
+    description: 'customer confirm job in 60 seconds',
+    type: JobDto,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'job not found or already confirmed automatically',
+  })
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('acess-token')
+  async confirm(@Request() req, @Param('id') id: string) {
+    const job = await this.jobService.findJob(id);
+    if (
+      job &&
+      job.state === JobState.matched &&
+      req.user._id == job.customerId &&
+      job.expiryTime > new Date()
+    ) {
+      await this.jobService.deleteTimeout(job);
+      await this.jobService.confirm(job);
+      await job.save();
       return new JobDto(job);
     } else throw new NotFoundException('job not found');
   }
