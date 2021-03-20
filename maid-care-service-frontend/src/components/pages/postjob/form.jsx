@@ -6,23 +6,16 @@ import { job, workspace, promotion } from '../../../api';
 import { useStores } from '../../../hooks/use-stores';
 import { observer } from 'mobx-react-lite';
 import * as Yup from 'yup';
+import ButtonField from './ButtonField.jsx';
 import {
   Link,
   VStack,
   Button,
   HStack,
-  Checkbox,
   FormControl,
   FormLabel,
   Select,
   Text,
-  Textarea,
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogContent,
-  AlertDialogOverlay,
 } from '@chakra-ui/react';
 import { TextInputField } from '../../shared/FormikField';
 import { values } from 'mobx';
@@ -338,80 +331,5 @@ const Page2Page3 = ({ steps, putResponse }) => {
       </HStack>
       {promotionBox()}
     </FormControl>
-  );
-};
-
-const ButtonField = ({ steps, setSteps }) => {
-  const handleDecrement = () => {
-    if (steps > 1) {
-      setSteps(previousStep => previousStep - 1);
-    }
-  };
-
-  const handleIncrement = () => {
-    if (steps <= 5) {
-      setSteps(previousStep => previousStep + 1);
-    }
-  };
-
-  // This 3 variables is used for submit button.
-  const [isOpen, setIsOpen] = React.useState(false);
-  const onClose = () => setIsOpen(false);
-  const cancelRef = React.useRef();
-
-  return (
-    <>
-      <HStack justify="flex-end" width="100%" bottom="1px">
-        {steps > 1 && steps < 4 ? (
-          <Button
-            width="100px"
-            className="button button-register"
-            bg="buttonGreen"
-            onClick={handleDecrement}>
-            Previous
-          </Button>
-        ) : null}
-        {steps < 3 ? (
-          <Button width="100px" className="button button-register" bg="buttonGreen" type="summit">
-            Next
-          </Button>
-        ) : null}
-        {steps == 3 ? (
-          <Button
-            width="100px"
-            className="button button-register"
-            bg="buttonGreen"
-            onClick={() => setIsOpen(true)}>
-            Summit
-          </Button>
-        ) : null}
-      </HStack>
-      <AlertDialog isOpen={isOpen} leastDestructiveRef={cancelRef} onClose={onClose} isCentered>
-        <AlertDialogOverlay>
-          <AlertDialogContent>
-            <AlertDialogHeader fontSize="lg" fontWeight="bold">
-              Do you want to confirm ?
-            </AlertDialogHeader>
-            <AlertDialogBody>
-              The system will perform the match immediately after you have confirmed.
-            </AlertDialogBody>
-            <AlertDialogFooter>
-              <Button ref={cancelRef} onClick={onClose}>
-                Cancel
-              </Button>
-              <Button
-                colorScheme="green"
-                onClick={() => {
-                  onClose();
-                  handleIncrement();
-                }}
-                ml={3}>
-                Confirm
-              </Button>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialogOverlay>
-      </AlertDialog>
-    </>
   );
 };
