@@ -5,4 +5,5 @@ export enum JobState {
   confirmed = 'confirmed',
   done = 'done',
   reviewed = 'reviewed',
+  canceled = 'canceled',
 }

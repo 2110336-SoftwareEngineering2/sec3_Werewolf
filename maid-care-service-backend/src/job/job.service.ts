@@ -178,10 +178,14 @@ export class JobService {
 
   async cancel(job: Job): Promise<Job> {
     await this.deleteTimeout(job);
-    job.state = JobState.posted;
+    job.state = JobState.canceled;
     this.maidsService.setAvailability(job.maidId, true);
-    // find new maid again
-    await this.findMaid(job);
+    //push notification to maid
+    console.log('customer cancel job');
+    await this.notificationService.sendNotification(
+      job.maidId,
+      'customer cancel job',
+    );
     return await job.save();
   }
 
