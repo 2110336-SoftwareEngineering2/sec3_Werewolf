@@ -1,4 +1,6 @@
 import React from 'react';
+import { job } from '../../../api';
+import { useFormikContext } from 'formik';
 import {
   Button,
   HStack,
@@ -10,7 +12,15 @@ import {
   AlertDialogOverlay,
 } from '@chakra-ui/react';
 
-const ButtonField = ({ steps, setSteps }) => {
+
+// this file, ButtonField.jsx, is responsible for 3 main job.
+// 1. contain all button ( Previous button, Next button, Submit button )
+// 2. handle steps increment & decrement when button is clicked.
+// 3. Show confirm window when submit button on page3 is clicked.
+
+const ButtonField = ({ steps, setSteps, isPromoAvailable }) => {
+  const { values } = useFormikContext();
+
   const handleDecrement = () => {
     if (steps > 1) {
       setSteps(previousStep => previousStep - 1);
@@ -23,6 +33,41 @@ const ButtonField = ({ steps, setSteps }) => {
     }
   };
 
+  const postJobToServer = () => {
+    const n_dishes = () => (values.isDishes === false ? 0 : values.amountOfDishes);
+    const n_rooms = () => (values.isRooms === false ? 0 : values.areaOfRooms);
+    const n_clothes = () => (values.isClothes === false ? 0 : values.amountOfClothes);
+
+    job
+      .post('/', {
+        workplaceId: values.workspaceId,
+        work: [
+          {
+            typeOfWork: 'Dish Washing',
+            description: 'None',
+            quantity: parseInt(n_dishes()),
+          },
+          {
+            typeOfWork: 'House Cleaning',
+            description: 'None',
+            quantity: parseInt(n_rooms()),
+          },
+          {
+            typeOfWork: 'Laundry',
+            description: 'None',
+            quantity: parseInt(n_clothes()),
+          },
+        ],
+        promotionCode: isPromoAvailable==='true' ? values.promotionCode : '',
+      })
+      .then(response => {
+        console.log(response);
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  };
+
   // This 3 variables is used for submit button.
   const [isOpen, setIsOpen] = React.useState(false);
   const onClose = () => setIsOpen(false);
@@ -31,7 +76,7 @@ const ButtonField = ({ steps, setSteps }) => {
   return (
     <>
       <HStack justify="flex-end" width="100%" bottom="1px">
-        {steps > 1 && steps < 4 ? (
+        {steps > 1 && steps < 5 ? (
           <Button
             width="100px"
             className="button button-register"
@@ -70,9 +115,11 @@ const ButtonField = ({ steps, setSteps }) => {
               </Button>
               <Button
                 colorScheme="green"
+                type="submit"
                 onClick={() => {
                   onClose();
                   handleIncrement();
+                  postJobToServer();
                 }}
                 ml={3}>
                 Confirm

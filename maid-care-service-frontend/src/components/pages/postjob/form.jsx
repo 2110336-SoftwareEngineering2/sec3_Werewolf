@@ -1,32 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 import { Formik, Form, useFormikContext, Field } from 'formik';
-import { Link as RouterLink, useHistory } from 'react-router-dom';
-import { job, workspace, promotion } from '../../../api';
+import { job } from '../../../api';
 import { useStores } from '../../../hooks/use-stores';
 import { observer } from 'mobx-react-lite';
 import * as Yup from 'yup';
 import ButtonField from './ButtonField.jsx';
 import Page1_TaskDescription from './Page1_TaskDescription.jsx';
 import Page2Page3_calculatePrice from './Page2Page3_calculatePrice.jsx';
-import {
-  Link,
-  VStack,
-  Button,
-  HStack,
-  FormControl,
-  FormLabel,
-  Select,
-  Text,
-} from '@chakra-ui/react';
-import { TextInputField } from '../../shared/FormikField';
-import { values } from 'mobx';
-import { FaYoutube } from 'react-icons/fa';
+import { VStack, Text } from '@chakra-ui/react';
 
 const PostjobForm = observer(props => {
+  // putResponse is variable which store response from putFormToServer ( put /cost API );
   const [putResponse, setPutResponse] = useState();
-  const { userStore } = useStores();
-  const user = userStore.userData;
+  const [isPromoAvailable, setPromoAvailable] = useState(null);
 
   const yup = Yup.object({
     amountOfDishes: Yup.mixed().when('isDishes', {
@@ -51,7 +38,7 @@ const PostjobForm = observer(props => {
 
   const handleSubmit = values => {
     if (props.steps < 5) {
-      if (props.steps == 1) {
+      if (props.steps == 1 || props.steps == 2) {
         putFormToServer((values = { values }));
       }
       props.setSteps(previousStep => previousStep + 1);
@@ -65,7 +52,7 @@ const PostjobForm = observer(props => {
 
     job
       .put('/cost', {
-        workspaceId: values.workspaceId,
+        workplaceId: values.workspaceId,
         work: [
           {
             typeOfWork: 'Dish Washing',
@@ -83,15 +70,15 @@ const PostjobForm = observer(props => {
             quantity: parseInt(n_clothes()),
           },
         ],
-        promotionCode: '',
+        promotionCode: isPromoAvailable === 'true' ? values.promotionCode : '',
       })
       .then(response => {
+        console.log(response);
         setPutResponse(response.data);
         console.log(putResponse);
       })
       .catch(error => {
         console.error(error);
-        return error;
       });
   };
 
@@ -99,7 +86,14 @@ const PostjobForm = observer(props => {
     if (props.steps === 1) {
       return <Page1_TaskDescription />;
     } else if (props.steps === 2 || props.steps === 3) {
-      return <Page2Page3_calculatePrice steps={props.steps} putResponse={putResponse} />;
+      return (
+        <Page2Page3_calculatePrice
+          steps={props.steps}
+          putResponse={putResponse}
+          isPromoAvailable={isPromoAvailable}
+          setPromoAvailable={setPromoAvailable}
+        />
+      );
     }
   };
 
@@ -121,11 +115,14 @@ const PostjobForm = observer(props => {
         <VStack spacing="4" width={{ sm: '72', md: '96' }}>
           {form()}
         </VStack>
-        <ButtonField steps={props.steps} setSteps={props.setSteps} />
+        <ButtonField
+          steps={props.steps}
+          setSteps={props.setSteps}
+          isPromoAvailable={isPromoAvailable}
+        />
       </Form>
     </Formik>
   );
 });
 
 export default PostjobForm;
-
