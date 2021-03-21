@@ -11,7 +11,7 @@ import Page2Page3_calculatePrice from './Page2Page3_calculatePrice.jsx';
 import { VStack, Text } from '@chakra-ui/react';
 
 const PostjobForm = observer(props => {
-  // putResponse is variable which store response from putFormToServer ( put /cost API );
+  // putResponse is variable which store response from jobPutCostAPI ( put /cost API );
   const [putResponse, setPutResponse] = useState();
   const [isPromoAvailable, setPromoAvailable] = useState(null);
 
@@ -39,13 +39,13 @@ const PostjobForm = observer(props => {
   const handleSubmit = values => {
     if (props.steps < 5) {
       if (props.steps == 1 || props.steps == 2) {
-        putFormToServer((values = { values }));
+        jobPutCostAPI((values = { values }));
       }
       props.setSteps(previousStep => previousStep + 1);
     }
   };
 
-  const putFormToServer = ({ values }) => {
+  const jobPutCostAPI = ({ values }) => {
     const n_dishes = () => (values.isDishes === false ? 0 : values.amountOfDishes);
     const n_rooms = () => (values.isRooms === false ? 0 : values.areaOfRooms);
     const n_clothes = () => (values.isClothes === false ? 0 : values.amountOfClothes);
