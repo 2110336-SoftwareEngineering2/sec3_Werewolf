@@ -39,13 +39,12 @@ const Page1_TaskDescription = observer(() => {
     <>
       <FormControl mb="20px" id="house-no" width={{ sm: '270px', md: '368px' }}>
         <FormLabel mb="0">Location</FormLabel>
-        <Select id="selectButton" name="workspaceId" mb="5px">
-          <option value="">Select your workplace location</option>
-          {/* Note : this option tag will render every time when user click something on the screen */}
+        <Field as={Select} id="selectButton" name="workspaceId" mb="5px">
+          <option value="" >Select your workplace location</option>
           {myWorkspaces.map(myWorkspace => {
-            return <option value={myWorkspace._id}>{myWorkspace.description}</option>;
+            return <option value={myWorkspace._id} >{myWorkspace.description}</option>;
           })}
-        </Select>
+        </Field>
         <Link as={RouterLink} to="/workspace" mt="10px">
           Add new workspace
         </Link>

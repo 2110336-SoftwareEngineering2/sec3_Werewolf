@@ -10,12 +10,9 @@ import {
 } from '@chakra-ui/react';
 import { TextInputField } from '../../shared/FormikField';
 
-const Page2Page3_calculatePrice = observer(({ steps, putResponse }) => {
-    // this 4 constanct is only for test.
-    const [isPromoAvailable, setPromoAvailable] = useState(null);
-    const [promoData, setPromoData] = useState();
-  
+const Page2Page3_calculatePrice = observer(({ steps, putResponse, isPromoAvailable, setPromoAvailable }) => {
     const { values } = useFormikContext();
+    const [promoData, setPromoData] = useState('');
   
     const getPromotioncodeFromServer = () => {
       promotion
@@ -29,13 +26,10 @@ const Page2Page3_calculatePrice = observer(({ steps, putResponse }) => {
         })
         .catch(error => {
           console.error(error);
+          setPromoData("");
           setPromoAvailable('false');
         });
     };
-  
-    const calTotalWithPromo = () =>
-      putResponse.cost -
-      (putResponse.cost * (isPromoAvailable === 'true' ? promoData.discountRate : 0)) / 100;
   
     const promotionBox = () => {
       if (steps == 2) {
@@ -81,7 +75,7 @@ const Page2Page3_calculatePrice = observer(({ steps, putResponse }) => {
                 Total price
               </Text>
               <Text fontFamily="body" fontWeight="bold">
-                {calTotalWithPromo()}
+                {putResponse.cost}
               </Text>
             </HStack>
           </>
