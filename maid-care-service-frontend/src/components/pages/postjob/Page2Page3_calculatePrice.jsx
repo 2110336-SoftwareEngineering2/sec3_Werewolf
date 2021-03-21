@@ -14,7 +14,7 @@ const Page2Page3_calculatePrice = observer(({ steps, putResponse, isPromoAvailab
     const { values } = useFormikContext();
     const [promoData, setPromoData] = useState('');
   
-    const getPromotioncodeFromServer = () => {
+    const getPromotioncodeAPI = () => {
       promotion
         .get(`/${values.promotionCode}`, {
           timeout: 5000,
@@ -41,7 +41,7 @@ const Page2Page3_calculatePrice = observer(({ steps, putResponse, isPromoAvailab
               placeholder="Apply Your Promotion Code"
             />
             <HStack mt="5px">
-              <Button onClick={getPromotioncodeFromServer} width="100px">
+              <Button onClick={getPromotioncodeAPI} width="100px">
                 Verify
               </Button>
               <Text

@@ -11,7 +11,7 @@ import {
   AlertDialogContent,
   AlertDialogOverlay,
 } from '@chakra-ui/react';
-
+import { wait, waitFor } from '@testing-library/dom';
 
 // this file, ButtonField.jsx, is responsible for 3 main job.
 // 1. contain all button ( Previous button, Next button, Submit button )
@@ -33,7 +33,7 @@ const ButtonField = ({ steps, setSteps, isPromoAvailable }) => {
     }
   };
 
-  const postJobToServer = () => {
+  const postJobAPI = () => {
     const n_dishes = () => (values.isDishes === false ? 0 : values.amountOfDishes);
     const n_rooms = () => (values.isRooms === false ? 0 : values.areaOfRooms);
     const n_clothes = () => (values.isClothes === false ? 0 : values.amountOfClothes);
@@ -58,10 +58,18 @@ const ButtonField = ({ steps, setSteps, isPromoAvailable }) => {
             quantity: parseInt(n_clothes()),
           },
         ],
-        promotionCode: isPromoAvailable==='true' ? values.promotionCode : '',
+        promotionCode: isPromoAvailable === 'true' ? values.promotionCode : '',
       })
       .then(response => {
-        console.log(response);
+        console.log(response.data._id);
+        job
+          .put(`/${response.data._id}/find-maid`)
+          .then(res => {
+            console.log(res);
+          })
+          .catch(error => {
+            console.error(error);
+          });
       })
       .catch(error => {
         console.error(error);
@@ -119,7 +127,7 @@ const ButtonField = ({ steps, setSteps, isPromoAvailable }) => {
                 onClick={() => {
                   onClose();
                   handleIncrement();
-                  postJobToServer();
+                  postJobAPI();
                 }}
                 ml={3}>
                 Confirm

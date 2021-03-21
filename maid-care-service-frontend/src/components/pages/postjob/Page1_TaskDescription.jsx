@@ -14,7 +14,7 @@ const Page1_TaskDescription = observer(() => {
 
   // this function will get workspace from backend server and then
   // set the value in myWorkspaces by perfrom setMyWorkspaces(response.data)
-  const getWorkspaceFromServer = () => {
+  const getWorkspaceAPI = () => {
     workspace
       .get('/', {
         timeout: 5000,
@@ -32,7 +32,7 @@ const Page1_TaskDescription = observer(() => {
   // this useEffec function will work only when page is reloaded.
   // that mean it will get workspace every time when when page is reloaded.
   useEffect(() => {
-    getWorkspaceFromServer();
+    getWorkspaceAPI();
   }, []);
 
   return (
