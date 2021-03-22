@@ -1,6 +1,6 @@
 import { observable, action, makeObservable, when } from 'mobx';
 import axiosRetry from 'axios-retry';
-import { auth, workspace } from '../api';
+import { auth } from '../api';
 
 class UserStore {
   userData = null;
@@ -73,8 +73,6 @@ class UserStore {
     localStorage.removeItem('token');
     this.userData = null;
   }
-
-  
 }
 
 export default UserStore;
