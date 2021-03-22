@@ -1,6 +1,6 @@
 import React,{useState} from "react";
 import {useParams,Redirect} from "react-router-dom";
-import { auth } from '../../../api';
+import { auth } from '../../../api/auth.js';
 
 const Verification = () => {
     const [verified,setVerified] = useState(false)
