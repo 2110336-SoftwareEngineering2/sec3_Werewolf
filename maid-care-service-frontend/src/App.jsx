@@ -9,23 +9,25 @@ import EditProfile from './components/pages/editprofile/editprofile.jsx';
 import Workspace from './components/pages/workspace/workspace.jsx';
 import ProtectedRoute from './components/protectedRoute';
 import Promotion from './components/pages/promotion/promotion.jsx';
-import SignUp from './components/pages/signup/signup.jsx';
-import Verification from './components/pages/signup/verfification.jsx';
+import Navbar from './components/layouts/Navbar.jsx';
+import JobsPage from './components/pages/jobs/jobs.jsx';
+import { Postjob } from './components/pages/postjob/postjob.jsx';
 
 export const App = () => {
   return (
     <ChakraProvider theme={theme}>
+      <Navbar />
       <Switch>
         <Route exact path="/">
           <Redirect to="/home" />
         </Route>
+        <Route exact path="/home" component={Home} />
         <Route exact path="/login" component={LogIn} />
-        <Route path="/promotion" component={Promotion} />
-        <Route path="/signup" component={SignUp} />
-        <Route path="/auth/verify/:token" component={Verification} />
-        <Route exact path="/profile/edit" component={EditProfile} />
-        <Route exact path="/workspace" component={Workspace} />
-        <ProtectedRoute exact path="/home" component={Home} />
+        <ProtectedRoute path="/promotion" component={Promotion} />
+        <ProtectedRoute exact path="/profile/edit" component={EditProfile} />
+        <ProtectedRoute exact path="/workspace" component={Workspace} />
+		<Route path="/postjob" component={Postjob} />
+        <ProtectedRoute exact path="/jobs" component={JobsPage} />
       </Switch>
     </ChakraProvider>
   );
