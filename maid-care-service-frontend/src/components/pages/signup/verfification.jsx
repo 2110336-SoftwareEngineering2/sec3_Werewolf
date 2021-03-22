@@ -1,6 +1,7 @@
-import React,{useState} from "react";
+import React,{useState,useEffect} from "react";
 import {useParams,Redirect} from "react-router-dom";
 import { auth } from '../../../api/auth.js';
+import {VStack,Box} from '@chakra-ui/react';
 
 const Verification = () => {
     const [verified,setVerified] = useState(false)
@@ -14,22 +15,37 @@ const Verification = () => {
             setVerified(true);
         })
         .catch(err => {
-            setError(err.message)
+            setError(err.response)
+            console.log(err)
         })
     }
 
-    verify()
+    useEffect(() => {
+        verify()
+    },[token])
 
     if(!error && verified){
         return(<Redirect to="/login" />)
     }
-    else{
-        return(<div>
+    else if(error && error.status === 401){
+        return(<VStack>
+            <Box>
             Sorry, we cannot verify your account
             <br/>
-            {error}
-        </div>)
+            An error occur: Token not existed or has expired
+            </Box>
+        </VStack>)
     }
+    else if(error && error.status === 403){
+        return(<VStack>
+            <Box>
+            Sorry, we cannot verify your account
+            <br/>
+            An error occur: Invalid user
+            </Box>
+        </VStack>)
+    }
+    return(<div>Redirecting</div>)
     
     
 }
