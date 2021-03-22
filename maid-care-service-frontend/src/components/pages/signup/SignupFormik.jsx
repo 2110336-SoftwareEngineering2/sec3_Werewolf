@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import * as Yup from 'yup';
 
-import { auth } from '../../../api';
+import { auth } from '../../../api/auth.js';
 
 import { VStack, Text, Image, Stack,Box,Flex } from '@chakra-ui/react';
 import {ErrorMessage} from 'formik';
@@ -13,19 +13,27 @@ const SignupFormik = () => {
   const WizardStep = ({ children }) => children;
   const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
   const [submitted, setSubmit] = useState(false);
+  const [error, setError] = useState(false)
 
   const work_choices = ['House Cleaning', 'Dish Washing', 'Laundry', 'Gardening', 'Decluttering'];
 
   function signup(values) {
     let confirm = window.confirm('Confirm form submission. This cannot be undone.');
     if(confirm == true){
-      setSubmit(true);
       auth.post('/register',values)
-      .then(response => console.log(response))
+      .then(response => {
+        console.log(response) 
+        setSubmit(true);
+      })
+      .catch(err => {
+        setError(err.response)
+        setSubmit(true)
+        console.log(err.response.status)
+      })
     }
   }
 
-  if (submitted) {
+  if (submitted && !error) {
     return (
       <VStack justifyContent="center">
         <Image src="/assets/images/mail.png" alt="verification email" mb="2" boxSize="10rem" />
@@ -35,6 +43,16 @@ const SignupFormik = () => {
         </Text>
       </VStack>
     );
+  }
+
+  else if (submitted && error){
+    if(error.status === 409)
+    return(
+      <VStack justifyContent="center" mt="2">
+        <Image src="/assets/images/sadface.png" alt="taken email" my="5" boxSize="10rem" />
+        <Text fontSize="lg" color="red">Sorry, this email address is already registered.</Text>
+      </VStack>
+    )
   }
 
   return (
@@ -64,14 +82,10 @@ const SignupFormik = () => {
             .matches(/^[aA-zZ\s]+$/, 'Only alphabets are allowed for this field ')
             .required('Required'),
       })}>
-        <Box width="80%">
         <TextInputField name="email" label="Email Address" placeholder="example@mail.com"/>
         <TextInputField name="password" label="Password" type="password"/>
-        <Stack direction={["column","row"]} mt="1">
-          <TextInputField name="firstName" label="First Name" placeholder="First Name"/>
-          <TextInputField name="lastName" label="Last Name" placeholder="Last Name"/>
-        </Stack>
-        </Box>
+        <TextInputField name="firstName" label="First Name" placeholder="First Name"/>
+        <TextInputField name="lastName" label="Last Name" placeholder="Last Name"/>
       </WizardStep>
 
 
