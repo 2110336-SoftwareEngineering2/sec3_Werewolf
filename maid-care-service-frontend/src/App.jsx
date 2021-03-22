@@ -11,6 +11,7 @@ import ProtectedRoute from './components/protectedRoute';
 import Promotion from './components/pages/promotion/promotion.jsx';
 import Navbar from './components/layouts/Navbar.jsx';
 import JobsPage from './components/pages/jobs/jobs.jsx';
+import { Postjob } from './components/pages/postjob/postjob.jsx';
 
 export const App = () => {
   return (
@@ -25,6 +26,7 @@ export const App = () => {
         <ProtectedRoute path="/promotion" component={Promotion} />
         <ProtectedRoute exact path="/profile/edit" component={EditProfile} />
         <ProtectedRoute exact path="/workspace" component={Workspace} />
+		<Route path="/postjob" component={Postjob} />
         <ProtectedRoute exact path="/jobs" component={JobsPage} />
       </Switch>
     </ChakraProvider>
