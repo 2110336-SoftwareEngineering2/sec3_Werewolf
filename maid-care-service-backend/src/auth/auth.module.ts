@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { SchedulerRegistry } from '@nestjs/schedule';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JWTService } from './jwt.service';
@@ -12,6 +13,7 @@ import { UsersModule } from '../users/users.module';
   controllers: [AuthController],
   providers: [
     AuthService,
+    SchedulerRegistry,
     JWTService,
     JwtStrategy,
     ...EmailVerificationProviders,

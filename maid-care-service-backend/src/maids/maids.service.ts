@@ -35,7 +35,7 @@ export class MaidsService {
 
   async updateWork(id: string, work: [string]): Promise<Maid> {
     const maidFromDb = await this.findMaid(id);
-    if (!maidFromDb) throw new ForbiddenException('Invalid maid');
+    if (!maidFromDb) throw new ForbiddenException('invalid maid');
     // update works
     if (work) {
       work.forEach((work) => {
@@ -50,7 +50,7 @@ export class MaidsService {
 
   async updateNote(id: string, note: string): Promise<Maid> {
     const maidFromDb = await this.findMaid(id);
-    if (!maidFromDb) throw new ForbiddenException('Invalid maid');
+    if (!maidFromDb) throw new ForbiddenException('invalid maid');
     // update note
     if (note) {
       maidFromDb.note = note;
@@ -66,9 +66,9 @@ export class MaidsService {
   ): Promise<Maid> {
     // validate latitude and Longitude
     if (isNaN(latitude) || isNaN(longitude))
-      throw new BadRequestException('Invalid latitude or Longitude');
+      throw new BadRequestException('invalid latitude or longitude');
     const maidFromDb = await this.findMaid(id);
-    if (!maidFromDb) throw new ForbiddenException('Invalid maid');
+    if (!maidFromDb) throw new ForbiddenException('invalid maid');
     // update latitude and Longitude
     maidFromDb.cerrentLocation.latitude = latitude;
     maidFromDb.cerrentLocation.longitude = longitude;

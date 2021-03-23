@@ -3,10 +3,10 @@ import {
   Inject,
   UnauthorizedException,
   ForbiddenException,
-  UnprocessableEntityException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import * as nodemailer from 'nodemailer';
+import { SchedulerRegistry } from '@nestjs/schedule';
 import { Model } from 'mongoose';
 import { JWTService } from './jwt.service';
 import { UsersService } from '../users/users.service';
@@ -17,6 +17,7 @@ export class AuthService {
   constructor(
     @Inject('EmailVerification_MODEL')
     private emailVerificationModel: Model<EmailVerification>,
+    private schedulerRegistry: SchedulerRegistry,
     private jwtService: JWTService,
     private usersService: UsersService,
   ) {}
@@ -66,6 +67,7 @@ export class AuthService {
         html:
           'Hello! <br><br> Thanks for your registration<br><br>' +
           '<a href=' +
+          // process.env.FRONTEND_URL +
           process.env.SERVER_URL +
           '/auth/verify/' +
           model.token +
@@ -83,7 +85,7 @@ export class AuthService {
       });
       return sent;
     } else {
-      throw new UnprocessableEntityException();
+      throw new ForbiddenException('can not find token');
     }
   }
 
@@ -95,15 +97,25 @@ export class AuthService {
       const user = await this.usersService.findUserByEmail(
         emailVerification.email,
       );
-      // remove the email verification token
-      await emailVerification.remove();
+      // remove the email verification token in 5 minutes
+      this.addTimeout(emailVerification, 300000);
       // validate user
-      if (!user) throw new ForbiddenException('Invalid user');
+      if (!user) throw new ForbiddenException('invalid user');
       user.valid = true;
       const savedUser = await user.save();
       return !!savedUser;
     } else {
-      throw new UnauthorizedException('Code not valid');
+      throw new UnauthorizedException('token not valid');
     }
+  }
+
+  addTimeout(emailVerification: EmailVerification, milliseconds: number) {
+    const callback = () => {
+      // remove the email verification token
+      emailVerification.remove();
+    };
+
+    const timeout = setTimeout(callback, milliseconds);
+    this.schedulerRegistry.addTimeout(emailVerification._id, timeout);
   }
 }

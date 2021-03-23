@@ -17,6 +17,7 @@ import { Maid } from 'src/maids/interfaces/maids.interface';
 import { CreateJobDto } from './dto/create-job.dto';
 import { WorkType } from 'src/maids/workType';
 import { WorkCost } from './workCost';
+import { JobState } from './jobState';
 
 @Injectable()
 export class JobService {
@@ -113,19 +114,21 @@ export class JobService {
     if (nearestMaid) {
       job.maidId = nearestMaid._id;
       job.requestedMaid.push(nearestMaid._id);
-      const cerrentTime = new Date();
       //expired in 60 seconds
+      const cerrentTime = new Date();
       const expiredIn = 60000;
       job.expiryTime = new Date(cerrentTime.getTime() + expiredIn);
       await job.save();
-      this.addTimeout(job, expiredIn);
+      const callback = () => {
+        this.reject(job);
+      };
+      await this.addTimeout(job, expiredIn, callback);
       //push notification to maid
       console.log('send request to maid ' + nearestMaid._id);
       await this.notificationService.sendNotification(
         nearestMaid._id,
         'new job',
       );
-      nearestMaid.availability = false;
       await nearestMaid.save();
     } else {
       job.maidId = null;
@@ -142,22 +145,65 @@ export class JobService {
   }
 
   async reject(job: Job): Promise<Job> {
-    this.maidsService.setAvailability(job.maidId, true);
+    await this.deleteTimeout(job);
     // find new maid
     await this.findMaid(job);
     return job;
   }
 
-  addTimeout(job: Job, milliseconds: number) {
+  async accept(job: Job): Promise<Job> {
+    await this.deleteTimeout(job);
+    job.state = JobState.matched;
+    // send nofication to customer
+    console.log('maid found');
+    await this.notificationService.sendNotification(
+      job.customerId,
+      'maid found',
+    );
+    // customer comfirm in 60 seconds
+    const cerrentTime = new Date();
+    const expiredIn = 60000;
+    job.expiryTime = new Date(cerrentTime.getTime() + expiredIn);
+    await job.save();
     const callback = () => {
-      this.reject(job);
+      this.confirm(job);
     };
+    await this.addTimeout(job, expiredIn, callback);
+    return await job.save();
+  }
 
+  async confirm(job: Job): Promise<Job> {
+    job.state = JobState.confirmed;
+    return await job.save();
+  }
+
+  async customer_cancel(job: Job): Promise<Job> {
+    await this.deleteTimeout(job);
+    job.state = JobState.canceled;
+    this.maidsService.setAvailability(job.maidId, true);
+    //push notification to maid
+    console.log('customer cancel job');
+    await this.notificationService.sendNotification(
+      job.maidId,
+      'customer cancel job',
+    );
+    return await job.save();
+  }
+
+  async jobDone(job: Job): Promise<Job> {
+    job.state = JobState.done;
+    // send nofication to customer
+    console.log('job done');
+    await this.notificationService.sendNotification(job.customerId, 'job done');
+    return await job.save();
+  }
+
+  async addTimeout(job: Job, milliseconds: number, callback) {
     const timeout = setTimeout(callback, milliseconds);
     this.schedulerRegistry.addTimeout(job.id, timeout);
   }
 
-  deleteTimeout(job: Job) {
+  async deleteTimeout(job: Job) {
     this.schedulerRegistry.deleteTimeout(job.id);
   }
 
