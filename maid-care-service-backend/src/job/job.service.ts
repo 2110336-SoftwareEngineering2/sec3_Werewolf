@@ -116,7 +116,7 @@ export class JobService {
       job.requestedMaid.push(nearestMaid._id);
       //expired in 60 seconds
       const cerrentTime = new Date();
-      const expiredIn = 20000;
+      const expiredIn = 60000;
       job.expiryTime = new Date(cerrentTime.getTime() + expiredIn);
       await job.save();
       const callback = () => {
