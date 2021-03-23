@@ -177,7 +177,6 @@ export class JobController {
       req.user._id == job.maidId &&
       job.expiryTime > new Date()
     ) {
-      await this.jobService.deleteTimeout(job);
       await this.jobService.reject(job);
       return new JobDto(job);
     } else throw new NotFoundException('job not found');
@@ -232,7 +231,7 @@ export class JobController {
       req.user._id == job.customerId &&
       job.expiryTime > new Date()
     ) {
-      await this.jobService.cancel(job);
+      await this.jobService.customer_cancel(job);
       return new JobDto(job);
     } else throw new NotFoundException('job not found');
   }
@@ -259,6 +258,23 @@ export class JobController {
       await this.jobService.deleteTimeout(job);
       await this.jobService.confirm(job);
       await job.save();
+      return new JobDto(job);
+    } else throw new NotFoundException('job not found');
+  }
+
+  @Put(':id/done')
+  @ApiCreatedResponse({ description: 'maid finish job', type: JobDto })
+  @ApiResponse({
+    status: 404,
+    description: 'job not found, already canceled or not confirmed yet',
+  })
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('acess-token')
+  async jobDone(@Request() req, @Param('id') id: string) {
+    const job = await this.jobService.findJob(id);
+    if (job && job.state === JobState.confirmed && req.user._id == job.maidId) {
+      this.maidsService.setAvailability(req.user._id, true);
+      await this.jobService.jobDone(job);
       return new JobDto(job);
     } else throw new NotFoundException('job not found');
   }

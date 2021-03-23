@@ -116,7 +116,7 @@ export class JobService {
       job.requestedMaid.push(nearestMaid._id);
       //expired in 60 seconds
       const cerrentTime = new Date();
-      const expiredIn = 60000;
+      const expiredIn = 20000;
       job.expiryTime = new Date(cerrentTime.getTime() + expiredIn);
       await job.save();
       const callback = () => {
@@ -145,6 +145,7 @@ export class JobService {
   }
 
   async reject(job: Job): Promise<Job> {
+    await this.deleteTimeout(job);
     // find new maid
     await this.findMaid(job);
     return job;
@@ -176,7 +177,7 @@ export class JobService {
     return await job.save();
   }
 
-  async cancel(job: Job): Promise<Job> {
+  async customer_cancel(job: Job): Promise<Job> {
     await this.deleteTimeout(job);
     job.state = JobState.canceled;
     this.maidsService.setAvailability(job.maidId, true);
@@ -186,6 +187,14 @@ export class JobService {
       job.maidId,
       'customer cancel job',
     );
+    return await job.save();
+  }
+
+  async jobDone(job: Job): Promise<Job> {
+    job.state = JobState.done;
+    // send nofication to customer
+    console.log('job done');
+    await this.notificationService.sendNotification(job.customerId, 'job done');
     return await job.save();
   }
 
