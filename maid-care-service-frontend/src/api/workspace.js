@@ -9,3 +9,7 @@ export const workspace = axios.create({
     secret: process.env.REACT_APP_SECRET,
   },
 });
+
+export const fetchWorkspaceById = (wid) => {
+  return workspace.get(`/${wid}`);
+};

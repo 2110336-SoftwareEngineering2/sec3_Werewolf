@@ -64,7 +64,7 @@ export const Workspace = () => {
   const [markers, setMarkers] = React.useState([]);
 
   // onMapClick is a function that create map marker icon when user click on the map.
-  const onMapClick = React.useCallback(event => {
+  const onMapClick = React.useCallback((event) => {
     setMarkers(() => [
       {
         lat: event.latLng.lat(),
@@ -75,7 +75,7 @@ export const Workspace = () => {
   }, []);
 
   const mapRef = React.useRef();
-  const onMapLoad = React.useCallback(map => {
+  const onMapLoad = React.useCallback((map) => {
     mapRef.current = map;
   }, []);
 
@@ -98,7 +98,7 @@ export const Workspace = () => {
           onClick={onMapClick}
           onLoad={onMapLoad}>
           <LocateMe panTo={panTo} />
-          {markers.map(marker => (
+          {markers.map((marker) => (
             <Marker
               key={marker.time.toISOString()}
               position={{ lat: marker.lat, lng: marker.lng }}
@@ -117,7 +117,7 @@ const InfoSidebar = observer(({ panTo, markers, setMarkers }) => {
   const [error, setError] = useState(false);
   const [isFormCorrect, setFormCorrect] = useState(false);
   const { userStore } = useStores();
-  
+
   const user = userStore.userData;
 
   const yup = Yup.object({
@@ -137,13 +137,13 @@ const InfoSidebar = observer(({ panTo, markers, setMarkers }) => {
         customerId: user._id,
         description: `${houseNo} ${address1} ${address2} ${city} ${state} ${country}`,
         latitude: markers[0].lat,
-        longitude: markers[0].lng
+        longitude: markers[0].lng,
       })
-      .then(response => {
+      .then((response) => {
         console.log(response);
         setSubmitting(false);
       })
-      .catch(error => {
+      .catch((error) => {
         console.error(error);
         setSubmitting(false);
         setError(error);
@@ -339,7 +339,7 @@ const SearchLocation = ({ panTo, setMarkers }) => {
     lng: null,
   });
 
-  const handleSelect = async value => {
+  const handleSelect = async (value) => {
     try {
       const result = await geocodeByAddress(value);
       const latLng = await getLatLng(result[0]);
@@ -360,7 +360,7 @@ const SearchLocation = ({ panTo, setMarkers }) => {
             <Input w="300px" {...getInputProps({ placeholder: 'Search your location....' })} />
             <Box w="300px">
               {loading ? <div>...loading</div> : null}
-              {suggestions.map(suggestion => {
+              {suggestions.map((suggestion) => {
                 const style = {
                   backgroundColor: suggestion.active ? '#41b6e6' : '#fff',
                 };
@@ -409,7 +409,7 @@ const LocateMe = ({ panTo }) => {
       className="button-locateMe"
       onClick={() => {
         navigator.geolocation.getCurrentPosition(
-          position => {
+          (position) => {
             panTo({
               lat: position.coords.latitude,
               lng: position.coords.longitude,

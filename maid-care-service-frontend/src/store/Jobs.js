@@ -3,14 +3,14 @@ import { job as JobAPI } from '../api';
 
 class JobsStore {
   jobs = [];
-  accpetedJob = null;
+  currentJob = null;
   loading = false;
   error = false;
 
   constructor() {
     makeAutoObservable(this, {
       jobs: observable,
-      accpetedJob: observable,
+      currentJob: observable,
       fetchAllJobs: action,
       accept: action,
       reject: action,
@@ -39,7 +39,7 @@ class JobsStore {
     this.error = false;
     return JobAPI.put(`/${jobId}/accept`)
       .then((response) => {
-        this.accpetedJob = response.data;
+        this.currentJob = response.data;
         this.loading = false;
       })
       .catch((error) => {
@@ -58,7 +58,7 @@ class JobsStore {
     this.error = false;
     return JobAPI.put(`/${jobId}/reject`)
       .then((response) => {
-        this.accpetedJob = null;
+        this.currentJob = null;
         this.loading = false;
       })
       .catch((error) => {
