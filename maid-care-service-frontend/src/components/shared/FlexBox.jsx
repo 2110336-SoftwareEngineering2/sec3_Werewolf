@@ -5,6 +5,8 @@ const FlexBox = ({ children }) => (
   <Flex
     py="8"
     px={{ base: '8', md: '12' }}
+    my="6"
+    mx="3"
     minWidth={{ base: '80vw', md: '30vw' }}
     bg="boxWhite"
     borderRadius="24px"
