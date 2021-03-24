@@ -7,6 +7,7 @@ export class MaidDto extends UpdateMaidDto {
     this._id = object._id;
     this.availability = object.availability;
     this.avgRating = object.avgRating;
+    this.totalReviews = object.totalReviews;
   }
 
   @ApiProperty({ type: String })
@@ -17,4 +18,7 @@ export class MaidDto extends UpdateMaidDto {
 
   @ApiProperty({ type: Number })
   readonly avgRating: number;
+
+  @ApiProperty({ type: Number })
+  readonly totalReviews: number;
 }
