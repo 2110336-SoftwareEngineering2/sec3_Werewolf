@@ -10,7 +10,7 @@ import { useStores } from '../../../hooks/use-stores';
 
 export const LogIn = observer(() => {
   const { userStore } = useStores();
-  const history = useLocation().state.history;
+  const history = useLocation().state ? useLocation().state.history: '';
 
   if (userStore.isAuthenticated) {
     return <Redirect to="/" />;
