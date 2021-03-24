@@ -40,3 +40,4 @@ export const fetchCurrentUser = async () => {
   axiosRetry(auth, { retries: 3 });
   return auth.get('/user');
 };
+

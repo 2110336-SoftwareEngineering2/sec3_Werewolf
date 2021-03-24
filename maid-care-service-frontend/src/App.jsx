@@ -24,12 +24,10 @@ export const App = () => {
         </Route>
         <ProtectedRoute exact path="/home" component={Home} />
         <Route exact path="/login" component={LogIn} />
-
        
         <ProtectedRoute exact path="/profile" component={ProfilePage} />
         <ProtectedRoute exact path="/profile/edit" component={EditProfile} />
         
-
         <ProtectedRoute path="/promotion" component={Promotion} />
         <ProtectedRoute exact path="/workspace" component={Workspace} />
 		    <Route path="/postjob" component={Postjob} />
