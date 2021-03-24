@@ -22,8 +22,8 @@ export const ProfilePage = () => {
 
     return(
       <HStack spacing={0.5}>
-      {Array(Math.floor(score)).fill(<FontAwesomeIcon icon={faStar}/>)}
-      {score - Math.floor(score) > 0 ? <FontAwesomeIcon icon={faStarHalf} /> : null}
+      {Array(Math.floor(score)).fill(<FontAwesomeIcon icon={faStar} color="#FFB800" />)}
+      {score - Math.floor(score) > 0 ? <FontAwesomeIcon icon={faStarHalf} color="#FFB800" /> : null}
       </HStack>)
   }
   
