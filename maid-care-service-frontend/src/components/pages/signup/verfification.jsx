@@ -1,11 +1,12 @@
 import React,{useState,useEffect} from "react";
-import {useParams,Redirect} from "react-router-dom";
+import {useHistory,useParams,Redirect} from "react-router-dom";
 import { auth } from '../../../api/auth.js';
 import {VStack,Box} from '@chakra-ui/react';
 
 const Verification = () => {
     const [verified,setVerified] = useState(false)
     const [error,setError] = useState(false)
+
     let {token} = useParams()
     
     function verify(){
@@ -20,12 +21,13 @@ const Verification = () => {
         })
     }
 
+    
     useEffect(() => {
         verify()
     },[token])
 
-    if(!error && verified){
-        return(<Redirect to="/login" />)
+    if(verified && !error){
+        return(<Redirect to={{pathname:"/login",state:{history:'/auth/verify'}}}/>)
     }
     else if(error && error.status === 401){
         return(<VStack>
