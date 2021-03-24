@@ -9,7 +9,7 @@ import {
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { NotificationService } from '../notification/notification.service';
-import { CustomerService } from '../customer/customer.service';
+import { WalletService } from '../wallet/wallet.service';
 import { MaidsService } from '../maids/maids.service';
 import { JobService } from '../job/job.service';
 import { WorkspacesService } from 'src/workspaces/workspaces.service';
@@ -24,7 +24,7 @@ export class UsersService {
   constructor(
     @Inject('USER_MODEL') private userModel: Model<User>,
     private notificationService: NotificationService,
-    private customerService: CustomerService,
+    private walletService: WalletService,
     private maidsService: MaidsService,
     private jobService: JobService,
     private workspacesService: WorkspacesService,
@@ -76,8 +76,8 @@ export class UsersService {
       // create new user
       const user = await this.createNewUser(createUserDto);
       if (user.role === 'customer')
-        // create new customer
-        await this.customerService.createNewCustomer(user._id);
+        // create new customer's wallet
+        await this.walletService.createNewWallet(user._id);
       else if (user.role === 'maid') {
         // create new maid
         await this.maidsService.createNewMaid(user._id);
@@ -116,9 +116,9 @@ export class UsersService {
       await this.notificationService.unsubscribe(user._id);
     } catch (error) {}
     if (user.role === 'customer') {
-      // delete customer and all jobs and workspaces posted by this customer
-      const customer = await this.customerService.findCustomer(user._id);
-      if (customer) {
+      // delete wallet, jobs and workspaces posted by this customer
+      const wallet = await this.walletService.findWallet(user._id);
+      if (wallet) {
         const jobs = await this.jobService.findByCustomer(id);
         jobs.forEach((job) => {
           job.remove();
@@ -129,7 +129,7 @@ export class UsersService {
         workspaces.forEach((workspace) => {
           workspace.remove();
         });
-        await customer.remove();
+        await wallet.remove();
       }
     } else if (user.role === 'maid') {
       // delete maid
