@@ -37,8 +37,12 @@ const JobStatus = ({ job: { state, expiryTime } }) => {
     </>
   ) : (
     <>
-      <Icon as={FaClock} />
-      <Text fontSize={`lg`}>{remainingTime}</Text>
+      <HStack>
+        <Icon as={FaClock} w={6} h={6} />
+        <Text fontSize={`lg`} fontWeight={`bold`}>
+          {remainingTime}
+        </Text>
+      </HStack>
     </>
   );
 };

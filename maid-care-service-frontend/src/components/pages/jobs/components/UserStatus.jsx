@@ -1,7 +1,7 @@
 import { Avatar } from '@chakra-ui/avatar';
 import { Text } from '@chakra-ui/layout';
 import { SkeletonCircle, SkeletonText } from '@chakra-ui/skeleton';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { fetchUserById } from '../../../../api';
 
 const UserStatus = ({ uid, user }) => {
@@ -9,27 +9,39 @@ const UserStatus = ({ uid, user }) => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    let isMounted = true;
     (async () => {
-      setLoading(true);
+      if (isMounted) setLoading(true);
       if (user) {
-        setUser(user);
+        if (isMounted) setUser(user);
       } else {
         try {
           const { data } = await fetchUserById(uid);
-          setUser(data);
+          if (isMounted) setUser(data);
         } catch (error) {
           console.error(error);
-          setUser(null);
+          if (isMounted) setUser(null);
         }
       }
-      setLoading(false);
+      if (isMounted) setLoading(false);
     })();
+
+    return () => {
+      isMounted = false;
+    };
   }, [uid, user]);
 
-  return loading || !u ? (
+  return loading ? (
     <>
       <SkeletonCircle size={10} />
       <SkeletonText noOfLines={2} />
+    </>
+  ) : !u ? (
+    <>
+      <Avatar></Avatar>
+      <Text fontSize={`lg`} fontWeight={`bold`}>
+        No user
+      </Text>
     </>
   ) : (
     <>

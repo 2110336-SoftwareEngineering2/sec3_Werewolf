@@ -1,47 +1,15 @@
-import { Avatar } from '@chakra-ui/avatar';
-import { Button, ButtonGroup } from '@chakra-ui/button';
+import { ButtonGroup } from '@chakra-ui/button';
 import Icon from '@chakra-ui/icon';
-import {
-  Box,
-  Center,
-  Grid,
-  GridItem,
-  Heading,
-  HStack,
-  List,
-  ListItem,
-  Text,
-} from '@chakra-ui/layout';
-import { Skeleton } from '@chakra-ui/skeleton';
+import { Box, Grid, GridItem, Heading, HStack, List, ListItem, Text } from '@chakra-ui/layout';
 import { observer } from 'mobx-react-lite';
-import React, { useEffect, useState } from 'react';
 import { FaTshirt } from 'react-icons/fa';
-import { fetchWorkspaceById } from '../../../../api';
+import Address from './Address';
+import Actions from './cta';
 import Status from './Status';
 import UserStatus from './UserStatus';
 
 const JobItemModal = observer(({ job, onCancel, onAccept }) => {
-  const [loading, setLoading] = useState(false);
-  const [address, setAddress] = useState(null);
-
-  const { _id: jobId, work, workplaceId, customerId } = job;
-
-  useEffect(() => {
-    // Get Job Address
-    (async () => {
-      try {
-        setLoading(true);
-        const response = await fetchWorkspaceById(workplaceId);
-        const wsp = response.data;
-        setAddress(wsp.description);
-        console.log(wsp);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, [workplaceId]);
+  const { _id: jobId, work, workplaceId, customerId, state } = job;
 
   return (
     <Grid h={`75vh`} templateRows={`14rem repeat(5, 1fr)`} templateColumns={`repeat(5, 1fr)`}>
@@ -64,24 +32,17 @@ const JobItemModal = observer(({ job, onCancel, onAccept }) => {
         ))}
       </GridItem>
       <GridItem rowSpan={2} colSpan={3} p={4} alignItems={`baseline`}>
-        <Heading as={`h6`} fontSize={`lg`} fontWeight={`bold`}>
-          Address
-        </Heading>
-        <Skeleton isLoaded={!loading}>
-          <Text>{address}</Text>
-        </Skeleton>
+        <Address workplaceId={workplaceId} />
       </GridItem>
       <GridItem rowStart={4} rowSpan={2} colStart={0} colSpan={3} p={4}>
         {/* TODO: add note to return value of api */}
         <Heading as={`h6`} fontSize={`lg`} fontWeight={`bold`}>
           Note
         </Heading>
-        <Skeleton isLoaded={!loading}>
-          <Text>
-            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Laborum, ullam! Lorem ipsum
-            dolor.
-          </Text>
-        </Skeleton>
+        <Text>
+          Lorem ipsum dolor sit amet consectetur, adipisicing elit. Laborum, ullam! Lorem ipsum
+          dolor.
+        </Text>
       </GridItem>
       <GridItem rowSpan={4} colSpan={1} p={4}>
         {/* Map State to What Component we want to Render Here! */}
@@ -95,12 +56,7 @@ const JobItemModal = observer(({ job, onCancel, onAccept }) => {
         rowStart={-2}
         colSpan={5}
         p={4}>
-        <Button onClick={onCancel} variant={`outline`} colorScheme={`red`}>
-          Cancel
-        </Button>
-        <Button onClick={onAccept} colorScheme={`green`}>
-          Accept
-        </Button>
+        <Actions job={job} state={state} />
       </GridItem>
     </Grid>
   );
