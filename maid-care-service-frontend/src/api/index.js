@@ -14,7 +14,7 @@ axios.interceptors.request.use((config) => {
 
 export { login, fetchCurrentUser, registerMaid };
 export { user, fetchUserById };
-export { workspace };
+export { workspace, fetchWorkspaceById };
 export { promotion };
 export { job };
 export { maid };
