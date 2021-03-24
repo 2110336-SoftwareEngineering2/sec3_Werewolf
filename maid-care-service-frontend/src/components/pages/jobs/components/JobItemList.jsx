@@ -1,44 +1,19 @@
-import { useDisclosure } from '@chakra-ui/hooks';
 import { Box, Container, Flex, HStack, Stack, Text, VStack } from '@chakra-ui/layout';
-import { Modal, ModalCloseButton, ModalContent, ModalOverlay } from '@chakra-ui/modal';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
 
-import JobItemModal from './JobItemModal';
 import Status from './Status';
 import UserStatus from './UserStatus';
 
-const JobItem = observer(({ job, ...props }) => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-
+const JobItem = observer(({ job }) => {
   const { customerId } = job;
 
   const renderMap = () => {
     return <Box flex={2} minW={`10rem`} bgColor="green.400" h={`12rem`}></Box>;
   };
 
-  const renderModal = () => {
-    return (
-      <Modal isCentered closeOnOverlayClick={false} isOpen={isOpen} onClose={onClose} size={`3xl`}>
-        <ModalOverlay />
-        <ModalContent overflow={'hidden'} borderRadius={`xl`}>
-          <ModalCloseButton zIndex={`tooltip`} />
-          {/* Job Modal */}
-          <JobItemModal job={job} onCancel={onClose} onAccept={() => console.log('accept')} />
-        </ModalContent>
-      </Modal>
-    );
-  };
-
   return (
-    <Container
-      boxShadow="md"
-      borderRadius={4}
-      overflow="hidden"
-      m={0}
-      px={0}
-      minW={`100%`}
-      onClick={onOpen}>
+    <Container boxShadow="md" borderRadius={4} overflow="hidden" m={0} px={0} minW={`100%`}>
       <Flex direction="row" alignItems="center">
         {renderMap()}
         <Stack direction={`column`} flex={4} p={2} alignItems="felx-start">
@@ -61,7 +36,6 @@ const JobItem = observer(({ job, ...props }) => {
           <Status job={job} />
         </VStack>
       </Flex>
-      {renderModal()}
     </Container>
   );
 });

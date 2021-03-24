@@ -3,9 +3,12 @@ import { createContext } from 'react';
 import JobsStore from './Jobs';
 import UserStore from './User';
 
+const userStore = new UserStore();
+const jobStore = new JobsStore({ userStore: userStore });
+
 export const intialStores = {
-  userStore: new UserStore(),
-  jobStore: new JobsStore(),
+  userStore,
+  jobStore,
 };
 
 export const StoreContext = createContext(null);
