@@ -198,6 +198,11 @@ export class JobService {
     return await job.save();
   }
 
+  async jobReviewd(job: Job): Promise<Job> {
+    job.state = JobState.reviewed;
+    return await job.save();
+  }
+
   async addTimeout(job: Job, milliseconds: number, callback) {
     const timeout = setTimeout(callback, milliseconds);
     this.schedulerRegistry.addTimeout(job.id, timeout);
