@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import {toJS} from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { Box, Flex, Stack, VStack, HStack, Text, Image, Switch } from '@chakra-ui/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -8,7 +9,7 @@ import {setAvailability} from '../../../api/maid';
 import FlexBox from '../../shared/FlexBox';
 import MaidLogo from '../../../MaidLogo.svg';
 import ProfilePic from './Pic.svg';
-import { fetchCurrentUser} from '../../../api/auth';
+import { fetchUserById} from '../../../api/user';
 import {fetchMaidById} from '../../../api/maid'
 import { useStores } from '../../../hooks/use-stores';
 
@@ -21,18 +22,12 @@ export const ProfilePage = observer(() => {
   useEffect(() => {
     if (userStore && userStore.userData) {
       const userID = userStore.userData._id;
-      fetchCurrentUser(userID)
-        .then((res) => {
-          setUser(res.data);
-          setAvail(maidInfo.availability)
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-
+      setUser(toJS(userStore.userData))
       fetchMaidById(userID)
       .then((res) => {
         setMaid(res.data);
+        setAvail(maidInfo.availability)
+        console.log(maidInfo)
       })
       .catch((err) => {
         console.log(err)
