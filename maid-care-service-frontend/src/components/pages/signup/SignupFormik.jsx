@@ -15,20 +15,19 @@ const SignupFormik = () => {
   const [submitted, setSubmit] = useState(false);
   const [error, setError] = useState(false)
 
-  const work_choices = ['House Cleaning', 'Dish Washing', 'Laundry', 'Gardening', 'Decluttering'];
+  const work_choices = ['House Cleaning', 'Dish Washing', 'Laundry', 'Gardening'];
 
   function signup(values) {
     let confirm = window.confirm('Confirm form submission. This cannot be undone.');
     if(confirm == true){
-      console.log('values' ,values)
       auth.post('/register',values)
       .then(response => {
-        console.log('response', response) 
+        console.log('res', response) 
         setSubmit(true);
       })
       .catch(err => {
         setError(err.response)
-        setSubmit(true)
+        setSubmit(true) 
         console.log(err.response.status)
       })
     }
@@ -84,8 +83,8 @@ const SignupFormik = () => {
       })}>
         <TextInputField name="email" label="Email Address" placeholder="example@mail.com"/>
         <TextInputField name="password" label="Password" type="password"/>
-        <TextInputField name="firstName" label="First Name" placeholder="First Name"/>
-        <TextInputField name="lastName" label="Last Name" placeholder="Last Name"/>
+        <TextInputField name="firstname" label="First Name" placeholder="First Name"/>
+        <TextInputField name="lastname" label="Last Name" placeholder="Last Name"/>
       </WizardStep>
 
 
@@ -115,7 +114,7 @@ const SignupFormik = () => {
             .required('Required'),
         })}>
           <DateField name="birthdate" label="Date of Birth" helperText="Maid can only be 18-80 years old" />
-          <TextInputField name="citizenID" label="Citizen ID" placeholder="Citizen ID" />
+          <TextInputField name="citizenId" label="Citizen ID" placeholder="Citizen ID" />
           <TextInputField name="bankAccountNumber" label="Bank Account Number" placeholder="Bank Account Number" />
       </WizardStep>
 
