@@ -105,7 +105,6 @@ const SignupFormik = () => {
               max_age.setFullYear(max_age.getFullYear() - 80);
               return birthdate >= max_age;
             }),
-          nationality: Yup.string().marequired(),
           citizenId: Yup.string()
             .matches(/^[0-9]+$/, 'Must be only digits')
             .length(13, 'Citizen ID must be 13-digit long')
