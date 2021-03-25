@@ -8,7 +8,7 @@ import Actions from './cta';
 import Status from './Status';
 import UserStatus from './UserStatus';
 
-const JobItemModal = observer(({ job, onCancel, onAccept }) => {
+const JobItemModal = observer(({ job }) => {
   const { _id: jobId, work, workplaceId, customerId, state } = job;
 
   return (
@@ -19,7 +19,9 @@ const JobItemModal = observer(({ job, onCancel, onAccept }) => {
         colSpan={6}
         bg={`green.300`}
         borderRadius={`xl`}
-        zIndex={`toast`}></GridItem>
+        zIndex={`toast`}>
+        {state}
+      </GridItem>
       <GridItem as={HStack} rowSpan={1} colSpan={1} px={2} py={2}>
         <UserStatus uid={customerId} />
       </GridItem>

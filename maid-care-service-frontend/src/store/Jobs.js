@@ -1,6 +1,6 @@
 import { action, makeAutoObservable, observable, toJS } from 'mobx';
 import { job as JobAPI } from '../api';
-import { MATCHED } from '../constants/post-state';
+import { CONFIRMED, MATCHED } from '../constants/post-state';
 
 class JobsStore {
   jobs = [];
@@ -20,17 +20,31 @@ class JobsStore {
   }
 
   async fetchAllJobs() {
+    /** test state */
+    let test_state = CONFIRMED;
+
     this.loading = true;
     this.error = false;
     const user = this.userStore.userData;
     const uid = user._id;
     return JobAPI.get(`/maid/${uid}`)
       .then((response) => {
-        const { data: jobs } = response;
+        // const { data: jobs } = response;
+        let { data: jobs } = response;
+        /** test state */
+        jobs = jobs.map((job) => {
+          if (job.state === MATCHED) return { ...job, state: test_state };
+          return job;
+        });
+
         this.jobs = jobs;
+
         // if current job is existed, assume that there is only one job
-        const cur = jobs.filter((job) => job.state === MATCHED);
-        if (cur.length >= 0) this.currentJob = cur[0];
+        const cur = jobs.filter((job) => job.state === test_state);
+        // if (cur.length >= 0) this.currentJob = { ...cur[0] };
+
+        /** test state */
+        if (cur.length >= 0) this.currentJob = { ...cur[0], state: test_state };
         console.log(toJS(this.currentJob));
         this.loading = false;
       })

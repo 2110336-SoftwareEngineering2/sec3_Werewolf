@@ -61,7 +61,6 @@ const JobsPage = observer(() => {
   }, [curUser, jobStore]);
 
   const renderModal = ({ job }) => {
-    job = { ...job, state: MATCHED };
     return (
       <Modal
         isCentered

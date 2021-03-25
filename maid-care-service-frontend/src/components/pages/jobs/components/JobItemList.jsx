@@ -1,11 +1,10 @@
 import { Box, Container, Flex, HStack, Stack, Text, VStack } from '@chakra-ui/layout';
-import { observer } from 'mobx-react-lite';
-import React from 'react';
+import React, { memo } from 'react';
 
 import Status from './Status';
 import UserStatus from './UserStatus';
 
-const JobItem = observer(({ job }) => {
+const JobItem = ({ job }) => {
   const { customerId } = job;
 
   const renderMap = () => {
@@ -38,6 +37,6 @@ const JobItem = observer(({ job }) => {
       </Flex>
     </Container>
   );
-});
+};
 
 export default JobItem;
