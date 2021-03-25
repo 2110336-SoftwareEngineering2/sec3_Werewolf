@@ -2,7 +2,7 @@ import { PartialType } from '@nestjs/mapped-types';
 import { CreateReviewDto } from './review.dto';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class UpdateReviewDto extends PartialType(CreateReviewDto) {
+export class UpdateReviewDto extends CreateReviewDto {
     @ApiProperty({ type: String })
     readonly jobId: string;
 

@@ -19,8 +19,8 @@ export class ReviewController {
     ){}
 
     @Put()
-    @ApiCreatedResponse({description: 'This controller update STATES, rating, review of job', type: CreateReviewDto})
-    @ApiResponse({ status: 400, description: 'wrong Job Id' })
+    @ApiCreatedResponse({description: 'This controller update STATES, rating, review of job and Update Maid rating', type: CreateReviewDto})
+    @ApiResponse({ status: 400, description: 'wrong Job Id, maid Id' })
     @ApiResponse({
     status: 401,
     description: 'user not match job owner',
