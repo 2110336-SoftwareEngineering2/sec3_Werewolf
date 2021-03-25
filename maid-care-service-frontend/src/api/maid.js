@@ -5,10 +5,24 @@ export const maid = axios.create({
   baseURL: '/api/maids',
   headers: {
     'Content-Type': 'application/json',
-    Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
-    secret: process.env.REACT_APP_SECRET || 'secret',
   },
 });
+
+maid.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers['Authorization'] = `Bearer ${token}`;
+      config.headers['secret'] = process.env.REACT_APP_SECRET;
+    }
+    console.log('interceptor conf', config);
+    return config;
+  },
+  (error) => {
+    console.log('intercaptor err', error);
+    throw error;
+  }
+);
 
 /**
  *
@@ -18,3 +32,7 @@ export const maid = axios.create({
 export const fetchMaidById = async (uid) => {
   return maid.get(`/${uid}`);
 };
+
+export const setAvailability = async (status) => {
+  return maid.put(`/availability/${status}`)
+}
