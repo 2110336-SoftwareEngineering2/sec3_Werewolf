@@ -20,8 +20,5 @@ export class ProfileDto {
   readonly citizenId: string;
 
   @ApiProperty({ type: String })
-  readonly nationality: string;
-
-  @ApiProperty({ type: String })
   readonly bankAccountNumber: string;
 }

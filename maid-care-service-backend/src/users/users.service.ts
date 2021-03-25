@@ -96,7 +96,6 @@ export class UsersService {
     if (newProfile.lastname) userFromDb.lastname = newProfile.lastname;
     if (newProfile.birthdate) userFromDb.birthdate = newProfile.birthdate;
     if (newProfile.citizenId) userFromDb.citizenId = newProfile.citizenId;
-    if (newProfile.nationality) userFromDb.nationality = newProfile.nationality;
     if (newProfile.bankAccountNumber)
       userFromDb.bankAccountNumber = newProfile.bankAccountNumber;
     await userFromDb.save();
