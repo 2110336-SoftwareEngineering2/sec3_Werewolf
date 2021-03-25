@@ -1,15 +1,31 @@
 import Icon from '@chakra-ui/icon';
 import { HStack, Text } from '@chakra-ui/layout';
 import React, { useEffect, useState } from 'react';
-import { FaCheckCircle, FaClock } from 'react-icons/fa';
-import { MATCHED, POSTED } from '../../../../constants/post-state';
+import { FaCalendarCheck, FaCheckCircle, FaClock } from 'react-icons/fa';
+import { CONFIRMED, MATCHED, POSTED } from '../../../../constants/post-state';
 
 const JobStatus = ({ job: { state, expiryTime } }) => {
+  return state === MATCHED ? (
+    <>
+      <HStack wrap={true}>
+        <Icon as={FaCheckCircle} w={6} h={6} />
+        <Text fontSize={`lg`} fontWeight={`bold`}>
+          Matched
+        </Text>
+      </HStack>
+    </>
+  ) : state === CONFIRMED ? (
+    <InProgressStatus />
+  ) : (
+    <CounterStatus expiryTime={expiryTime} />
+  );
+};
+
+const CounterStatus = (expiryTime) => {
   const [remainingTime, setRemainingTime] = useState(null);
 
   // Create Interval if Job Still NOT Matched
   useEffect(() => {
-    if (state !== POSTED) return;
     const interval = setInterval(() => {
       const exp = new Date(expiryTime);
       const cur = new Date();
@@ -24,24 +40,32 @@ const JobStatus = ({ job: { state, expiryTime } }) => {
     return () => {
       clearInterval(interval);
     };
-  }, [state, expiryTime]);
+  }, [expiryTime]);
 
-  return state === MATCHED ? (
-    <>
-      <HStack wrap={true}>
-        <Icon as={FaCheckCircle} w={6} h={6} />
-        <Text fontSize={`lg`} fontWeight={`bold`}>
-          Matched
-        </Text>
-      </HStack>
-    </>
-  ) : (
+  return (
     <>
       <HStack>
         <Icon as={FaClock} w={6} h={6} />
         <Text fontSize={`lg`} fontWeight={`bold`}>
           {remainingTime}
         </Text>
+      </HStack>
+    </>
+  );
+};
+
+const InProgressStatus = () => {
+  return (
+    <>
+      <HStack wrap={true}>
+        <Icon as={FaCalendarCheck} w={6} h={6} />
+        <Text fontSize={`lg`} fontWeight={`bold`}>
+          Confirmed
+        </Text>
+      </HStack>
+      <HStack>
+        <Text>{new Date().toDateString()}</Text>
+        <Text>{new Date().toTimeString()}</Text>
       </HStack>
     </>
   );
