@@ -10,7 +10,7 @@ import { useStores } from '../../../hooks/use-stores';
 
 export const LogIn = observer(() => {
   const { userStore } = useStores();
-  const history = useLocation().state ? useLocation().state.history: '';
+  const from = useLocation().state ? useLocation().state.from: '';
 
   if (userStore.isAuthenticated) {
     return <Redirect to="/" />;
@@ -20,7 +20,7 @@ export const LogIn = observer(() => {
     <Flex bg="brandGreen" align="center" justify="center" minH="100vh">
       <FlexBox>
         <VStack spacing="1">
-          {history == '/auth/verify'? <Text fontSize="large" color="green">Register Succesful!</Text>:null}
+          {from == '/auth/verify'? <Text fontSize="large" color="green">Register Succesful!</Text>:null}
           <VStack spacing="3">
               <Box fontSize="3xl" mb="5">
                 Grab
