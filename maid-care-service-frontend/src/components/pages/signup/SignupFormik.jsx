@@ -20,9 +20,10 @@ const SignupFormik = () => {
   function signup(values) {
     let confirm = window.confirm('Confirm form submission. This cannot be undone.');
     if(confirm == true){
+      console.log('values' ,values)
       auth.post('/register',values)
       .then(response => {
-        console.log(response) 
+        console.log('response', response) 
         setSubmit(true);
       })
       .catch(err => {
@@ -61,11 +62,10 @@ const SignupFormik = () => {
       initialValues={{
         email: '',
         password: '',
-        firstName: '',
-        lastName: '',
+        firstname: '',
+        lastname: '',
         birthdate: '',
-        nationality: '',
-        citizenID: '',
+        citizenId: '',
         bankAccountNumber: '',
         role: 'maid',
         work: [],
@@ -75,10 +75,10 @@ const SignupFormik = () => {
       <WizardStep validationSchema={Yup.object({
         email: Yup.string().email().required(),
         password: Yup.string().required(),
-        firstName: Yup.string()
+        firstname: Yup.string()
             .matches(/^[aA-zZ\s]+$/, 'Only alphabets are allowed for this field ')
             .required('Required'),
-          lastName: Yup.string()
+          lastname: Yup.string()
             .matches(/^[aA-zZ\s]+$/, 'Only alphabets are allowed for this field ')
             .required('Required'),
       })}>
@@ -105,7 +105,8 @@ const SignupFormik = () => {
               max_age.setFullYear(max_age.getFullYear() - 80);
               return birthdate >= max_age;
             }),
-          citizenID: Yup.string()
+          nationality: Yup.string().marequired(),
+          citizenId: Yup.string()
             .matches(/^[0-9]+$/, 'Must be only digits')
             .length(13, 'Citizen ID must be 13-digit long')
             .required('Required'),
