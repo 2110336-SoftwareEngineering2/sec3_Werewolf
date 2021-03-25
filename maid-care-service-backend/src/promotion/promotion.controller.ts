@@ -9,7 +9,12 @@ import {
   UseGuards,
   NotFoundException,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags, ApiCreatedResponse } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiTags,
+  ApiCreatedResponse,
+  ApiResponse,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/passport/jwt-auth.guard';
 import { RolesGuard } from 'src/common/guard/roles.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
@@ -27,6 +32,7 @@ export class PromotionController {
     description: 'Admin create promotion',
     type: PromotionDto,
   })
+  @ApiResponse({ status: 400, description: 'wrong discountRate or date' })
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   @ApiBearerAuth('acess-token')
@@ -50,6 +56,7 @@ export class PromotionController {
     description: 'Get promotion by promotion code',
     type: PromotionDto,
   })
+  @ApiResponse({ status: 404, description: 'Promotion not valid' })
   async findPromotion(@Param('code') code: string) {
     const promotion = await this.promotionService.findPromotion(code);
     if (!promotion) throw new NotFoundException('Promotion not valid');

@@ -43,7 +43,7 @@ export class NotificationController {
       const subscription = await this.notificationService.unsubscribe(
         req.user._id,
       );
-      return new SubscriptionDto(subscription);
+      return subscription;
     } catch (error) {
       throw error;
     }

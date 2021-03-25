@@ -8,7 +8,6 @@ import {
   Put,
   Delete,
   UseGuards,
-  BadRequestException,
   UnauthorizedException,
   NotFoundException,
 } from '@nestjs/common';
@@ -116,8 +115,6 @@ export class UsersController {
   async resetPassord(
     @Body() resetPasswordDto: ResetPasswordDto,
   ): Promise<boolean> {
-    if (!resetPasswordDto.newPassword)
-      throw new BadRequestException('no new password');
     resetPasswordDto.email = resetPasswordDto.email.toLowerCase();
     try {
       const isValidPassword = await this.usersService.checkPassword(

@@ -54,11 +54,6 @@ export class UsersService {
   }
 
   async register(createUserDto: CreateUserDto): Promise<User> {
-    // validate email
-    if (!this.isValidEmail(createUserDto.email))
-      throw new BadRequestException('Bad email');
-    // validate password
-    if (!createUserDto.password) throw new BadRequestException('No password');
     // validate role
     if (!this.isValidRole(createUserDto.role))
       throw new BadRequestException(

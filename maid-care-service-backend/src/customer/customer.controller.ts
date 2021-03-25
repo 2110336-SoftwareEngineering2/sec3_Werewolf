@@ -6,6 +6,8 @@ import {
   Put,
   UseGuards,
   BadRequestException,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -70,10 +72,8 @@ export class CustomerController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('customer')
   @ApiBearerAuth('acess-token')
-  async addCoin(@Request() req, @Param('g_coin') g_coin_string: string) {
-    const g_coin = Number(g_coin_string);
-    if (!g_coin && g_coin != 0)
-      throw new BadRequestException('g-coin must be a number');
+  @UsePipes(new ValidationPipe({ transform: true }))
+  async addCoin(@Request() req, @Param('g_coin') g_coin: number) {
     if (g_coin < 0)
       throw new BadRequestException('g-coin must not be negative');
     const wallet = await this.walletService.addCoin(req.user._id, g_coin);

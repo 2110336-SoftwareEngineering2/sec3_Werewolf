@@ -2,13 +2,8 @@ import { ApiProperty } from '@nestjs/swagger';
 import { WorkType } from '../workType';
 
 export class UpdateMaidDto {
-  constructor(object: any) {
-    this.note = object.note;
-    this.work = object.work;
-  }
-
   @ApiProperty({ type: String })
-  readonly note: string;
+  note: string;
 
   @ApiProperty({
     type: 'array',
@@ -16,5 +11,5 @@ export class UpdateMaidDto {
       enum: Object.values(WorkType),
     },
   })
-  readonly work: [string];
+  work: [string];
 }
