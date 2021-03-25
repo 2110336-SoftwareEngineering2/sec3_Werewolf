@@ -27,7 +27,9 @@ const Verification = () => {
     },[token])
 
     if(verified && !error){
-        return(<Redirect to={{pathname:"/login",state:{history:'/auth/verify'}}}/>)
+        // set location state from
+        // setiing history state won't work bc it crashes with history push for redirecting to homepage
+        return(<Redirect to={{pathname:"/login",state:{from:'/auth/verify'}}}/>)
     }
     else if(error && error.status === 401){
         return(<VStack>

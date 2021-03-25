@@ -3,7 +3,7 @@ import * as Yup from 'yup';
 
 import { auth } from '../../../api/auth.js';
 
-import { VStack, Text, Image, Stack,Box,Flex } from '@chakra-ui/react';
+import { VStack, Text, Image, Stack,Box,Flex, Spinner } from '@chakra-ui/react';
 import {ErrorMessage} from 'formik';
 
 import Wizard from './Wizard/Wizard';
@@ -12,18 +12,20 @@ import {TextInputField, DateField, CheckField} from "../../shared/FormikField";
 const SignupFormik = () => {
   const WizardStep = ({ children }) => children;
   const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
-  const [submitted, setSubmit] = useState(false);
-  const [error, setError] = useState(false)
+  const [submit, setSubmit] = useState(false); // form submitted
+  const [sent, setSent] = useState(false); //api responsed 
+  const [error, setError] = useState(false) // error from api 
 
   const work_choices = ['House Cleaning', 'Dish Washing', 'Laundry', 'Gardening'];
 
   function signup(values) {
     let confirm = window.confirm('Confirm form submission. This cannot be undone.');
     if(confirm == true){
+      setSubmit(true)
       auth.post('/register',values)
       .then(response => {
         console.log('res', response) 
-        setSubmit(true);
+        setSent(true);
       })
       .catch(err => {
         setError(err.response)
@@ -33,7 +35,16 @@ const SignupFormik = () => {
     }
   }
 
-  if (submitted && !error) {
+  //submit form but still waiting for api to send email
+  if(submit && !sent){
+    return(<VStack justifyContent="center" h="10rem">
+        <Spinner size="xl" />
+        <Text fontSize="lg">Please wait...</Text>
+    </VStack>)
+  }
+
+  // api response and no error
+  else if (sent && !error) {
     return (
       <VStack justifyContent="center">
         <Image src="/assets/images/mail.png" alt="verification email" mb="2" boxSize="10rem" />
@@ -45,7 +56,8 @@ const SignupFormik = () => {
     );
   }
 
-  else if (submitted && error){
+  // api response with error
+  else if (sent && error){
     if(error.status === 409)
     return(
       <VStack justifyContent="center" mt="2">
@@ -55,6 +67,7 @@ const SignupFormik = () => {
     )
   }
 
+  // form 
   return (
     <VStack spacing="1" width="100%">
       <Wizard
