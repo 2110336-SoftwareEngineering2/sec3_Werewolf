@@ -33,7 +33,7 @@ export const ProfilePage = observer(() => {
         console.log(err)
       })
     }
-  }, [userStore.userData]);
+  }, [userStore.userData, maidInfo]);
 
   // generate star icons per review score
   const stars = (score) => {
