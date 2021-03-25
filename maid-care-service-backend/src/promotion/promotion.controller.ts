@@ -7,11 +7,17 @@ import {
   Post,
   Delete,
   UseGuards,
-  UnauthorizedException,
   NotFoundException,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags, ApiCreatedResponse } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiTags,
+  ApiCreatedResponse,
+  ApiResponse,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/passport/jwt-auth.guard';
+import { RolesGuard } from 'src/common/guard/roles.guard';
+import { Roles } from 'src/common/decorators/roles.decorator';
 import { PromotionService } from './promotion.service';
 import { CreatePromotionDto } from './dto/create-promotion.dto';
 import { PromotionDto } from './dto/promotion.dto';
@@ -26,23 +32,23 @@ export class PromotionController {
     description: 'Admin create promotion',
     type: PromotionDto,
   })
-  @UseGuards(JwtAuthGuard)
+  @ApiResponse({ status: 400, description: 'wrong discountRate or date' })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
   @ApiBearerAuth('acess-token')
   async createPromotion(
     @Request() req,
     @Body() createPromotionDto: CreatePromotionDto,
   ) {
-    if (req.user.role === 'admin') {
-      try {
-        const promotion = await this.promotionService.createPromotion(
-          req.user._id,
-          createPromotionDto,
-        );
-        return new PromotionDto(promotion);
-      } catch (error) {
-        throw error;
-      }
-    } else throw new UnauthorizedException('user is not admin');
+    try {
+      const promotion = await this.promotionService.createPromotion(
+        req.user._id,
+        createPromotionDto,
+      );
+      return new PromotionDto(promotion);
+    } catch (error) {
+      throw error;
+    }
   }
 
   @Get(':code')
@@ -50,6 +56,7 @@ export class PromotionController {
     description: 'Get promotion by promotion code',
     type: PromotionDto,
   })
+  @ApiResponse({ status: 404, description: 'Promotion not valid' })
   async findPromotion(@Param('code') code: string) {
     const promotion = await this.promotionService.findPromotion(code);
     if (!promotion) throw new NotFoundException('Promotion not valid');
@@ -61,12 +68,11 @@ export class PromotionController {
     description: 'Admin get all promotions',
     type: [PromotionDto],
   })
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
   @ApiBearerAuth('acess-token')
-  async findAll(@Request() req) {
-    if (req.user.role === 'admin') {
-      return await this.promotionService.findAll();
-    }
+  async findAll() {
+    return await this.promotionService.findAll();
   }
 
   @Delete(':code')
@@ -74,16 +80,15 @@ export class PromotionController {
     description: 'Delete promotion by promotion code',
     type: PromotionDto,
   })
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
   @ApiBearerAuth('acess-token')
-  async removePromotion(@Request() req, @Param('code') code: string) {
-    if (req.user.role === 'admin') {
-      try {
-        const promotion = await this.promotionService.removePromotion(code);
-        return new PromotionDto(promotion);
-      } catch (error) {
-        throw error;
-      }
-    } else throw new UnauthorizedException('user is not admin');
+  async removePromotion(@Param('code') code: string) {
+    try {
+      const promotion = await this.promotionService.removePromotion(code);
+      return new PromotionDto(promotion);
+    } catch (error) {
+      throw error;
+    }
   }
 }

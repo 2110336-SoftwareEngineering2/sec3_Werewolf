@@ -8,9 +8,17 @@ import {
   Delete,
   UseGuards,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags, ApiCreatedResponse } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiTags,
+  ApiCreatedResponse,
+  ApiResponse,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/passport/jwt-auth.guard';
+import { RolesGuard } from 'src/common/guard/roles.guard';
+import { Roles } from 'src/common/decorators/roles.decorator';
 import { WorkspacesService } from './workspaces.service';
 import { CreateWorkspaceDto } from './dto/create-workspace.dto';
 
@@ -24,12 +32,12 @@ export class WorkspacesController {
     description: 'Add Workspace',
     type: CreateWorkspaceDto,
   })
+  @ApiResponse({ status: 401, description: 'user is not customer' })
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('acess-token')
-  async createWorkspace(
-    @Request() req,
-    @Body() createWorkspaceDto: CreateWorkspaceDto,
-  ) {
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('customer')
+  async createWorkspace(@Body() createWorkspaceDto: CreateWorkspaceDto) {
     try {
       return await this.workspacesService.addNewWorkspace(createWorkspaceDto);
     } catch (error) {
@@ -42,7 +50,9 @@ export class WorkspacesController {
     description: 'Get All Workspace By CustomerId from Request',
     type: CreateWorkspaceDto,
   })
-  @UseGuards(JwtAuthGuard)
+  @ApiResponse({ status: 401, description: 'user is not customer' })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('customer')
   @ApiBearerAuth('acess-token')
   async findAllWorkspace(@Request() req) {
     try {
@@ -77,17 +87,26 @@ export class WorkspacesController {
     description: 'Delete Workspace By Workspace Id',
     type: CreateWorkspaceDto,
   })
-  @UseGuards(JwtAuthGuard)
+  @ApiResponse({
+    status: 401,
+    description: 'can only delete your workspace unless user is admin',
+  })
+  @ApiResponse({ status: 401, description: 'user is not customer' })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('customer', 'admin')
   @ApiBearerAuth('acess-token')
   async removeWorkspaceByWorkspaceId(@Request() req, @Param('id') id: string) {
     //Delete by workspaceId
     try {
       const requestCustomerId = req.user._id;
       const targetWorkspace = await this.workspacesService.findOne(id);
-      if (requestCustomerId == targetWorkspace.customerId) {
+      if (
+        req.user.role === 'admin' ||
+        requestCustomerId == targetWorkspace.customerId
+      ) {
         const result = await this.workspacesService.removeWorkspace(id);
         return result;
-      }
+      } else throw new UnauthorizedException('it is not your workspace');
     } catch (error) {
       throw error;
     }

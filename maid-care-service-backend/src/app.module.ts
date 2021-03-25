@@ -10,6 +10,8 @@ import { PromotionModule } from './promotion/promotion.module';
 import { JobModule } from './job/job.module';
 import { NotificationModule } from './notification/notification.module';
 import { WorkspacesModule } from './workspaces/workspaces.module';
+import { WalletModule } from './wallet/wallet.module';
+import { ReviewModule } from './review/review.module';
 
 @Module({
   imports: [
@@ -24,6 +26,8 @@ import { WorkspacesModule } from './workspaces/workspaces.module';
     JobModule,
     NotificationModule,
     WorkspacesModule,
+    WalletModule,
+    ReviewModule,
   ],
   controllers: [AppController],
   providers: [AppService],

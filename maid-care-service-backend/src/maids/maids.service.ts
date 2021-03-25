@@ -64,9 +64,6 @@ export class MaidsService {
     latitude: number,
     longitude: number,
   ): Promise<Maid> {
-    // validate latitude and Longitude
-    if (isNaN(latitude) || isNaN(longitude))
-      throw new BadRequestException('invalid latitude or longitude');
     const maidFromDb = await this.findMaid(id);
     if (!maidFromDb) throw new ForbiddenException('invalid maid');
     // update latitude and Longitude

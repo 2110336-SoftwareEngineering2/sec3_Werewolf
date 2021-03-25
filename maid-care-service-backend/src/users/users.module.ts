@@ -4,7 +4,7 @@ import { UsersService } from './users.service';
 import { UsersProviders } from './users.providers';
 import { DatabaseModule } from '../database/database.module';
 import { NotificationModule } from '../notification/notification.module';
-import { CustomerModule } from '../customer/customer.module';
+import { WalletModule } from '../wallet/wallet.module';
 import { MaidsModule } from '../maids/maids.module';
 import { JobModule } from '../job/job.module';
 import { WorkspacesModule } from 'src/workspaces/workspaces.module';
@@ -13,7 +13,7 @@ import { WorkspacesModule } from 'src/workspaces/workspaces.module';
   imports: [
     DatabaseModule,
     NotificationModule,
-    CustomerModule,
+    WalletModule,
     MaidsModule,
     JobModule,
     WorkspacesModule,

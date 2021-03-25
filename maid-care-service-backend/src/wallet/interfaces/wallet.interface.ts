@@ -1,5 +1,5 @@
 import { Document } from 'mongoose';
 
-export interface Customer extends Document {
+export interface Wallet extends Document {
   g_coin: number;
 }

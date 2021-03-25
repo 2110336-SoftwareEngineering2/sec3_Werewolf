@@ -9,7 +9,7 @@ import {
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { NotificationService } from '../notification/notification.service';
-import { CustomerService } from '../customer/customer.service';
+import { WalletService } from '../wallet/wallet.service';
 import { MaidsService } from '../maids/maids.service';
 import { JobService } from '../job/job.service';
 import { WorkspacesService } from 'src/workspaces/workspaces.service';
@@ -24,7 +24,7 @@ export class UsersService {
   constructor(
     @Inject('USER_MODEL') private userModel: Model<User>,
     private notificationService: NotificationService,
-    private customerService: CustomerService,
+    private walletService: WalletService,
     private maidsService: MaidsService,
     private jobService: JobService,
     private workspacesService: WorkspacesService,
@@ -54,11 +54,6 @@ export class UsersService {
   }
 
   async register(createUserDto: CreateUserDto): Promise<User> {
-    // validate email
-    if (!this.isValidEmail(createUserDto.email))
-      throw new BadRequestException('Bad email');
-    // validate password
-    if (!createUserDto.password) throw new BadRequestException('No password');
     // validate role
     if (!this.isValidRole(createUserDto.role))
       throw new BadRequestException(
@@ -76,8 +71,8 @@ export class UsersService {
       // create new user
       const user = await this.createNewUser(createUserDto);
       if (user.role === 'customer')
-        // create new customer
-        await this.customerService.createNewCustomer(user._id);
+        // create new customer's wallet
+        await this.walletService.createNewWallet(user._id);
       else if (user.role === 'maid') {
         // create new maid
         await this.maidsService.createNewMaid(user._id);
@@ -101,7 +96,6 @@ export class UsersService {
     if (newProfile.lastname) userFromDb.lastname = newProfile.lastname;
     if (newProfile.birthdate) userFromDb.birthdate = newProfile.birthdate;
     if (newProfile.citizenId) userFromDb.citizenId = newProfile.citizenId;
-    if (newProfile.nationality) userFromDb.nationality = newProfile.nationality;
     if (newProfile.bankAccountNumber)
       userFromDb.bankAccountNumber = newProfile.bankAccountNumber;
     await userFromDb.save();
@@ -116,9 +110,9 @@ export class UsersService {
       await this.notificationService.unsubscribe(user._id);
     } catch (error) {}
     if (user.role === 'customer') {
-      // delete customer and all jobs and workspaces posted by this customer
-      const customer = await this.customerService.findCustomer(user._id);
-      if (customer) {
+      // delete wallet, jobs and workspaces posted by this customer
+      const wallet = await this.walletService.findWallet(user._id);
+      if (wallet) {
         const jobs = await this.jobService.findByCustomer(id);
         jobs.forEach((job) => {
           job.remove();
@@ -129,7 +123,7 @@ export class UsersService {
         workspaces.forEach((workspace) => {
           workspace.remove();
         });
-        await customer.remove();
+        await wallet.remove();
       }
     } else if (user.role === 'maid') {
       // delete maid
@@ -151,13 +145,6 @@ export class UsersService {
     user.password = await bcrypt.hash(newPassword, saltRounds);
     const savedUser = await user.save();
     return !!savedUser;
-  }
-
-  isValidEmail(email: string) {
-    if (email) {
-      const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-      return re.test(email);
-    } else return false;
   }
 
   isValidRole(role: string) {

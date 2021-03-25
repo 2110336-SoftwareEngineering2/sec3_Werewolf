@@ -8,6 +8,7 @@ import { NotificationModule } from '../notification/notification.module';
 import { MaidsModule } from '../maids/maids.module';
 import { WorkspacesModule } from 'src/workspaces/workspaces.module';
 import { PromotionModule } from 'src/promotion/promotion.module';
+import { WalletModule } from '../wallet/wallet.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { PromotionModule } from 'src/promotion/promotion.module';
     MaidsModule,
     WorkspacesModule,
     PromotionModule,
+    WalletModule,
   ],
   controllers: [JobController],
   providers: [JobService, SchedulerRegistry, ...JobProviders],

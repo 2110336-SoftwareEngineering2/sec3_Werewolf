@@ -8,7 +8,6 @@ import {
   Put,
   Delete,
   UseGuards,
-  BadRequestException,
   UnauthorizedException,
   NotFoundException,
 } from '@nestjs/common';
@@ -88,6 +87,10 @@ export class UsersController {
     description: 'Delete user by uid',
     type: UserDto,
   })
+  @ApiResponse({
+    status: 401,
+    description: 'can only delete yourself unless user is admin',
+  })
   @ApiResponse({ status: 404, description: 'invalid user' })
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('acess-token')
@@ -99,7 +102,7 @@ export class UsersController {
       } catch (error) {
         throw error;
       }
-    } else throw new UnauthorizedException();
+    } else throw new UnauthorizedException('can not delete other user');
   }
 
   @Put('reset-password')
@@ -112,8 +115,6 @@ export class UsersController {
   async resetPassord(
     @Body() resetPasswordDto: ResetPasswordDto,
   ): Promise<boolean> {
-    if (!resetPasswordDto.newPassword)
-      throw new BadRequestException('no new password');
     resetPasswordDto.email = resetPasswordDto.email.toLowerCase();
     try {
       const isValidPassword = await this.usersService.checkPassword(
