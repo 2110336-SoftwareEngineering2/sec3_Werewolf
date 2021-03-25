@@ -5,7 +5,6 @@ import {
   Request,
   Get,
   Put,
-  UnauthorizedException,
   NotFoundException,
   UseGuards,
 } from '@nestjs/common';
@@ -16,10 +15,12 @@ import {
   ApiResponse,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/passport/jwt-auth.guard';
+import { RolesGuard } from 'src/common/guard/roles.guard';
 import { MaidsService } from './maids.service';
 import { UpdateMaidDto } from './dto/update-maid.dto';
 import { CerrentLocationDto } from './dto/location.dto';
 import { MaidDto } from './dto/maid.dto';
+import { Roles } from 'src/common/decorators/roles.decorator';
 
 @Controller('maids')
 @ApiTags('maid')
@@ -41,21 +42,20 @@ export class MaidsController {
     type: MaidDto,
   })
   @ApiResponse({ status: 401, description: 'user is not maid' })
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('maid')
   @ApiBearerAuth('acess-token')
   async updateWork(@Request() req, @Body() updateMaidDto: UpdateMaidDto) {
-    if (req.user.role === 'maid') {
-      try {
-        await this.maidsService.updateWork(req.user._id, updateMaidDto.work);
-        const maid = await this.maidsService.updateNote(
-          req.user._id,
-          updateMaidDto.note,
-        );
-        return new MaidDto(maid);
-      } catch (error) {
-        throw error;
-      }
-    } else throw new UnauthorizedException('user is not maid');
+    try {
+      await this.maidsService.updateWork(req.user._id, updateMaidDto.work);
+      const maid = await this.maidsService.updateNote(
+        req.user._id,
+        updateMaidDto.note,
+      );
+      return new MaidDto(maid);
+    } catch (error) {
+      throw error;
+    }
   }
 
   @Put('update-location')
@@ -65,24 +65,23 @@ export class MaidsController {
   })
   @ApiResponse({ status: 400, description: 'invalid latitude or Longitude' })
   @ApiResponse({ status: 401, description: 'user is not maid' })
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('maid')
   @ApiBearerAuth('acess-token')
   async updateLocation(
     @Request() req,
     @Body() locationDto: CerrentLocationDto,
   ) {
-    if (req.user.role === 'maid') {
-      try {
-        await this.maidsService.updateLocation(
-          req.user._id,
-          locationDto.latitude,
-          locationDto.longitude,
-        );
-        return true;
-      } catch (error) {
-        throw error;
-      }
-    } else throw new UnauthorizedException('user is not maid');
+    try {
+      await this.maidsService.updateLocation(
+        req.user._id,
+        locationDto.latitude,
+        locationDto.longitude,
+      );
+      return true;
+    } catch (error) {
+      throw error;
+    }
   }
 
   @Put('availability/:availability')
@@ -91,22 +90,21 @@ export class MaidsController {
     type: MaidDto,
   })
   @ApiResponse({ status: 401, description: 'user is not maid' })
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('maid')
   @ApiBearerAuth('acess-token')
   async setAvailability(
     @Request() req,
     @Param('availability') availability: boolean,
   ) {
-    if (req.user.role === 'maid') {
-      try {
-        const maid = await this.maidsService.setAvailability(
-          req.user._id,
-          availability,
-        );
-        return new MaidDto(maid);
-      } catch (error) {
-        throw error;
-      }
-    } else throw new UnauthorizedException('user is not maid');
+    try {
+      const maid = await this.maidsService.setAvailability(
+        req.user._id,
+        availability,
+      );
+      return new MaidDto(maid);
+    } catch (error) {
+      throw error;
+    }
   }
 }

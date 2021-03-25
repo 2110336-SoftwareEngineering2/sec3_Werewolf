@@ -88,6 +88,10 @@ export class UsersController {
     description: 'Delete user by uid',
     type: UserDto,
   })
+  @ApiResponse({
+    status: 401,
+    description: 'can only delete yourself unless user is admin',
+  })
   @ApiResponse({ status: 404, description: 'invalid user' })
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('acess-token')
@@ -99,7 +103,7 @@ export class UsersController {
       } catch (error) {
         throw error;
       }
-    } else throw new UnauthorizedException();
+    } else throw new UnauthorizedException('can not delete other user');
   }
 
   @Put('reset-password')

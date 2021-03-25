@@ -24,9 +24,10 @@ export class AuthService {
 
   async validateLogin(email: string, pass: string) {
     const user = await this.usersService.findUserByEmail(email);
-    if (!user) throw new UnauthorizedException('Invalid user');
+    if (!user) throw new UnauthorizedException('Incorrect email or password');
     const isValidPass = await bcrypt.compare(pass, user.password);
-    if (!isValidPass) throw new UnauthorizedException('Incorrect password');
+    if (!isValidPass)
+      throw new UnauthorizedException('Incorrect email or password');
     if (!user.valid) throw new UnauthorizedException('Email not verified');
     const accessToken = await this.jwtService.createToken(email, user.role);
     return accessToken;
