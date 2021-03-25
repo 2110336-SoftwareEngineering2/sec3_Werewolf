@@ -42,13 +42,13 @@ export { postjob };
 export { job };
 
 const user = axios.create({
-  baseURL: '/api/user',
+  baseURL: '/api/users',
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-job.interceptors.request.use(
+user.interceptors.request.use(
   config => {
     const token = localStorage.getItem('token');
     if (token) {
@@ -64,3 +64,28 @@ job.interceptors.request.use(
   }
 );
 export { user };
+
+
+const maid = axios.create({
+  baseURL: '/api/maids',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+maid.interceptors.request.use(
+  config => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers['Authorization'] = `Bearer ${token}`;
+      config.headers['secret'] = process.env.REACT_APP_SECRET;
+    }
+    console.log('interceptor conf', config);
+    return config;
+  },
+  error => {
+    console.log('intercaptor err', error);
+    throw error;
+  }
+);
+export { maid };

@@ -6,14 +6,17 @@ import { useStores } from '../../../hooks/use-stores';
 import { observer } from 'mobx-react-lite';
 import * as Yup from 'yup';
 import ButtonField from './ButtonField.jsx';
+import Page5_maidInfo from './Page5_maidInfo.jsx';
 import Page1_TaskDescription from './Page1_TaskDescription.jsx';
-import Page2Page3_calculatePrice from './Page2Page3_calculatePrice.jsx';
+import Page2Page3_calculatePrice from './Page2_3_calculatePrice.jsx';
+import Page4_matching from './Page4_matching.jsx';
 import { VStack, Text } from '@chakra-ui/react';
 
 const PostjobForm = observer(props => {
   // putResponse is variable which store response from jobPutCostAPI ( put /cost API );
   const [putResponse, setPutResponse] = useState();
   const [isPromoAvailable, setPromoAvailable] = useState(null);
+  const [maidId, setMaidId] = useState("");
 
   const yup = Yup.object({
     amountOfDishes: Yup.mixed().when('isDishes', {
@@ -95,6 +98,12 @@ const PostjobForm = observer(props => {
         />
       );
     }
+    else if (props.steps == 4){
+      return <Page4_matching/>
+    }
+    else if (props.steps == 5){
+      return <Page5_maidInfo maidId={"605ca4cbfc41950040c4c1d9"}/>
+    }
   };
 
   return (
@@ -119,6 +128,7 @@ const PostjobForm = observer(props => {
           steps={props.steps}
           setSteps={props.setSteps}
           isPromoAvailable={isPromoAvailable}
+          setMaidId={setMaidId}
         />
       </Form>
     </Formik>

@@ -18,7 +18,7 @@ import { wait, waitFor } from '@testing-library/dom';
 // 2. handle steps increment & decrement when button is clicked.
 // 3. Show confirm window when submit button on page3 is clicked.
 
-const ButtonField = ({ steps, setSteps, isPromoAvailable }) => {
+const ButtonField = ({ steps, setSteps, isPromoAvailable, setMaidId }) => {
   const { values } = useFormikContext();
   const [findmaidStatus, setFindmaidStatus] = useState(false);
   let getStatusFindmaidInterval;
@@ -99,6 +99,9 @@ const ButtonField = ({ steps, setSteps, isPromoAvailable }) => {
           clearInterval(getStatusFindmaidInterval);
           setFindmaidStatus(true);
           handleIncrement();
+          var maidId = response.data.maidId;
+          setMaidId(maidId);
+          console.log("This is your maid", response.data.maidId);
         }
         
       })
