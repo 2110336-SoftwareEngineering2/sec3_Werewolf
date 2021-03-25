@@ -5,6 +5,7 @@ import {
     ApiCreatedResponse,
     ApiResponse,
   } from '@nestjs/swagger';
+import { UpdateMaidDto } from 'src/maids/dto/update-maid.dto';
 import { JwtAuthGuard } from '../auth/passport/jwt-auth.guard';
 import { CreateReviewDto } from './dto/review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
@@ -19,7 +20,7 @@ export class ReviewController {
 
     @Put()
     @ApiCreatedResponse({description: 'This controller update STATES, rating, review of job', type: CreateReviewDto})
-    @ApiResponse({ status: 400, description: 'wrong JobId' })
+    @ApiResponse({ status: 400, description: 'wrong Job Id' })
     @ApiResponse({
     status: 401,
     description: 'user not match job owner',
@@ -29,12 +30,12 @@ export class ReviewController {
     async updateJobReviewd(@Request() req, @Body() updateReviewDto: UpdateReviewDto){
         const isSameCustomer = this.reviewService.checkUserWithJob(updateReviewDto.jobId, req.user._id);
         if (isSameCustomer){
+            const maidUpdate = await this.reviewService.updateMaidRating(updateReviewDto.maidId, updateReviewDto.rating);
             return await this.reviewService.updateJobReview(updateReviewDto);
         } else{
             throw new UnauthorizedException('user not match job owner');
         }
     }
 
-    
 
 }
