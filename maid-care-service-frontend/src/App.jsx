@@ -4,6 +4,7 @@ import { Switch, Route, Redirect } from 'react-router-dom';
 import theme from './theme.js';
 
 import LogIn from './components/pages/login/login.jsx';
+import SignUp from './components/pages/signup/signup.jsx';
 import Home from './components/pages/home/home.jsx';
 import EditProfile from './components/pages/editprofile/editprofile.jsx';
 import Workspace from './components/pages/workspace/workspace.jsx';
@@ -13,6 +14,7 @@ import ProfilePage from './components/pages/profilepage/profilepage.jsx';
 import Navbar from './components/layouts/Navbar.jsx';
 import JobsPage from './components/pages/jobs/jobs.jsx';
 import { Postjob } from './components/pages/postjob/postjob.jsx';
+import Verification from './components/pages/signup/verfification.jsx';
 
 export const App = () => {
   return (
@@ -24,11 +26,13 @@ export const App = () => {
         </Route>
         <ProtectedRoute exact path="/home" component={Home} />
         <Route exact path="/login" component={LogIn} />
+        <Route exact path="/register" component={SignUp} />
        
+        <Route exact path="/auth/verify/:token" component={Verification} />
+        <ProtectedRoute path="/promotion" component={Promotion} />
         <ProtectedRoute exact path="/profile" component={ProfilePage} />
         <ProtectedRoute exact path="/profile/edit" component={EditProfile} />
         
-        <ProtectedRoute path="/promotion" component={Promotion} />
         <ProtectedRoute exact path="/workspace" component={Workspace} />
 		    <Route path="/postjob" component={Postjob} />
         <ProtectedRoute exact path="/jobs" component={JobsPage} />

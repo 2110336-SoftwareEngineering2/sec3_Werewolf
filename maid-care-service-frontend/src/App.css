@@ -20,6 +20,10 @@ body {
   border-color: '#E2E8F0';
 }
 
+form{
+  width: 100%;
+}
+
 .button {
   color: white;
   width: 103px;

@@ -8,6 +8,7 @@ const FlexBox = ({ children }) => (
     my="6"
     mx="3"
     minWidth={{ base: '80vw', md: '30vw' }}
+    height="fit-content"
     bg="boxWhite"
     borderRadius="24px"
     boxShadow="0px 4px 20px rgba(0, 0, 0, 0.25)">
