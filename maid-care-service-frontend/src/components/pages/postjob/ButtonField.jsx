@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { job } from '../../../api';
 import { useFormikContext } from 'formik';
 import {
@@ -20,6 +20,8 @@ import { wait, waitFor } from '@testing-library/dom';
 
 const ButtonField = ({ steps, setSteps, isPromoAvailable }) => {
   const { values } = useFormikContext();
+  const [findmaidStatus, setFindmaidStatus] = useState(false);
+  let getStatusFindmaidInterval;
 
   const handleDecrement = () => {
     if (steps > 1) {
@@ -33,7 +35,7 @@ const ButtonField = ({ steps, setSteps, isPromoAvailable }) => {
     }
   };
 
-  const postJobAPI = () => {
+  const postJob_findmaidAPI = () => {
     const n_dishes = () => (values.isDishes === false ? 0 : values.amountOfDishes);
     const n_rooms = () => (values.isRooms === false ? 0 : values.areaOfRooms);
     const n_clothes = () => (values.isClothes === false ? 0 : values.amountOfClothes);
@@ -61,15 +63,44 @@ const ButtonField = ({ steps, setSteps, isPromoAvailable }) => {
         promotionCode: isPromoAvailable === 'true' ? values.promotionCode : '',
       })
       .then(response => {
-        console.log(response.data._id);
-        job
-          .put(`/${response.data._id}/find-maid`)
-          .then(res => {
-            console.log(res);
-          })
-          .catch(error => {
-            console.error(error);
-          });
+        console.log('postJobAPI : ', response);
+        var jobId = response.data._id;
+        jobPutFindmaidAPI(jobId);
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  };
+
+  const jobPutFindmaidAPI = jobID => {
+    job
+      .put(`/${jobID}/find-maid`)
+      .then(response => {
+        console.log('FindmaidAPI : ', response);
+        const findmaidID = response.data._id;
+        //getFindmaidStatusAPI(findmaidID);
+        getStatusFindmaidInterval = setInterval( () => getFindmaidStatusAPI(findmaidID) , 5000);
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  };
+
+  const getFindmaidStatusAPI = findMaidID => {
+    job
+      .get(`/${findMaidID}`, {
+        timeout: 5000,
+      })
+      .then(response => {
+        console.log('getFindmaidStatusAPI : ', response);
+        console.log(response.data.state);
+        if (response.data.state == 'matched') {
+          console.log("We are matched");
+          clearInterval(getStatusFindmaidInterval);
+          setFindmaidStatus(true);
+          handleIncrement();
+        }
+        
       })
       .catch(error => {
         console.error(error);
@@ -127,7 +158,7 @@ const ButtonField = ({ steps, setSteps, isPromoAvailable }) => {
                 onClick={() => {
                   onClose();
                   handleIncrement();
-                  postJobAPI();
+                  postJob_findmaidAPI();
                 }}
                 ml={3}>
                 Confirm

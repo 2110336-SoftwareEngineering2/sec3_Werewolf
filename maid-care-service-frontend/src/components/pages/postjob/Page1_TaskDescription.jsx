@@ -42,7 +42,7 @@ const Page1_TaskDescription = observer(() => {
         <Field as={Select} id="selectButton" name="workspaceId" mb="5px">
           <option value="" >Select your workplace location</option>
           {myWorkspaces.map(myWorkspace => {
-            return <option value={myWorkspace._id} >{myWorkspace.description}</option>;
+            return <option key={myWorkspace._id} value={myWorkspace._id} >{myWorkspace.description}</option>;
           })}
         </Field>
         <Link as={RouterLink} to="/workspace" mt="10px">

@@ -79,5 +79,33 @@ const PostjobHeader = ({ steps }) => {
           </Stack>
         </>
       );
+      case 5:
+      return (
+        <>
+          <HStack justify="center" width="100%">
+            <Box fontSize="1xl" mb="8">
+              <chakra.img src={LogoText} h="40px" />
+            </Box>
+          </HStack>
+          <Box
+            fontSize={{ base: 'xl', md: '2xl' }}
+            width="100%"
+            fontWeight="bold"
+            textAlign="center"
+            mb="50px"
+            >
+            Matched
+          </Box>
+          <Stack direction="row" spacing={4}>
+            <Spinner
+              size="xl"
+              thickness="4px"
+              speed="0.65s"
+              emptyColor="gray.200"
+              color="green.500"
+            />
+          </Stack>
+        </>
+      );
   }
 };
