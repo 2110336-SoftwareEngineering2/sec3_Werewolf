@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 
-import { Formik, Form, useFormikContext, Field } from 'formik';
-import { job } from '../../../api';
-import { useStores } from '../../../hooks/use-stores';
+import { Formik, Form } from 'formik';
 import { observer } from 'mobx-react-lite';
 import * as Yup from 'yup';
 import ButtonField from './ButtonField.jsx';

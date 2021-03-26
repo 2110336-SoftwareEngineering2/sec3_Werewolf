@@ -27,8 +27,8 @@ const Page1_TaskDescription = observer(() => {
       });
   };
 
-  // this useEffec function will work only when page is reloaded.
-  // that mean it will get workspace every time when when page is reloaded.
+  // this useEffect function will work only when page is reloaded.
+  // that mean it will get workspace every time when page is reloaded.
   useEffect(() => {
     getWorkspaceAPI();
   }, []);

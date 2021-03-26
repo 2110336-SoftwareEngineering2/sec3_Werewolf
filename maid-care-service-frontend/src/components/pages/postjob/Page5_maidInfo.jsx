@@ -4,6 +4,7 @@ import { maid, user } from '../../../api';
 import profileImage from './Image/profileImage.png';
 import { VStack, Text, HStack, Box, chakra } from '@chakra-ui/react';
 import StarRating from './components/StarRating.jsx';
+import AlertButton from './components/AlertButton.jsx';
 
 const Page5_maidInfo = ({ maidId }) => {
   var d = new Date();
@@ -38,6 +39,10 @@ const Page5_maidInfo = ({ maidId }) => {
       });
   };
 
+  const testHandle = () => {
+    console.log("Hello");
+  }
+
   useEffect(() => {
     getMaidInfo_user();
     getMaidInfo_maid();
@@ -63,7 +68,7 @@ const Page5_maidInfo = ({ maidId }) => {
         </Text>
         <Text>
           {d.getFullYear() -
-            (maidInfo == null
+            (userInfo == null
               ? d.getFullYear()
               : parseInt(userInfo.birthdate.substring(0, 4)))}{' '}
           years old
@@ -71,6 +76,8 @@ const Page5_maidInfo = ({ maidId }) => {
         <Box mt="10px" bg="white" width="100%" height="150px" fontSize="12px" overflow="hidden">
           {maidInfo == null ? '' : maidInfo.note}
         </Box>
+        <AlertButton mainbtnName="Confirm" mainbtnColor = "buttonGreen"  lbtnName="Cancel" rbtnName="Confirm" headerText="Do you want to confirm ?" bodyText="We will send confirmation message to your maid." lbtnFunction={testHandle} rbtnFunction={testHandle} />
+        <AlertButton mainbtnName="Cancel" mainbtnColor = "red" lbtnName="Cancel" rbtnName="Confirm" headerText="Do you want to confirm ?" bodyText="We will send canceled message to your maid." lbtnFunction={testHandle} rbtnFunction={testHandle} />
       </Box>
     </HStack>
   );

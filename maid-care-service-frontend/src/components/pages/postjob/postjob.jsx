@@ -4,7 +4,7 @@ import { Box, Flex, VStack, HStack, chakra } from '@chakra-ui/react';
 import PostjobForm from './form';
 
 export const Postjob = () => {
-  const [steps, setSteps] = useState(1);
+  const [steps, setSteps] = useState(5);
 
   return (
     <Flex bg="brandGreen" align="center" justify="center" minH="100vh">
@@ -29,6 +29,7 @@ export const Postjob = () => {
   );
 };
 
+// this function return a different header format for each steps.
 const PostjobHeader = ({ steps }) => {
   switch (steps) {
     case 1:
