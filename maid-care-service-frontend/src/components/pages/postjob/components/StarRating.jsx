@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { VStack, Text, HStack, Box, chakra } from '@chakra-ui/react';
+import { HStack } from '@chakra-ui/react';
 
 const StarRating = ({ rating }) => {
   const [hoverRating, setHoverRating] = useState(0);

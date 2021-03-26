@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import LogoText from '../../../assets/images/logo-text.png';
-import { Box, Flex, VStack, Button, HStack, chakra, Stack, Spinner } from '@chakra-ui/react';
+import { Box, Flex, VStack, HStack, chakra } from '@chakra-ui/react';
 import PostjobForm from './form';
-import { useStores } from '../../../hooks/use-stores';
+
 export const Postjob = () => {
-  const [steps, setSteps] = useState(5);
+  const [steps, setSteps] = useState(1);
 
   return (
     <Flex bg="brandGreen" align="center" justify="center" minH="100vh">
@@ -12,11 +12,15 @@ export const Postjob = () => {
         py="8"
         px={{ base: '8', md: '12' }}
         minWidth={{ base: '80vw', md: '30vw' }}
-        width={steps === 5 ? "700px" : "450px"}
+        width={steps === 5 ? '700px' : '450px'}
         bg="boxWhite"
         borderRadius="24px"
         boxShadow="0px 4px 20px rgba(0, 0, 0, 0.25)">
-        <VStack spacing="3" mb="5" minHeight={ steps > 3 ? {} : { sm: '80vh', md: '70vh' }} width="100%">
+        <VStack
+          spacing="3"
+          mb="5"
+          minHeight={steps > 3 ? {} : { sm: '80vh', md: '70vh' }}
+          width="100%">
           <PostjobHeader steps={steps} />
           <PostjobForm steps={steps} setSteps={setSteps} />
         </VStack>
@@ -49,6 +53,7 @@ const PostjobHeader = ({ steps }) => {
           </Box>
         </>
       );
+
     case 4:
       return (
         <>
@@ -59,13 +64,14 @@ const PostjobHeader = ({ steps }) => {
           </HStack>
         </>
       );
-      case 5:
+
+    case 5:
       return (
         <HStack justify="left" width="100%">
-            <Box fontSize="1xl" mb="8">
-              <chakra.img src={LogoText} h="30px" />
-            </Box>
-          </HStack>
+          <Box fontSize="1xl" mb="8">
+            <chakra.img src={LogoText} h="30px" />
+          </Box>
+        </HStack>
       );
   }
 };

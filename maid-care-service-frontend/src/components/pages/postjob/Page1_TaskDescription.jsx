@@ -9,11 +9,10 @@ import { TextInputField } from '../../shared/FormikField';
 
 const Page1_TaskDescription = observer(() => {
   const { values } = useFormikContext();
-  const [error, setError] = useState(false);
   const [myWorkspaces, setMyWorkspaces] = useState([]);
 
   // this function will get workspace from backend server and then
-  // set the value in myWorkspaces by perfrom setMyWorkspaces(response.data)
+  // set the value in myWorkspaces by perfroming setMyWorkspaces(response.data)
   const getWorkspaceAPI = () => {
     workspace
       .get('/', {
@@ -25,7 +24,6 @@ const Page1_TaskDescription = observer(() => {
       })
       .catch(error => {
         console.error(error);
-        setError(error);
       });
   };
 
@@ -39,7 +37,7 @@ const Page1_TaskDescription = observer(() => {
     <>
       <FormControl mb="20px" id="house-no" width={{ sm: '270px', md: '368px' }}>
         <FormLabel mb="0">Location</FormLabel>
-        <Field as={Select} id="selectButton" name="workspaceId" mb="5px">
+        <Field as={Select} id="selectButton" name="workplaceId" mb="5px">
           <option value="" >Select your workplace location</option>
           {myWorkspaces.map(myWorkspace => {
             return <option key={myWorkspace._id} value={myWorkspace._id} >{myWorkspace.description}</option>;

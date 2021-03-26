@@ -1,6 +1,6 @@
-import React, { useState  } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useFormikContext } from 'formik';
-import { promotion } from '../../../api';
+import { promotion, job } from '../../../api';
 import { observer } from 'mobx-react-lite';
 import {
   Button,
@@ -10,9 +10,52 @@ import {
 } from '@chakra-ui/react';
 import { TextInputField } from '../../shared/FormikField';
 
-const Page2Page3_calculatePrice = observer(({ steps, putResponse, isPromoAvailable, setPromoAvailable }) => {
+const Page2Page3_calculatePrice = observer(({ steps, isPromoAvailable, setPromoAvailable }) => {
     const { values } = useFormikContext();
+    const [ costInfo, setCostInfo] = useState();
     const [promoData, setPromoData] = useState('');
+
+    const jobPutCostAPI = () => {
+      console.log("value2", values);
+      const n_dishes = () => (values.isDishes === false ? 0 : values.amountOfDishes);
+      const n_rooms = () => (values.isRooms === false ? 0 : values.areaOfRooms);
+      const n_clothes = () => (values.isClothes === false ? 0 : values.amountOfClothes);
+  
+      job
+        .put('/cost', {
+          workplaceId: values.workplaceId,
+          work: [
+            {
+              typeOfWork: 'Dish Washing',
+              description: 'None',
+              quantity: parseInt(n_dishes()),
+            },
+            {
+              typeOfWork: 'House Cleaning',
+              description: 'None',
+              quantity: parseInt(n_rooms()),
+            },
+            {
+              typeOfWork: 'Laundry',
+              description: 'None',
+              quantity: parseInt(n_clothes()),
+            },
+          ],
+          promotionCode: isPromoAvailable === 'true' ? values.promotionCode : '',
+        })
+        .then(response => {
+          console.log("put job/cost", response);
+          setCostInfo(response.data);
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    };
+
+    useEffect(() => {
+      console.log("value", values);
+      jobPutCostAPI();
+    }, [steps]);
   
     const getPromotioncodeAPI = () => {
       promotion
@@ -75,7 +118,7 @@ const Page2Page3_calculatePrice = observer(({ steps, putResponse, isPromoAvailab
                 Total price
               </Text>
               <Text fontFamily="body" fontWeight="bold">
-                {putResponse.cost}
+                {costInfo.cost}
               </Text>
             </HStack>
           </>
@@ -95,7 +138,7 @@ const Page2Page3_calculatePrice = observer(({ steps, putResponse, isPromoAvailab
             Dishes
           </Text>
           <Text fontFamily="body">
-            {putResponse === undefined ? 'Loading...' : putResponse.work[0].cost}
+            {costInfo === undefined ? 'Loading...' : costInfo.work[0].cost}
           </Text>
         </HStack>
         <HStack justify="space-between" width="100%">
@@ -104,7 +147,7 @@ const Page2Page3_calculatePrice = observer(({ steps, putResponse, isPromoAvailab
             meters of Rooms
           </Text>
           <Text fontFamily="body">
-            {putResponse === undefined ? 'Loading...' : putResponse.work[1].cost}
+            {costInfo === undefined ? 'Loading...' : costInfo.work[1].cost}
           </Text>
         </HStack>
         <HStack justify="space-between" width="100%">
@@ -115,7 +158,7 @@ const Page2Page3_calculatePrice = observer(({ steps, putResponse, isPromoAvailab
             Clothes
           </Text>
           <Text fontFamily="body">
-            {putResponse === undefined ? 'Loading...' : putResponse.work[2].cost}
+            {costInfo === undefined ? 'Loading...' : costInfo.work[2].cost}
           </Text>
         </HStack>
         <HStack justify="space-between" width="100%">
@@ -123,9 +166,9 @@ const Page2Page3_calculatePrice = observer(({ steps, putResponse, isPromoAvailab
             Total price
           </Text>
           <Text fontFamily="body" fontWeight="bold">
-            {putResponse === undefined
+            {costInfo === undefined
               ? ''
-              : putResponse.work[0].cost + putResponse.work[1].cost + putResponse.work[2].cost}
+              : costInfo.work[0].cost + costInfo.work[1].cost + costInfo.work[2].cost}
           </Text>
         </HStack>
         {promotionBox()}
