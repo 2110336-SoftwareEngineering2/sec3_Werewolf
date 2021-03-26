@@ -1,15 +1,9 @@
 import React, { useState, useEffect } from 'react';
 
-import { Formik, Form, useFormikContext, Field } from 'formik';
 import { maid, user } from '../../../api';
 import profileImage from './Image/profileImage.png';
-import { useStores } from '../../../hooks/use-stores';
-import { observer } from 'mobx-react-lite';
-import * as Yup from 'yup';
-import ButtonField from './ButtonField.jsx';
-import Page1_TaskDescription from './Page1_TaskDescription.jsx';
-import Page2Page3_calculatePrice from './Page2_3_calculatePrice.jsx';
 import { VStack, Text, HStack, Box, chakra } from '@chakra-ui/react';
+import StarRating from './components/StarRating.jsx';
 
 const Page5_maidInfo = ({ maidId }) => {
   var d = new Date();
@@ -50,11 +44,14 @@ const Page5_maidInfo = ({ maidId }) => {
   }, []);
 
   return (
-    <HStack width="600px" height="300px" border="2px">
-      <Box justifyContent="center" width="200px" height="100%">
+    <HStack width="600px" height="300px" >
+      <VStack justifyContent="center" width="200px" height="100%">
         <chakra.img src={profileImage} width="200px" />
-      </Box>
-      <Box width="400px" height="100%" border="1px">
+        <HStack>
+          <StarRating rating={ maidInfo == null ? 0 : maidInfo.avgRating == null ? 0 : maidInfo.avgRating }/>
+        </HStack>
+      </VStack>
+      <Box width="400px" height="100%">
         <Text mb="20px" fontWeight="bold">
           Maid Profile
         </Text>

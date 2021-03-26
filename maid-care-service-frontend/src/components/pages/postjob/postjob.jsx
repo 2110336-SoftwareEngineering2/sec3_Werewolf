@@ -16,7 +16,7 @@ export const Postjob = () => {
         bg="boxWhite"
         borderRadius="24px"
         boxShadow="0px 4px 20px rgba(0, 0, 0, 0.25)">
-        <VStack spacing="3" mb="5" minHeight={ steps > 3 ? {} : { sm: '80vh', md: '70vh' }} width="100%" border="1px">
+        <VStack spacing="3" mb="5" minHeight={ steps > 3 ? {} : { sm: '80vh', md: '70vh' }} width="100%">
           <PostjobHeader steps={steps} />
           <PostjobForm steps={steps} setSteps={setSteps} />
         </VStack>
