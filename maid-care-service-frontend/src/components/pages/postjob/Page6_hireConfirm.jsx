@@ -17,15 +17,15 @@ const Page6_hireConfirm = ({ isConfirm }) => {
         return (
           <>
             <svg
-              class="w-6 h-6"
+              className="w-6 h-6"
               fill="none"
               stroke="red"
               viewBox="0 0 24 24"
               xmlns="http://www.w3.org/2000/svg">
               <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
                 d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path>
             </svg>
             <Text fontWeight="bold" fontSize="25px" color="red.500">
@@ -38,15 +38,15 @@ const Page6_hireConfirm = ({ isConfirm }) => {
         return (
           <>
             <svg
-              class="w-12 h-12"
+              className="w-12 h-12"
               fill="none"
               stroke="green"
               viewBox="0 0 24 24"
               xmlns="http://www.w3.org/2000/svg">
               <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
                 d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
             </svg>
             <Text fontWeight="bold" fontSize="25px" color="green.600">
@@ -59,15 +59,15 @@ const Page6_hireConfirm = ({ isConfirm }) => {
         return (
           <>
             <svg
-              class="w-6 h-6"
+              className="w-6 h-6"
               fill="none"
               stroke="red"
               viewBox="0 0 24 24"
               xmlns="http://www.w3.org/2000/svg">
               <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
                 d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
             </svg>
             <Text fontWeight="bold" fontSize="25px" color="red.500">
@@ -76,19 +76,19 @@ const Page6_hireConfirm = ({ isConfirm }) => {
           </>
         );
 
-        case 'noMatch':
+      case 'noMatch':
         return (
-            <>
+          <>
             <svg
-              class="w-6 h-6"
+              className="w-6 h-6"
               fill="none"
               stroke="red"
               viewBox="0 0 24 24"
               xmlns="http://www.w3.org/2000/svg">
               <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
                 d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
             </svg>
             <Text fontWeight="bold" fontSize="20px" color="red.500">

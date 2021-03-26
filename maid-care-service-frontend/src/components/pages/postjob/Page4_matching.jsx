@@ -1,11 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, Stack, Spinner } from '@chakra-ui/react';
 import { useFormikContext } from 'formik';
 import { job } from '../../../api';
 
 const Page4_maidInfo = ( {setSteps, isPromoAvailable, setConfirm, setMaidId, setJobId} ) => {
   const { values } = useFormikContext();
-  const { matchErrorCount, setMatchErrorCount } = useFormikContext(0);
   let getStatusFindmaidInterval;
 
   const handleIncrement = () => {
@@ -70,24 +69,20 @@ const Page4_maidInfo = ( {setSteps, isPromoAvailable, setConfirm, setMaidId, set
       })
       .then(response => {
         console.log('get job/{jobId} : ', response);
-        console.log(response.data.state);
         if (response.data.state == 'matched') {
-          console.log("We are matched");
           clearInterval(getStatusFindmaidInterval);
-          handleIncrement();
           var maidId = response.data.maidId;
           setMaidId(maidId);
+          handleIncrement();
           console.log("This is your maid", response.data.maidId);
         }
         
       })
       .catch(error => {
         console.error(error);
-        setMatchErrorCount(previousCount => previousCount + 1);
-        if ( matchErrorCount > 1 ){
-          setSteps(6);
-          setConfirm("noMatch")
-        }
+        clearInterval(getStatusFindmaidInterval);
+        setConfirm("noMatch")
+        setSteps(6);
       });
   };
 
