@@ -33,6 +33,11 @@ export class PromotionController {
     type: PromotionDto,
   })
   @ApiResponse({ status: 400, description: 'wrong discountRate or date' })
+  @ApiResponse({ status: 401, description: 'user is not admin' })
+  @ApiResponse({
+    status: 409,
+    description: 'this promotion code already exist',
+  })
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   @ApiBearerAuth('acess-token')
@@ -68,6 +73,7 @@ export class PromotionController {
     description: 'Admin get all promotions',
     type: [PromotionDto],
   })
+  @ApiResponse({ status: 401, description: 'user is not admin' })
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   @ApiBearerAuth('acess-token')
@@ -80,6 +86,8 @@ export class PromotionController {
     description: 'Delete promotion by promotion code',
     type: PromotionDto,
   })
+  @ApiResponse({ status: 401, description: 'user is not admin' })
+  @ApiResponse({ status: 404, description: 'promotion not valid' })
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   @ApiBearerAuth('acess-token')

@@ -8,7 +8,6 @@ export class UserDto {
     this.lastname = object.lastname;
     this.birthdate = object.birthdate;
     this.citizenId = object.citizenId;
-    this.nationality = object.nationality;
     this.bankAccountNumber = object.bankAccountNumber;
     this.role = object.role;
   }
@@ -30,9 +29,6 @@ export class UserDto {
 
   @ApiProperty({ type: String })
   readonly citizenId: string;
-
-  @ApiProperty({ type: String })
-  readonly nationality: string;
 
   @ApiProperty({ type: String })
   readonly bankAccountNumber: string;
