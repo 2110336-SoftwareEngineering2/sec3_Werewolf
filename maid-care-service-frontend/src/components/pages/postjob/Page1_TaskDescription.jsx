@@ -20,7 +20,7 @@ const Page1_TaskDescription = observer(() => {
       })
       .then(response => {
         setMyWorkspaces(response.data);
-        console.log("get workspace/ : ", response.data);
+        console.log('get workspace/ : ', response.data);
       })
       .catch(error => {
         console.error(error);
@@ -38,9 +38,13 @@ const Page1_TaskDescription = observer(() => {
       <FormControl mb="20px" id="house-no" width={{ sm: '270px', md: '368px' }}>
         <FormLabel mb="0">Location</FormLabel>
         <Field as={Select} id="selectButton" name="workplaceId" mb="5px">
-          <option value="" >Select your workplace location</option>
+          <option value="">Select your workplace location</option>
           {myWorkspaces.map(myWorkspace => {
-            return <option key={myWorkspace._id} value={myWorkspace._id} >{myWorkspace.description}</option>;
+            return (
+              <option key={myWorkspace._id} value={myWorkspace._id}>
+                {myWorkspace.description}
+              </option>
+            );
           })}
         </Field>
         <Link as={RouterLink} to="/workspace" mt="10px">

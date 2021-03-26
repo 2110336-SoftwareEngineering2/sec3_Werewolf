@@ -3,12 +3,12 @@ import { Box, Stack, Spinner } from '@chakra-ui/react';
 import { useFormikContext } from 'formik';
 import { job } from '../../../api';
 
-const Page4_maidInfo = ( {setSteps, isPromoAvailable, setConfirm, setMaidId, setJobId} ) => {
+const Page4_maidInfo = ({ setSteps, isPromoAvailable, setConfirm, setMaidId, setJobId }) => {
   const { values } = useFormikContext();
   let getStatusFindmaidInterval;
 
   const handleIncrement = () => {
-      setSteps(previousStep => previousStep + 1);
+    setSteps(previousStep => previousStep + 1);
   };
 
   const postJob_findmaidAPI = () => {
@@ -55,7 +55,7 @@ const Page4_maidInfo = ( {setSteps, isPromoAvailable, setConfirm, setMaidId, set
       .then(response => {
         console.log('put job/{uid}/find-maid : ', response);
         const findmaidID = response.data._id;
-        getStatusFindmaidInterval = setInterval( () => getFindmaidStatusAPI(findmaidID) , 5000);
+        getStatusFindmaidInterval = setInterval(() => getFindmaidStatusAPI(findmaidID), 5000);
       })
       .catch(error => {
         console.error(error);
@@ -74,46 +74,38 @@ const Page4_maidInfo = ( {setSteps, isPromoAvailable, setConfirm, setMaidId, set
           var maidId = response.data.maidId;
           setMaidId(maidId);
           handleIncrement();
-          console.log("This is your maid", response.data.maidId);
+          console.log('This is your maid', response.data.maidId);
         }
-        
       })
       .catch(error => {
         console.error(error);
         clearInterval(getStatusFindmaidInterval);
-        setConfirm("noMatch")
+        setConfirm('noMatch');
         setSteps(6);
       });
   };
 
   useEffect(() => {
     postJob_findmaidAPI();
-  }, [])
+  }, []);
 
-    return(
-        <>
-        <Box
-            fontSize={{ base: 'xl', md: '2xl' }}
-            width="100%"
-            fontWeight="bold"
-            textAlign="center"
-            mb="50px"
-            >
-            We are finding a Maid for you
-            <br />
-            Please wait !
-          </Box>
-          <Stack direction="row" spacing={4}>
-            <Spinner
-              size="xl"
-              thickness="4px"
-              speed="0.65s"
-              emptyColor="gray.200"
-              color="green.500"
-            />
-          </Stack>
-        </>
-    );
-}
+  return (
+    <>
+      <Box
+        fontSize={{ base: 'xl', md: '2xl' }}
+        width="100%"
+        fontWeight="bold"
+        textAlign="center"
+        mb="50px">
+        We are finding a Maid for you
+        <br />
+        Please wait !
+      </Box>
+      <Stack direction="row" spacing={4}>
+        <Spinner size="xl" thickness="4px" speed="0.65s" emptyColor="gray.200" color="green.500" />
+      </Stack>
+    </>
+  );
+};
 
-export default Page4_maidInfo
+export default Page4_maidInfo;

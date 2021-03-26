@@ -16,7 +16,6 @@ import {
 // 3. Show confirm window when submit button on page3 is clicked.
 
 const ButtonField = ({ steps, setSteps }) => {
-
   const handleDecrement = () => {
     if (steps > 1) {
       setSteps(previousStep => previousStep - 1);
@@ -28,8 +27,6 @@ const ButtonField = ({ steps, setSteps }) => {
       setSteps(previousStep => previousStep + 1);
     }
   };
-
-  
 
   // This 3 variables is used for submit button.
   const [isOpen, setIsOpen] = React.useState(false);

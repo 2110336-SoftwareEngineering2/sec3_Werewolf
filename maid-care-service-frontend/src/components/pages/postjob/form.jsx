@@ -61,11 +61,26 @@ const PostjobForm = observer(props => {
           />
         );
       case 4:
-        return <Page4_matching setSteps={props.setSteps} isPromoAvailable={isPromoAvailable} setConfirm={setConfirm} setMaidId={setMaidId} setJobId={setJobId}/>;
+        return (
+          <Page4_matching
+            setSteps={props.setSteps}
+            isPromoAvailable={isPromoAvailable}
+            setConfirm={setConfirm}
+            setMaidId={setMaidId}
+            setJobId={setJobId}
+          />
+        );
       case 5:
-        return <Page5_maidInfo setSteps={props.setSteps} maidId={maidId} jobId={jobId} setConfirm={setConfirm}/>;
+        return (
+          <Page5_maidInfo
+            setSteps={props.setSteps}
+            maidId={maidId}
+            jobId={jobId}
+            setConfirm={setConfirm}
+          />
+        );
       case 6:
-        return <Page6_hireConfirm isConfirm={isConfirm}/>;
+        return <Page6_hireConfirm isConfirm={isConfirm} />;
     }
   };
 
