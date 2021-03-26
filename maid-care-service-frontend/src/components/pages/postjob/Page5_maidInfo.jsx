@@ -17,7 +17,7 @@ const Page5_maidInfo = ({ maidId }) => {
       })
       .then(response => {
         console.log('User : ', response);
-        setMaidInfo(response.data);
+        setUserInfo(response.data);
       })
       .catch(error => {
         console.error(error);
@@ -31,7 +31,7 @@ const Page5_maidInfo = ({ maidId }) => {
       })
       .then(response => {
         console.log('Maid : ', response);
-        setUserInfo(response.data);
+        setMaidInfo(response.data);
       })
       .catch(error => {
         console.error(error);
@@ -44,36 +44,32 @@ const Page5_maidInfo = ({ maidId }) => {
   }, []);
 
   return (
-    <HStack width="600px" height="300px" >
+    <HStack width="600px" height="300px">
       <VStack justifyContent="center" width="200px" height="100%">
         <chakra.img src={profileImage} width="200px" />
-        <HStack>
-          <StarRating rating={ maidInfo == null ? 0 : maidInfo.avgRating == null ? 0 : maidInfo.avgRating }/>
-        </HStack>
+        <StarRating
+          rating={maidInfo == null ? 0 : maidInfo.avgRating == null ? 0 : maidInfo.avgRating}
+        />
+        <Text>
+          {maidInfo == null ? 0 : maidInfo.avgRating == null ? 0 : maidInfo.avgRating}/5 from {maidInfo == null ? 0 : maidInfo.totalReviews} reviews 
+        </Text>
       </VStack>
       <Box width="400px" height="100%">
         <Text mb="20px" fontWeight="bold">
           Maid Profile
         </Text>
         <Text>
-          {maidInfo == null ? '' : maidInfo.firstname} {maidInfo == null ? '' : maidInfo.lastname}
+          {userInfo == null ? '' : userInfo.firstname} {userInfo == null ? '' : userInfo.lastname}
         </Text>
         <Text>
           {d.getFullYear() -
             (maidInfo == null
               ? d.getFullYear()
-              : parseInt(maidInfo.birthdate.substring(0, 4)))}{' '}
+              : parseInt(userInfo.birthdate.substring(0, 4)))}{' '}
           years old
         </Text>
-        <Box 
-        mt="10px"
-        bg="white" 
-        width="100%" 
-        height="150px"
-        fontSize="12px"
-        overflow="hidden"
-        >
-          {userInfo == null ? "" : userInfo.note}
+        <Box mt="10px" bg="white" width="100%" height="150px" fontSize="12px" overflow="hidden">
+          {maidInfo == null ? '' : maidInfo.note}
         </Box>
       </Box>
     </HStack>
