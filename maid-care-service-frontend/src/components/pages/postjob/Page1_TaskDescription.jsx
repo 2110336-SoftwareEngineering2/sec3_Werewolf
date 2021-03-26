@@ -20,7 +20,7 @@ const Page1_TaskDescription = observer(() => {
       })
       .then(response => {
         setMyWorkspaces(response.data);
-        console.log(response.data);
+        console.log("get workspace/ : ", response.data);
       })
       .catch(error => {
         console.error(error);

@@ -4,10 +4,11 @@ import { Formik, Form } from 'formik';
 import { observer } from 'mobx-react-lite';
 import * as Yup from 'yup';
 import ButtonField from './ButtonField.jsx';
-import Page5_maidInfo from './Page5_maidInfo.jsx';
 import Page1_TaskDescription from './Page1_TaskDescription.jsx';
 import Page2Page3_calculatePrice from './Page2_3_calculatePrice.jsx';
 import Page4_matching from './Page4_matching.jsx';
+import Page5_maidInfo from './Page5_maidInfo.jsx';
+import Page6_hireConfirm from './Page6_hireConfirm.jsx';
 import { VStack, Text } from '@chakra-ui/react';
 
 const PostjobForm = observer(props => {
@@ -16,6 +17,8 @@ const PostjobForm = observer(props => {
   // maidId is received from API in Page4_matching and then pass as a parameter to
   // Page5_maidInfo in order to get maid information.
   const [maidId, setMaidId] = useState('');
+  const [jobId, setJobId] = useState('');
+  const [isConfirm, setConfirm] = useState('null');
 
   const yup = Yup.object({
     amountOfDishes: Yup.mixed().when('isDishes', {
@@ -58,9 +61,11 @@ const PostjobForm = observer(props => {
           />
         );
       case 4:
-        return <Page4_matching setSteps={props.setSteps} isPromoAvailable={isPromoAvailable} setMaidId={setMaidId} />;
+        return <Page4_matching setSteps={props.setSteps} isPromoAvailable={isPromoAvailable} setConfirm={setConfirm} setMaidId={setMaidId} setJobId={setJobId}/>;
       case 5:
-        return <Page5_maidInfo maidId={'605ca4cbfc41950040c4c1d9'} />;
+        return <Page5_maidInfo setSteps={props.setSteps} maidId={maidId} jobId={jobId} setConfirm={setConfirm}/>;
+      case 6:
+        return <Page6_hireConfirm isConfirm={isConfirm}/>;
     }
   };
 

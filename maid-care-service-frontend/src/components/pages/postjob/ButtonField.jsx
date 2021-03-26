@@ -39,7 +39,7 @@ const ButtonField = ({ steps, setSteps }) => {
   return (
     <>
       <HStack justify="flex-end" width="100%" bottom="1px">
-        {steps > 1 && steps < 5 ? (
+        {steps > 1 && steps < 4 ? (
           <Button
             width="100px"
             className="button button-register"

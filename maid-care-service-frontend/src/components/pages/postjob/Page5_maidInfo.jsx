@@ -1,23 +1,27 @@
 import React, { useState, useEffect } from 'react';
 
-import { maid, user } from '../../../api';
+import { maid, user, job } from '../../../api';
 import profileImage from './Image/profileImage.png';
 import { VStack, Text, HStack, Box, chakra } from '@chakra-ui/react';
 import StarRating from './components/StarRating.jsx';
 import AlertButton from './components/AlertButton.jsx';
 
-const Page5_maidInfo = ({ maidId }) => {
+const Page5_maidInfo = ({ setSteps, maidId, jobId, setConfirm }) => {
   var d = new Date();
   const [maidInfo, setMaidInfo] = useState();
   const [userInfo, setUserInfo] = useState();
 
-  const getMaidInfo_user = () => {
+  const handleIncrement = () => {
+    setSteps(previousStep => previousStep + 1);
+};
+
+  const getUserInfo_API = () => {
     user
       .get(`/${maidId}`, {
         timeout: 5000,
       })
       .then(response => {
-        console.log('User : ', response);
+        console.log('get user/{uid} : ', response);
         setUserInfo(response.data);
       })
       .catch(error => {
@@ -25,13 +29,13 @@ const Page5_maidInfo = ({ maidId }) => {
       });
   };
 
-  const getMaidInfo_maid = () => {
+  const getMaidInfo_API = () => {
     maid
       .get(`/${maidId}`, {
         timeout: 5000,
       })
       .then(response => {
-        console.log('Maid : ', response);
+        console.log('get maid/{uid} : ', response);
         setMaidInfo(response.data);
       })
       .catch(error => {
@@ -39,13 +43,41 @@ const Page5_maidInfo = ({ maidId }) => {
       });
   };
 
+  const customerConfirm_API = () => {
+    job
+      .put(`/${jobId}/customer-confirm`)
+      .then(response => {
+        console.log('put job/{jobId}/customer-confirm : ', response);
+        handleIncrement();
+        setConfirm('true')
+      })
+      .catch(error => {
+        console.error(error);
+        setConfirm('fail')
+      });
+  }
+
+  const customerCancel_API = () => {
+    job
+      .put(`/${jobId}/customer-cancel`)
+      .then(response => {
+        console.log('put job/{jobId}/customer-confirm : ', response);
+        handleIncrement();
+        setConfirm('false')
+      })
+      .catch(error => {
+        console.error(error);
+        setConfirm('fail')
+      });
+  }
+
   const testHandle = () => {
-    console.log("Hello");
+    console.log("Cancel");
   }
 
   useEffect(() => {
-    getMaidInfo_user();
-    getMaidInfo_maid();
+    getUserInfo_API();
+    getMaidInfo_API();
   }, []);
 
   return (
@@ -76,8 +108,24 @@ const Page5_maidInfo = ({ maidId }) => {
         <Box mt="10px" bg="white" width="100%" height="150px" fontSize="12px" overflow="hidden">
           {maidInfo == null ? '' : maidInfo.note}
         </Box>
-        <AlertButton mainbtnName="Confirm" mainbtnColor = "buttonGreen"  lbtnName="Cancel" rbtnName="Confirm" headerText="Do you want to confirm ?" bodyText="We will send confirmation message to your maid." lbtnFunction={testHandle} rbtnFunction={testHandle} />
-        <AlertButton mainbtnName="Cancel" mainbtnColor = "red" lbtnName="Cancel" rbtnName="Confirm" headerText="Do you want to confirm ?" bodyText="We will send canceled message to your maid." lbtnFunction={testHandle} rbtnFunction={testHandle} />
+        <AlertButton 
+        mainbtnName="Confirm" 
+        mainbtnColor = "buttonGreen"  
+        lbtnName="Cancel" 
+        rbtnName="Confirm" 
+        headerText="Do you want to confirm ?" 
+        bodyText="We will send confirmation message to your maid." 
+        lbtnFunction={testHandle} 
+        rbtnFunction={customerConfirm_API} />
+        <AlertButton 
+        mainbtnName="Cancel" 
+        mainbtnColor = "red" 
+        lbtnName="Cancel" 
+        rbtnName="Confirm" 
+        headerText="Do you want to confirm ?" 
+        bodyText="We will send canceled message to your maid." 
+        lbtnFunction={testHandle} 
+        rbtnFunction={customerCancel_API} />
       </Box>
     </HStack>
   );

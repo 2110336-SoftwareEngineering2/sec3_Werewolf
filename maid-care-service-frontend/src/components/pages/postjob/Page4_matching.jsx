@@ -3,8 +3,9 @@ import { Box, Stack, Spinner } from '@chakra-ui/react';
 import { useFormikContext } from 'formik';
 import { job } from '../../../api';
 
-const Page4_maidInfo = ( {setSteps, isPromoAvailable, setMaidId} ) => {
+const Page4_maidInfo = ( {setSteps, isPromoAvailable, setConfirm, setMaidId, setJobId} ) => {
   const { values } = useFormikContext();
+  const { matchErrorCount, setMatchErrorCount } = useFormikContext(0);
   let getStatusFindmaidInterval;
 
   const handleIncrement = () => {
@@ -39,8 +40,9 @@ const Page4_maidInfo = ( {setSteps, isPromoAvailable, setMaidId} ) => {
         promotionCode: isPromoAvailable === 'true' ? values.promotionCode : '',
       })
       .then(response => {
-        console.log('postJobAPI : ', response);
+        console.log('post job/ : ', response);
         var jobId = response.data._id;
+        setJobId(jobId);
         jobPutFindmaidAPI(jobId);
       })
       .catch(error => {
@@ -52,7 +54,7 @@ const Page4_maidInfo = ( {setSteps, isPromoAvailable, setMaidId} ) => {
     job
       .put(`/${jobID}/find-maid`)
       .then(response => {
-        console.log('FindmaidAPI : ', response);
+        console.log('put job/{uid}/find-maid : ', response);
         const findmaidID = response.data._id;
         getStatusFindmaidInterval = setInterval( () => getFindmaidStatusAPI(findmaidID) , 5000);
       })
@@ -67,7 +69,7 @@ const Page4_maidInfo = ( {setSteps, isPromoAvailable, setMaidId} ) => {
         timeout: 5000,
       })
       .then(response => {
-        console.log('getFindmaidStatusAPI : ', response);
+        console.log('get job/{jobId} : ', response);
         console.log(response.data.state);
         if (response.data.state == 'matched') {
           console.log("We are matched");
@@ -81,6 +83,11 @@ const Page4_maidInfo = ( {setSteps, isPromoAvailable, setMaidId} ) => {
       })
       .catch(error => {
         console.error(error);
+        setMatchErrorCount(previousCount => previousCount + 1);
+        if ( matchErrorCount > 1 ){
+          setSteps(6);
+          setConfirm("noMatch")
+        }
       });
   };
 

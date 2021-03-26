@@ -16,7 +16,6 @@ const Page2Page3_calculatePrice = observer(({ steps, isPromoAvailable, setPromoA
     const [promoData, setPromoData] = useState('');
 
     const jobPutCostAPI = () => {
-      console.log("value2", values);
       const n_dishes = () => (values.isDishes === false ? 0 : values.amountOfDishes);
       const n_rooms = () => (values.isRooms === false ? 0 : values.areaOfRooms);
       const n_clothes = () => (values.isClothes === false ? 0 : values.amountOfClothes);
@@ -53,7 +52,6 @@ const Page2Page3_calculatePrice = observer(({ steps, isPromoAvailable, setPromoA
     };
 
     useEffect(() => {
-      console.log("value", values);
       jobPutCostAPI();
     }, [steps]);
   
@@ -65,7 +63,7 @@ const Page2Page3_calculatePrice = observer(({ steps, isPromoAvailable, setPromoA
         .then(response => {
           setPromoAvailable('true');
           setPromoData(response.data);
-          console.log(promoData);
+          console.log("get promotion/{code}", response);
         })
         .catch(error => {
           console.error(error);
