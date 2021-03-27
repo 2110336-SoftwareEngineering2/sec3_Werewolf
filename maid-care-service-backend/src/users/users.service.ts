@@ -2,7 +2,6 @@ import {
   Injectable,
   Inject,
   BadRequestException,
-  ForbiddenException,
   NotFoundException,
   ConflictException,
 } from '@nestjs/common';
@@ -87,7 +86,7 @@ export class UsersService {
 
   async updateProfile(id: string, newProfile: ProfileDto): Promise<User> {
     const userFromDb = await this.findUser(id);
-    if (!userFromDb) throw new ForbiddenException('Invalid user');
+    if (!userFromDb) throw new NotFoundException('Invalid user');
     if (newProfile.password) {
       newProfile.password = await bcrypt.hash(newProfile.password, saltRounds);
       userFromDb.password = newProfile.password;
@@ -135,13 +134,13 @@ export class UsersService {
 
   async checkPassword(email: string, pass: string): Promise<boolean> {
     const user = await this.findUserByEmail(email);
-    if (!user) throw new NotFoundException('Invalid user');
+    if (!user) return false;
     return await bcrypt.compare(pass, user.password);
   }
 
   async setPassword(email: string, newPassword: string): Promise<boolean> {
     const user = await this.findUserByEmail(email);
-    if (!user) throw new ForbiddenException('Invalid user');
+    if (!user) throw new NotFoundException('Invalid user');
     user.password = await bcrypt.hash(newPassword, saltRounds);
     const savedUser = await user.save();
     return !!savedUser;

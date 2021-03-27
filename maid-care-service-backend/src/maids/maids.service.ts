@@ -2,7 +2,7 @@ import {
   Injectable,
   Inject,
   BadRequestException,
-  ForbiddenException,
+  NotFoundException,
 } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { Job } from 'src/job/interfaces/job.interface';
@@ -35,7 +35,7 @@ export class MaidsService {
 
   async updateWork(id: string, work: [string]): Promise<Maid> {
     const maidFromDb = await this.findMaid(id);
-    if (!maidFromDb) throw new ForbiddenException('invalid maid');
+    if (!maidFromDb) throw new NotFoundException('invalid maid');
     // update works
     if (work) {
       work.forEach((work) => {
@@ -50,7 +50,7 @@ export class MaidsService {
 
   async updateNote(id: string, note: string): Promise<Maid> {
     const maidFromDb = await this.findMaid(id);
-    if (!maidFromDb) throw new ForbiddenException('invalid maid');
+    if (!maidFromDb) throw new NotFoundException('invalid maid');
     // update note
     if (note) {
       maidFromDb.note = note;
@@ -65,7 +65,7 @@ export class MaidsService {
     longitude: number,
   ): Promise<Maid> {
     const maidFromDb = await this.findMaid(id);
-    if (!maidFromDb) throw new ForbiddenException('invalid maid');
+    if (!maidFromDb) throw new NotFoundException('invalid maid');
     // update latitude and Longitude
     maidFromDb.cerrentLocation.latitude = latitude;
     maidFromDb.cerrentLocation.longitude = longitude;
@@ -75,7 +75,7 @@ export class MaidsService {
 
   async setAvailability(id: string, availability: boolean): Promise<Maid> {
     const maidFromDb = await this.findMaid(id);
-    if (!maidFromDb) throw new ForbiddenException('Invalid maid');
+    if (!maidFromDb) throw new NotFoundException('Invalid maid');
     maidFromDb.availability = availability;
     await maidFromDb.save();
     return maidFromDb;

@@ -111,7 +111,7 @@ export class UsersController {
     type: Boolean,
   })
   @ApiResponse({ status: 400, description: 'no new password' })
-  @ApiResponse({ status: 401, description: 'old password is incorrect' })
+  @ApiResponse({ status: 401, description: 'email or password is incorrect' })
   async resetPassord(
     @Body() resetPasswordDto: ResetPasswordDto,
   ): Promise<boolean> {
@@ -122,7 +122,7 @@ export class UsersController {
         resetPasswordDto.currentPassword,
       );
       if (!isValidPassword)
-        throw new UnauthorizedException('incorrect password');
+        throw new UnauthorizedException('incorrect email or password');
       return await this.usersService.setPassword(
         resetPasswordDto.email,
         resetPasswordDto.newPassword,

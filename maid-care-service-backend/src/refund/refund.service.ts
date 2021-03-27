@@ -1,9 +1,4 @@
-import {
-  Injectable,
-  Inject,
-  NotFoundException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { JobService } from 'src/job/job.service';
 import { UsersService } from 'src/users/users.service';
@@ -37,7 +32,8 @@ export class RefundService {
   ): Promise<Refund> {
     //validate jobId
     const job = await this.jobService.findJob(createRefundDto.jobId);
-    if (!job) throw new BadRequestException('invalid job id');
+    if (!job || job.customerId != creater)
+      throw new NotFoundException('job not found');
     const createdRefund = new this.refundModel(createRefundDto);
     createdRefund.customerId = creater;
     return await createdRefund.save();

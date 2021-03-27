@@ -32,8 +32,11 @@ export class RefundController {
     description: 'customer create refund',
     type: RefundDto,
   })
-  @ApiResponse({ status: 400, description: 'wrong jobId' })
   @ApiResponse({ status: 401, description: 'user is not customer' })
+  @ApiResponse({
+    status: 404,
+    description: 'job not found or it is not your job',
+  })
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('customer')
   @ApiBearerAuth('acess-token')

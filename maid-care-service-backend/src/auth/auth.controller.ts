@@ -7,7 +7,7 @@ import {
   Post,
   UseGuards,
   UnprocessableEntityException,
-  ForbiddenException,
+  NotFoundException,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -36,10 +36,8 @@ export class AuthController {
     description: 'Login with email and password to get access token',
     type: AccessTokenDto,
   })
-  @ApiResponse({
-    status: 401,
-    description: 'email or password is incorrect or email is not verified',
-  })
+  @ApiResponse({ status: 401, description: 'email or password is incorrect' })
+  @ApiResponse({ status: 403, description: 'email is not verified' })
   async login(@Body() login: LoginDto) {
     login.email = login.email.toLowerCase();
     try {
@@ -58,7 +56,7 @@ export class AuthController {
   @ApiBearerAuth('acess-token')
   async getUser(@Request() req) {
     const user = await this.usersService.findUserByEmail(req.user.email);
-    if (!user) throw new ForbiddenException('Invalid user');
+    if (!user) throw new NotFoundException('Invalid user');
     return new UserDto(user);
   }
 
@@ -97,8 +95,8 @@ export class AuthController {
     description: 'token not existed or have changed',
   })
   @ApiResponse({
-    status: 403,
-    description: 'invalid user, something wrong',
+    status: 404,
+    description: 'invalid user',
   })
   async verifyEmail(@Param() params): Promise<boolean> {
     try {

@@ -2,7 +2,6 @@ import {
   Injectable,
   Inject,
   BadRequestException,
-  ForbiddenException,
   NotFoundException,
   ConflictException,
 } from '@nestjs/common';
@@ -226,7 +225,7 @@ export class JobService {
         return 'ตารางเมตร';
       }
       default: {
-        throw new ForbiddenException(workType + ' is not valid type of work');
+        throw new BadRequestException(workType + ' is not valid type of work');
       }
     }
   }

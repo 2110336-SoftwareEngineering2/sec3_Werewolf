@@ -61,7 +61,7 @@ export class PromotionController {
     description: 'Get promotion by promotion code',
     type: PromotionDto,
   })
-  @ApiResponse({ status: 404, description: 'Promotion not valid' })
+  @ApiResponse({ status: 404, description: 'promotion not valid' })
   async findPromotion(@Param('code') code: string) {
     const promotion = await this.promotionService.findPromotion(code);
     if (!promotion) throw new NotFoundException('Promotion not valid');
