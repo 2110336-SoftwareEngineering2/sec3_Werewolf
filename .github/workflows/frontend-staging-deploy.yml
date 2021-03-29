@@ -45,6 +45,8 @@ jobs:
           envkey_REACT_APP_SECRET: ${{ secrets.SECRET }}
           envkey_REACT_APP_GOOGLE_AMPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
           envkey_REACT_APP_PUBLIC_VAPID_KEY: ${{ secrets.PUBLIC_VAPID_KEY }}
+          directory: 'maid-care-service-frontend'
+          file_name: .env
 
       - name: Build the site
         run: |
