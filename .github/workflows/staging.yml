@@ -81,7 +81,7 @@ jobs:
         uses: stefda/action-cloud-run@v1.0
         with:
           image: gcr.io/${{ secrets.STAGING_GCP_PROJECT_ID }}/staging-maid-care-backend:${{ github.sha }}
-          service: maid-care-service-backend
+          service: staging-maid-care-service-backend
           project: ${{ secrets.STAGING_GCP_PROJECT_ID }}
           region: asia-southeast1
           env: .env
