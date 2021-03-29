@@ -36,7 +36,16 @@ jobs:
         uses: actions/setup-node@v2.1.4
         with: 
           node-version: 14.x
-            
+
+      - name: Create .env
+        uses: SpicyPizza/create-envfile@v1
+        with:
+          envkey_NODE_ENV: "production"
+          envkey_REACT_APP_URL: ${{ secret.STAGING_SERVER_URL }}
+          envkey_REACT_APP_SECRET: ${{ secret.SECRET }}
+          envkey_REACT_APP_GOOGLE_AMPS_API_KEY: ${{ secret.GOOGLE_MAPS_API_KEY }}
+          envkey_REACT_APP_PUBLIC_VAPID_KEY: ${{ secret.PUBLIC_VAPID_KEY }}
+
       - name: Build the site
         run: |
           yarn install --production 
@@ -55,10 +64,6 @@ jobs:
         env:
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NODE_ENV: "staging"
-          REACT_APP_SECRET: ${{ secrets.SECRET }}
-          REACT_APP_API_URL: ${{ secrets.SERVER_URL }}
-          REACT_APP_GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
           
       - uses: sarisia/actions-status-discord@v1
         if: success()
