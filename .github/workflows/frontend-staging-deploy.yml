@@ -45,7 +45,6 @@ jobs:
           envkey_REACT_APP_SECRET: ${{ secrets.SECRET }}
           envkey_REACT_APP_GOOGLE_AMPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
           envkey_REACT_APP_PUBLIC_VAPID_KEY: ${{ secrets.PUBLIC_VAPID_KEY }}
-          directory: 'maid-care-service-frontend'
           file_name: .env
 
       - name: Build the site
@@ -56,13 +55,10 @@ jobs:
       - name: Install Netlify
         run: sudo npm install -g netlify-cli --unsafe-perm=true
         
-      - name: Netlify Actions
-        uses: nwtgck/actions-netlify@v1.1.11
+      - name: Deploy
+        uses: netlify/actions/cli@master
         with:
-          production-branch: 'main'
-          publish-dir: './maid-care-service-frontend/build/'
-          deploy-message: "Deploy Staging ${{ github.event.head_commit.message }}"
-          alias: 'staging'
+          args: 'deploy --dir=build --alias=staging --prod=false --message="deploy as staging from github actions" '
         env:
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
