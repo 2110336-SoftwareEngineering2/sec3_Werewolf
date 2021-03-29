@@ -20,4 +20,5 @@ export const JobSchema = new mongoose.Schema({
   state: { type: String, default: JobState.creating },
   rating: { type: Number, default: 0 },
   review: { type: String, default: null },
+  photos: [String],
 });

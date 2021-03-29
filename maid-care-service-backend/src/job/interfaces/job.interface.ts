@@ -13,4 +13,5 @@ export interface Job extends Document {
   state: string;
   rating: number;
   review: string;
+  photos: string[];
 }
