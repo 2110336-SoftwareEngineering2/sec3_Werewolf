@@ -63,7 +63,7 @@ jobs:
       - name: Build Nest Project
         run: npm run build
       - name: Build docker image
-        run: docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/staging-maid-care-backend:${{ github.sha }} .
+        run: docker build -t gcr.io/${{ secrets.STAGING_GCP_PROJECT_ID }}/staging-maid-care-backend:${{ github.sha }} .
           
       - name: Create .env
         uses: SpicyPizza/create-envfile@v1
