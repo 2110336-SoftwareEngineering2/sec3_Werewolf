@@ -6,7 +6,7 @@ import { Spinner } from '@chakra-ui/spinner';
 import { toJS } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import React, { useEffect, useState } from 'react';
-import { MATCHED, POSTED } from '../../../constants/post-state';
+import { CONFIRMED, MATCHED, POSTED } from '../../../constants/post-state';
 import { useStores } from '../../../hooks/use-stores';
 
 import JobItemList from './components/JobItemList';
@@ -29,10 +29,15 @@ const JobsPage = observer(() => {
 
   // Render Modal if already have a current job
   useEffect(() => {
-    if (currentJob == null) return;
-    setSelected(currentJob);
-    setHaveJob(true);
-    onOpen();
+    console.log(toJS(currentJob));
+    if (currentJob == null) {
+      setSelected({ state: CONFIRMED });
+      onOpen();
+      // onClose();
+    } else {
+      setSelected(currentJob);
+      onOpen();
+    }
   }, [currentJob, onOpen]);
 
   useEffect(() => {

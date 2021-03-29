@@ -44,7 +44,7 @@ class JobsStore {
         // if (cur.length >= 0) this.currentJob = { ...cur[0] };
 
         /** test state */
-        if (cur.length >= 0) this.currentJob = { ...cur[0], state: test_state };
+        if (cur.length > 0) this.currentJob = { ...cur[0], state: test_state };
         console.log(toJS(this.currentJob));
         this.loading = false;
       })
@@ -88,6 +88,10 @@ class JobsStore {
         this.loading = false;
         throw error;
       });
+  }
+
+  async discard({ jobId }) {
+    // TODO: Maid Discard Current Job
   }
 }
 

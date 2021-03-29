@@ -26,7 +26,7 @@ const JobItemModal = observer(({ job }) => {
         <UserStatus uid={customerId} />
       </GridItem>
       <GridItem as={List} rowStart={3} rowSpan={3} colStart={0} colSpan={1} p={4}>
-        {work.map(({ quantity }, idx) => (
+        {work && work.map(({ quantity }, idx) => (
           <ListItem as={HStack} key={jobId + idx}>
             <Icon as={FaTshirt} w={8} h={8} color={`gray.800`} />
             <Text>{quantity} ตัว</Text>
