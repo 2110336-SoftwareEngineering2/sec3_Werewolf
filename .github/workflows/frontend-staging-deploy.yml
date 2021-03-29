@@ -41,10 +41,10 @@ jobs:
         uses: SpicyPizza/create-envfile@v1
         with:
           envkey_NODE_ENV: "production"
-          envkey_REACT_APP_URL: ${{ secret.STAGING_SERVER_URL }}
-          envkey_REACT_APP_SECRET: ${{ secret.SECRET }}
-          envkey_REACT_APP_GOOGLE_AMPS_API_KEY: ${{ secret.GOOGLE_MAPS_API_KEY }}
-          envkey_REACT_APP_PUBLIC_VAPID_KEY: ${{ secret.PUBLIC_VAPID_KEY }}
+          envkey_REACT_APP_URL: ${{ secrets.STAGING_SERVER_URL }}
+          envkey_REACT_APP_SECRET: ${{ secrets.SECRET }}
+          envkey_REACT_APP_GOOGLE_AMPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
+          envkey_REACT_APP_PUBLIC_VAPID_KEY: ${{ secrets.PUBLIC_VAPID_KEY }}
 
       - name: Build the site
         run: |
