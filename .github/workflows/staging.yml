@@ -1,7 +1,4 @@
-# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
-
-name: Backend
+name: Backend-Staging
 
 on:
   push:
@@ -38,8 +35,7 @@ jobs:
       if: success()
       with:
         webhook: ${{ secrets.DISCORD_WEBHOOK }}
-        title: "Run Test"
-        description: "Congrat! Your PR passed the test"
+        title: "Staging - Run Test"
         color: 0x28a745
         username: Werewolf GitHub Actions
     
@@ -47,8 +43,7 @@ jobs:
       if: failure()
       with:
         webhook: ${{ secrets.DISCORD_WEBHOOK }}
-        title: "Run Test"
-        description: "Sorry, but your is shit!"
+        title: "Staging - Run Test"
         color: 0xd73a49
         username: Werewolf GitHub Actions
         
@@ -68,35 +63,35 @@ jobs:
       - name: Build Nest Project
         run: npm run build
       - name: Build docker image
-        run: docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/maid-care-backend:${{ github.sha }} .
+        run: docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/staging-maid-care-backend:${{ github.sha }} .
           
       - name: Create .env
         uses: SpicyPizza/create-envfile@v1
         with:
           envkey_NODE_ENV: "production"
           envkey_GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-          envkey_GCP_SA_KEY: ${{ secrets.GCP_SA_KEY_BASE64 }}
+          envkey_GCP_SA_KEY: ${{ secrets.STAGING_GCP_SA_KEY_BASE64 }}
           envkey_MONGO_URL: ${{ secrets.MONGO_URL }}
-          envkey_SERVER_URL: ${{ secrets.SERVER_URL }}
+          envkey_SERVER_URL: ${{ secrets.STAGING_SERVER_URL }}
           envkey_MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
           envkey_MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
-          envkey_SECRET: ${{ secrets.SECRET }}
+          envkey_SECRET: ${{ secrets.STAGING_SECRET }}
       
       - name: Deploy service to Cloud Run
         uses: stefda/action-cloud-run@v1.0
         with:
-          image: gcr.io/${{ secrets.GCP_PROJECT_ID }}/maid-care-backend:${{ github.sha }}
+          image: gcr.io/${{ secrets.GCP_PROJECT_ID }}/staging-maid-care-backend:${{ github.sha }}
           service: maid-care-service-backend
           project: ${{ secrets.GCP_PROJECT_ID }}
-          region: asia-east1
+          region: asia-southeast1
           env: .env
-          service key: ${{ secrets.GCP_SA_KEY_BASE64 }}
+          service key: ${{ secrets.STAGING_GCP_SA_KEY_BASE64 }}
       
       - uses: sarisia/actions-status-discord@v1
         if: success()
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          title: "Deploy to Cloud Run"
+          title: "Deploy Staging to Cloud Run"
           description: "Congrat! deploy successfully"
           color: 0x28a745
           username: Werewolf GitHub Actions
@@ -109,4 +104,3 @@ jobs:
           description: "Sorry, something wrong here"
           color: 0xd73a49
           username: Werewolf GitHub Actions
-    
