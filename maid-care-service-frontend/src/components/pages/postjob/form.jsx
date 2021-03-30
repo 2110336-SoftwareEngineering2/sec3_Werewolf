@@ -13,12 +13,23 @@ import { VStack, Text } from '@chakra-ui/react';
 
 const PostjobForm = observer(props => {
   const [isPromoAvailable, setPromoAvailable] = useState(null);
-
   // maidId is received from API in Page4_matching and then pass as a parameter to
   // Page5_maidInfo in order to get maid information.
   const [maidId, setMaidId] = useState('');
   const [jobId, setJobId] = useState('');
   const [isConfirm, setConfirm] = useState('null');
+
+  const handleDecrement = () => {
+    if (props.steps >= 1) {
+      props.setSteps(previousStep => previousStep - 1);
+    }
+  };
+
+  const handleIncrement = () => {
+    if (props.steps <= 6) {
+      props.setSteps(previousStep => previousStep + 1);
+    }
+  };
 
   const yup = Yup.object({
     amountOfDishes: Yup.mixed().when('isDishes', {
@@ -64,6 +75,7 @@ const PostjobForm = observer(props => {
         return (
           <Page4_matching
             setSteps={props.setSteps}
+            handleIncrement={handleIncrement}
             isPromoAvailable={isPromoAvailable}
             setConfirm={setConfirm}
             setMaidId={setMaidId}
@@ -74,6 +86,7 @@ const PostjobForm = observer(props => {
         return (
           <Page5_maidInfo
             setSteps={props.setSteps}
+            handleIncrement={handleIncrement}
             maidId={maidId}
             jobId={jobId}
             setConfirm={setConfirm}
@@ -102,7 +115,7 @@ const PostjobForm = observer(props => {
         <VStack spacing="4" width={{ sm: '72', md: '96' }}>
           {switchPage()}
         </VStack>
-        <ButtonField steps={props.steps} setSteps={props.setSteps} />
+        <ButtonField steps={props.steps} handleDecrement={handleDecrement} handleIncrement={handleIncrement}/>
       </Form>
     </Formik>
   );

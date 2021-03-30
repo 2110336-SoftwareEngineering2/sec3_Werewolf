@@ -5,15 +5,12 @@ import profileImage from './Image/profileImage.png';
 import { VStack, Text, HStack, Box, chakra } from '@chakra-ui/react';
 import StarRating from './components/StarRating.jsx';
 import AlertButton from './components/AlertButton.jsx';
+import Timer from './components/Timer.jsx';
 
-const Page5_maidInfo = ({ setSteps, maidId, jobId, setConfirm }) => {
+const Page5_maidInfo = ({ handleIncrement, maidId, jobId, setConfirm }) => {
   var d = new Date();
   const [maidInfo, setMaidInfo] = useState();
   const [userInfo, setUserInfo] = useState();
-
-  const handleIncrement = () => {
-    setSteps(previousStep => previousStep + 1);
-  };
 
   const getUserInfo_API = () => {
     user
@@ -106,7 +103,7 @@ const Page5_maidInfo = ({ setSteps, maidId, jobId, setConfirm }) => {
               : parseInt(userInfo.birthdate.substring(0, 4)))}{' '}
           years old
         </Text>
-        <Box mt="10px" bg="white" width="100%" height="150px" fontSize="12px" overflow="hidden">
+        <Box mt="10px" mb="10px" bg="white" width="100%" height="150px" fontSize="12px" overflow="hidden">
           {maidInfo == null ? '' : maidInfo.note}
         </Box>
         <AlertButton
@@ -129,6 +126,10 @@ const Page5_maidInfo = ({ setSteps, maidId, jobId, setConfirm }) => {
           lbtnFunction={testHandle}
           rbtnFunction={customerCancel_API}
         />
+        <Text mt="5px" color="red">
+          You have only <Timer countdown={10} timerFunction={customerConfirm_API} /> sec(s)
+          left to cancel the job
+        </Text>
       </Box>
     </HStack>
   );

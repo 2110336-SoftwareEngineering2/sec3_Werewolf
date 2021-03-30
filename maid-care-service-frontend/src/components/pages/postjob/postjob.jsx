@@ -75,5 +75,13 @@ const PostjobHeader = ({ steps }) => {
           </Box>
         </HStack>
       );
+    default:
+      return (
+        <HStack justify="left" width="100%">
+          <Box fontSize="1xl" mb="8">
+            <chakra.img src={LogoText} h="30px" />
+          </Box>
+        </HStack>
+      );
   }
 };
