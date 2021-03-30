@@ -35,7 +35,7 @@ export class PromotionService {
 
   async removePromotion(code: string): Promise<Promotion> {
     const promotion = await this.findPromotion(code);
-    if (!promotion) throw new NotFoundException('Promotion not valid');
+    if (!promotion) throw new NotFoundException('promotion not valid');
     return await promotion.remove();
   }
 

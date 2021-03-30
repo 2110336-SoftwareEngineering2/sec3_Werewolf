@@ -23,6 +23,7 @@ async function bootstrap() {
     .addTag('job')
     .addTag('notification')
     .addTag('workspace')
+    .addTag('refund')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);

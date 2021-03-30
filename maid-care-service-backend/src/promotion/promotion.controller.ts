@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   NotFoundException,
+  ConflictException,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -33,6 +34,11 @@ export class PromotionController {
     type: PromotionDto,
   })
   @ApiResponse({ status: 400, description: 'wrong discountRate or date' })
+  @ApiResponse({ status: 401, description: 'user is not admin' })
+  @ApiResponse({
+    status: 409,
+    description: 'this promotion code already exist',
+  })
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   @ApiBearerAuth('acess-token')
@@ -56,10 +62,16 @@ export class PromotionController {
     description: 'Get promotion by promotion code',
     type: PromotionDto,
   })
-  @ApiResponse({ status: 404, description: 'Promotion not valid' })
+  @ApiResponse({ status: 404, description: 'promotion not valid' })
   async findPromotion(@Param('code') code: string) {
     const promotion = await this.promotionService.findPromotion(code);
+    const cerrentDate = new Date();
     if (!promotion) throw new NotFoundException('Promotion not valid');
+    if (
+      (promotion.expiredDate && promotion.expiredDate < cerrentDate) ||
+      promotion.availableDate > cerrentDate
+    )
+      throw new ConflictException('unavailable promotion date');
     return new PromotionDto(promotion);
   }
 
@@ -68,6 +80,7 @@ export class PromotionController {
     description: 'Admin get all promotions',
     type: [PromotionDto],
   })
+  @ApiResponse({ status: 401, description: 'user is not admin' })
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   @ApiBearerAuth('acess-token')
@@ -80,6 +93,8 @@ export class PromotionController {
     description: 'Delete promotion by promotion code',
     type: PromotionDto,
   })
+  @ApiResponse({ status: 401, description: 'user is not admin' })
+  @ApiResponse({ status: 404, description: 'promotion not valid' })
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   @ApiBearerAuth('acess-token')

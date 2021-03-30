@@ -2,6 +2,7 @@ import {
   Injectable,
   Inject,
   UnauthorizedException,
+  NotFoundException,
   ForbiddenException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
@@ -28,7 +29,7 @@ export class AuthService {
     const isValidPass = await bcrypt.compare(pass, user.password);
     if (!isValidPass)
       throw new UnauthorizedException('Incorrect email or password');
-    if (!user.valid) throw new UnauthorizedException('Email not verified');
+    if (!user.valid) throw new ForbiddenException('Email not verified');
     const accessToken = await this.jwtService.createToken(email, user.role);
     return accessToken;
   }
@@ -86,7 +87,7 @@ export class AuthService {
       });
       return sent;
     } else {
-      throw new ForbiddenException('can not find token');
+      throw new NotFoundException('can not find token');
     }
   }
 
@@ -101,7 +102,7 @@ export class AuthService {
       // remove the email verification token in 5 minutes
       this.addTimeout(emailVerification, 300000);
       // validate user
-      if (!user) throw new ForbiddenException('invalid user');
+      if (!user) throw new NotFoundException('invalid user');
       user.valid = true;
       const savedUser = await user.save();
       return !!savedUser;

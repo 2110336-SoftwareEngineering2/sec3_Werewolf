@@ -12,6 +12,7 @@ import { NotificationModule } from './notification/notification.module';
 import { WorkspacesModule } from './workspaces/workspaces.module';
 import { WalletModule } from './wallet/wallet.module';
 import { ReviewModule } from './review/review.module';
+import { RefundModule } from './refund/refund.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { ReviewModule } from './review/review.module';
     WorkspacesModule,
     WalletModule,
     ReviewModule,
+    RefundModule,
   ],
   controllers: [AppController],
   providers: [AppService],

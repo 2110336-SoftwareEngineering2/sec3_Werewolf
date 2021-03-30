@@ -14,6 +14,9 @@ export class JobDto {
     this.state = object.state;
     this.rating = object.rating;
     this.review = object.review;
+    this.photos = object.photos;
+    this.acceptedTime = object.acceptedTime;
+    this.finishTime = object.finishTime;
   }
 
   @ApiProperty({ type: String })
@@ -45,6 +48,15 @@ export class JobDto {
 
   @ApiProperty({ type: String })
   readonly review: string;
+
+  @ApiProperty({ type: [String] })
+  readonly photos: string[];
+
+  @ApiProperty({ type: Date })
+  readonly acceptedTime: Date;
+
+  @ApiProperty({ type: Date })
+  readonly finishTime: Date;
 }
 
 export class Work {
