@@ -97,7 +97,7 @@ export class JobService {
       (promotion.expiredDate && promotion.expiredDate < cerrentDate) ||
       promotion.availableDate > cerrentDate
     )
-      throw new ConflictException('invalid promotion date');
+      throw new ConflictException('unavailable promotion date');
     return cost * (1 - promotion.discountRate / 100);
   }
 

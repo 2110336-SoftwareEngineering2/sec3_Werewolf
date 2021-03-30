@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   NotFoundException,
+  ConflictException,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -64,7 +65,13 @@ export class PromotionController {
   @ApiResponse({ status: 404, description: 'promotion not valid' })
   async findPromotion(@Param('code') code: string) {
     const promotion = await this.promotionService.findPromotion(code);
+    const cerrentDate = new Date();
     if (!promotion) throw new NotFoundException('Promotion not valid');
+    if (
+      (promotion.expiredDate && promotion.expiredDate < cerrentDate) ||
+      promotion.availableDate > cerrentDate
+    )
+      throw new ConflictException('unavailable promotion date');
     return new PromotionDto(promotion);
   }
 
