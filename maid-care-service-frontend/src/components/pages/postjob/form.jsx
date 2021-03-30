@@ -50,6 +50,7 @@ const PostjobForm = observer(props => {
         .required('Amount of cloth must be a number.')
         .min(1, 'Amount of cloth must be positive number.'),
     }),
+    workplaceId: Yup.string().required("Please add your workspace location"),
   });
 
   const handleSubmit = () => {

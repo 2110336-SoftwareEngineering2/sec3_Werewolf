@@ -99,9 +99,6 @@ const Page4_maidInfo = ({ setSteps, handleIncrement, isPromoAvailable, setConfir
       </Box>
       <VStack direction="row" spacing={10}>
         <Spinner size="xl" thickness="4px" speed="0.65s" emptyColor="gray.200" color="green.500" />
-        <VStack mt="20px">
-          <Text color="green">The system will notify you when pairing is complete.</Text>
-        </VStack>
       </VStack>
     </>
   );

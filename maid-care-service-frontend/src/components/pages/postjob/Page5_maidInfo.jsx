@@ -127,7 +127,7 @@ const Page5_maidInfo = ({ handleIncrement, maidId, jobId, setConfirm }) => {
           rbtnFunction={customerCancel_API}
         />
         <Text mt="5px" color="red">
-          You have only <Timer countdown={10} timerFunction={customerConfirm_API} /> sec(s)
+          You have only <Timer countdown={40} timerFunction={customerConfirm_API} /> sec(s)
           left to cancel the job
         </Text>
       </Box>
