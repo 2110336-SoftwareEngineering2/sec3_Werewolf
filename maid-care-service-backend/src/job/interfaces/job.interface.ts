@@ -14,4 +14,6 @@ export interface Job extends Document {
   rating: number;
   review: string;
   photos: string[];
+  acceptedTime: Date;
+  finishTime: Date;
 }

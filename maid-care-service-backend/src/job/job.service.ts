@@ -157,6 +157,7 @@ export class JobService {
   async accept(job: Job): Promise<Job> {
     await this.deleteTimeout(job);
     job.state = JobState.matched;
+    job.acceptedTime = new Date();
     // send nofication to customer
     console.log('maid found');
     await this.notificationService.sendNotification(
@@ -195,6 +196,7 @@ export class JobService {
 
   async jobDone(job: Job): Promise<Job> {
     job.state = JobState.done;
+    job.finishTime = new Date();
     // send nofication to customer
     console.log('job done');
     await this.notificationService.sendNotification(job.customerId, 'job done');

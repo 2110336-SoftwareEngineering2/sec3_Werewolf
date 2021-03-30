@@ -21,4 +21,6 @@ export const JobSchema = new mongoose.Schema({
   rating: { type: Number, default: 0 },
   review: { type: String, default: null },
   photos: [String],
+  acceptedTime: { type: Date, default: null },
+  finishTime: { type: Date, default: null },
 });
