@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Model } from 'mongoose';
-import { Job } from 'src/job/interfaces/job.interface';
+import { Job } from '../job/interfaces/job.interface';
 import { Maid } from './interfaces/maids.interface';
 import { WorkType } from './workType';
 

@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { JobDto } from 'src/job/dto/job.dto';
-import { UserDto } from 'src/users/dto/user.dto';
+import { JobDto } from '../../job/dto/job.dto';
+import { UserDto } from '../../users/dto/user.dto';
 
 export class RefundDto {
   constructor(object: any) {

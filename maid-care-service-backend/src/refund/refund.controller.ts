@@ -15,9 +15,9 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/auth/passport/jwt-auth.guard';
-import { Roles } from 'src/common/decorators/roles.decorator';
-import { RolesGuard } from 'src/common/guard/roles.guard';
+import { JwtAuthGuard } from '../auth/passport/jwt-auth.guard';
+import { RolesGuard } from '../common/guard/roles.guard';
+import { Roles } from '../common/decorators/roles.decorator';
 import { CreateRefundDto } from './dto/create-refund.dto';
 import { RefundDto } from './dto/refund.dto';
 import { RefundService } from './refund.service';

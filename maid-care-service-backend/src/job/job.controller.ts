@@ -19,13 +19,13 @@ import {
   ApiResponse,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/passport/jwt-auth.guard';
-import { RolesGuard } from 'src/common/guard/roles.guard';
-import { Roles } from 'src/common/decorators/roles.decorator';
+import { RolesGuard } from '../common/guard/roles.guard';
+import { Roles } from '../common/decorators/roles.decorator';
 import { JobService } from './job.service';
 import { CostDto } from './dto/cost.dto';
 import { CreateJobDto } from './dto/create-job.dto';
 import { JobDto } from './dto/job.dto';
-import { MaidsService } from 'src/maids/maids.service';
+import { MaidsService } from '../maids/maids.service';
 import { JobState } from './jobState';
 import { PhotoDto } from './dto/photo.dto';
 

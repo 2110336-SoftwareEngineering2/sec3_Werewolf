@@ -17,8 +17,8 @@ import {
   ApiResponse,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/passport/jwt-auth.guard';
-import { RolesGuard } from 'src/common/guard/roles.guard';
-import { Roles } from 'src/common/decorators/roles.decorator';
+import { RolesGuard } from '../common/guard/roles.guard';
+import { Roles } from '../common/decorators/roles.decorator';
 import { WorkspacesService } from './workspaces.service';
 import { CreateWorkspaceDto } from './dto/create-workspace.dto';
 

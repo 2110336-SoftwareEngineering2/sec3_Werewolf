@@ -1,7 +1,7 @@
 import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import { Model } from 'mongoose';
-import { JobService } from 'src/job/job.service';
-import { UsersService } from 'src/users/users.service';
+import { JobService } from '../job/job.service';
+import { UsersService } from '../users/users.service';
 import { CreateRefundDto } from './dto/create-refund.dto';
 import { RefundDto } from './dto/refund.dto';
 import { Refund } from './interfaces/refund.interface';

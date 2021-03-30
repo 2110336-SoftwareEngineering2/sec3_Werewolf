@@ -11,7 +11,7 @@ import { NotificationService } from '../notification/notification.service';
 import { WalletService } from '../wallet/wallet.service';
 import { MaidsService } from '../maids/maids.service';
 import { JobService } from '../job/job.service';
-import { WorkspacesService } from 'src/workspaces/workspaces.service';
+import { WorkspacesService } from '../workspaces/workspaces.service';
 import { User } from './interfaces/users.interface';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ProfileDto } from './dto/profile.dto';
