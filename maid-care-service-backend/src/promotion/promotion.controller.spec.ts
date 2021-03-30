@@ -3,7 +3,6 @@ import * as mongoose from 'mongoose';
 import { DatabaseModule } from '../database/database.module';
 import { PromotionDto } from './dto/promotion.dto';
 import { PromotionController } from './promotion.controller';
-import { PromotionModule } from './promotion.module';
 import { PromotionProviders } from './promotion.providers';
 import { PromotionService } from './promotion.service';
 
@@ -11,9 +10,11 @@ describe('PromotionController', () => {
   let promotionController: PromotionController;
   let promotionService: PromotionService;
 
-  beforeEach(async () => {
+  const adminReq = { user: { _id: '602a4e322b8caf19b4c4e962', role: 'admin' } };
+
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [PromotionModule, DatabaseModule],
+      imports: [DatabaseModule],
       controllers: [PromotionController],
       providers: [PromotionService, ...PromotionProviders],
     })
@@ -31,58 +32,8 @@ describe('PromotionController', () => {
       })
       .compile();
 
-    promotionService = module.get<PromotionService>(PromotionService);
     promotionController = module.get<PromotionController>(PromotionController);
-  });
-
-  const admin = { user: { _id: '602a4e322b8caf19b4c4e962' } };
-
-  const testCode = 'GSIMPTQ125';
-
-  const createPromotionDto = {
-    code: testCode,
-    description: 'test promotion code',
-    discountRate: 0.15,
-    availableDate: null,
-    expiredDate: null,
-  };
-
-  const newPromotion = new PromotionDto(createPromotionDto);
-  newPromotion.creater = '602a4e322b8caf19b4c4e962';
-
-  const expiredCode = '153YUSAENH';
-
-  const createExpiredPromotionDto = {
-    code: expiredCode,
-    description: 'test expired promotion code',
-    discountRate: 0.5,
-    availableDate: null,
-    expiredDate: new Date(new Date().getTime() - 1),
-  };
-
-  const expiredPromotion = new PromotionDto(createExpiredPromotionDto);
-  expiredPromotion.creater = '602a4e322b8caf19b4c4e962';
-
-  describe('createPromotion', () => {
-    it('create new promotion', async () => {
-      // create new promotion
-      expect(
-        await promotionController.createPromotion(admin, createPromotionDto),
-      ).toStrictEqual(newPromotion);
-
-      // find promotion
-      expect(await promotionController.findPromotion(testCode)).toStrictEqual(
-        newPromotion,
-      );
-
-      // create duplicate promotion
-      try {
-        await promotionController.createPromotion(admin, createPromotionDto);
-        expect(true).toBeFalsy();
-      } catch (error) {
-        expect(error.status).toBe(409);
-      }
-    });
+    promotionService = module.get<PromotionService>(PromotionService);
   });
 
   describe('findAll', () => {
@@ -92,17 +43,81 @@ describe('PromotionController', () => {
     });
   });
 
-  describe('expiredPromotion', () => {
-    it('create expired promotion', async () => {
-      // create expired promotion
+  describe('newPromotion', () => {
+    const testCode = 'GSIMPTQ125';
+    const createPromotionDto = {
+      code: testCode,
+      description: 'test promotion code',
+      discountRate: 0.15,
+      availableDate: null,
+      expiredDate: null,
+    };
+    const promotionDto = new PromotionDto(createPromotionDto);
+    promotionDto.creater = '602a4e322b8caf19b4c4e962';
+
+    it('create new promotion', async () => {
+      // create new promotion
       expect(
-        await promotionController.createPromotion(
-          admin,
-          createExpiredPromotionDto,
-        ),
-      ).toStrictEqual(expiredPromotion);
+        await promotionController.createPromotion(adminReq, createPromotionDto),
+      ).toStrictEqual(promotionDto);
 
       // find promotion
+      expect(await promotionController.findPromotion(testCode)).toStrictEqual(
+        promotionDto,
+      );
+
+      // create duplicate promotion
+      try {
+        await promotionController.createPromotion(adminReq, createPromotionDto);
+        expect(true).toBeFalsy();
+      } catch (error) {
+        expect(error.status).toBe(409);
+      }
+    });
+
+    it('delete promotion', async () => {
+      // delete promotion
+      expect(await promotionController.removePromotion(testCode)).toStrictEqual(
+        promotionDto,
+      );
+
+      // find deleted promotion
+      try {
+        await promotionController.findPromotion(testCode);
+        expect(true).toBeFalsy();
+      } catch (error) {
+        expect(error.status).toBe(404);
+      }
+
+      // delete non exist promotion
+      try {
+        await promotionController.removePromotion(testCode);
+        expect(true).toBeFalsy();
+      } catch (error) {
+        expect(error.status).toBe(404);
+      }
+    });
+  });
+
+  describe('expiredPromotion', () => {
+    const expiredCode = '153YUSAENH';
+    const createPromotionDto = {
+      code: expiredCode,
+      description: 'expired promotion code',
+      discountRate: 0.5,
+      availableDate: null,
+      expiredDate: new Date(new Date().getTime() - 1),
+    };
+    const promotionDto = new PromotionDto(createPromotionDto);
+    promotionDto.creater = '602a4e322b8caf19b4c4e962';
+
+    it('create expired promotion', async () => {
+      expect(
+        await promotionController.createPromotion(adminReq, createPromotionDto),
+      ).toStrictEqual(promotionDto);
+    });
+
+    it('get expired promotion', async () => {
       try {
         await promotionController.findPromotion(expiredCode);
         expect(true).toBeFalsy();
@@ -110,17 +125,45 @@ describe('PromotionController', () => {
         expect(error.status).toBe(409);
       }
     });
-  });
 
-  describe('removePromotion', () => {
-    it('delete promotion', async () => {
-      expect(await promotionController.removePromotion(testCode)).toStrictEqual(
-        newPromotion,
-      );
-
+    it('delete expired promotion', async () => {
       expect(
         await promotionController.removePromotion(expiredCode),
-      ).toStrictEqual(expiredPromotion);
+      ).toStrictEqual(promotionDto);
+    });
+  });
+
+  describe('unavailablePromotion', () => {
+    const unavailableCode = 'TT7BVJNPL249';
+    const createPromotionDto = {
+      code: unavailableCode,
+      description: 'unavailable promotion code',
+      discountRate: 0.25,
+      availableDate: new Date(new Date().getTime() + 6000000),
+      expiredDate: null,
+    };
+    const promotionDto = new PromotionDto(createPromotionDto);
+    promotionDto.creater = '602a4e322b8caf19b4c4e962';
+
+    it('create unavailable promotion', async () => {
+      expect(
+        await promotionController.createPromotion(adminReq, createPromotionDto),
+      ).toStrictEqual(promotionDto);
+    });
+
+    it('get unavailable promotion', async () => {
+      try {
+        await promotionController.findPromotion(unavailableCode);
+        expect(true).toBeFalsy();
+      } catch (error) {
+        expect(error.status).toBe(409);
+      }
+    });
+
+    it('delete unavailable promotion', async () => {
+      expect(
+        await promotionController.removePromotion(unavailableCode),
+      ).toStrictEqual(promotionDto);
     });
   });
 
