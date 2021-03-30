@@ -1,6 +1,6 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
-import { VStack, Text, Button, Box } from '@chakra-ui/react';
+import { VStack, Text, Button} from '@chakra-ui/react';
 
 const Page6_hireConfirm = ({ isConfirm }) => {
   const history = useHistory();
