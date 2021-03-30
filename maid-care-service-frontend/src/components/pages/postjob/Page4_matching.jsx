@@ -4,7 +4,7 @@ import { useHistory } from 'react-router-dom';
 import { useFormikContext } from 'formik';
 import { job } from '../../../api';
 
-const Page4_maidInfo = ({ setSteps, isPromoAvailable, setConfirm, setMaidId, setJobId }) => {
+const Page4_maidInfo = ({ setSteps, handleIncrement, isPromoAvailable, setConfirm, setMaidId, setJobId }) => {
   const { values } = useFormikContext();
   let getStatusFindmaidInterval;
 
@@ -13,10 +13,6 @@ const Page4_maidInfo = ({ setSteps, isPromoAvailable, setConfirm, setMaidId, set
   const routeChange = () => {
     let path = `/post/create`;
     history.push(path);
-  };
-
-  const handleIncrement = () => {
-    setSteps(previousStep => previousStep + 1);
   };
 
   const postJob_findmaidAPI = () => {
