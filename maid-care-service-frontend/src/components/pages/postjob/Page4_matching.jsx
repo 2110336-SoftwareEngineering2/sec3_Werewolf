@@ -1,19 +1,11 @@
 import React, { useEffect } from 'react';
-import { Box, Stack, Spinner, Button, VStack, Text } from '@chakra-ui/react';
-import { useHistory } from 'react-router-dom';
+import { Box, Spinner, VStack, Text } from '@chakra-ui/react';
 import { useFormikContext } from 'formik';
 import { job } from '../../../api';
 
 const Page4_maidInfo = ({ setSteps, handleIncrement, isPromoAvailable, setConfirm, setMaidId, setJobId }) => {
   const { values } = useFormikContext();
   let getStatusFindmaidInterval;
-
-  const history = useHistory();
-
-  const routeChange = () => {
-    let path = `/post/create`;
-    history.push(path);
-  };
 
   const postJob_findmaidAPI = () => {
     const n_dishes = () => (values.isDishes === false ? 0 : values.amountOfDishes);
@@ -108,13 +100,6 @@ const Page4_maidInfo = ({ setSteps, handleIncrement, isPromoAvailable, setConfir
       <VStack direction="row" spacing={10}>
         <Spinner size="xl" thickness="4px" speed="0.65s" emptyColor="gray.200" color="green.500" />
         <VStack mt="20px">
-          <Button
-            width="200px"
-            className="button button-register"
-            bg="buttonGreen"
-            onClick={routeChange}>
-            Back to your posts.
-          </Button>
           <Text color="green">The system will notify you when pairing is complete.</Text>
         </VStack>
       </VStack>
