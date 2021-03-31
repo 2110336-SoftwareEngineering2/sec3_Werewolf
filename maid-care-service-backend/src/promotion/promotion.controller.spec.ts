@@ -1,10 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import * as dotenv from 'dotenv';
 import * as mongoose from 'mongoose';
 import { DatabaseModule } from '../database/database.module';
 import { PromotionDto } from './dto/promotion.dto';
 import { PromotionController } from './promotion.controller';
 import { PromotionProviders } from './promotion.providers';
 import { PromotionService } from './promotion.service';
+
+dotenv.config();
 
 describe('PromotionController', () => {
   let promotionController: PromotionController;
@@ -17,20 +20,7 @@ describe('PromotionController', () => {
       imports: [DatabaseModule],
       controllers: [PromotionController],
       providers: [PromotionService, ...PromotionProviders],
-    })
-      .overrideProvider('DATABASE_CONNECTION')
-      .useFactory({
-        factory: async (): Promise<typeof mongoose> =>
-          await mongoose.connect(
-            'mongodb://localhost/maid_care_service_database',
-            {
-              useNewUrlParser: true,
-              useUnifiedTopology: true,
-              useFindAndModify: false,
-            },
-          ),
-      })
-      .compile();
+    }).compile();
 
     promotionController = module.get<PromotionController>(PromotionController);
     promotionService = module.get<PromotionService>(PromotionService);

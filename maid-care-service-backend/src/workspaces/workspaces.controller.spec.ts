@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import * as dotenv from 'dotenv';
 import * as mongoose from 'mongoose';
 import { JobModule } from '../job/job.module';
 import { MaidsModule } from '../maids/maids.module';
@@ -14,6 +15,8 @@ import { WorkspaceProviders } from './workspaces.providers';
 import { WorkspacesService } from './workspaces.service';
 import { WorkspaceDto } from './dto/workspace.dto';
 
+dotenv.config();
+
 describe('WorkspacesController', () => {
   let workspacesController: WorkspacesController;
   let workspacesService: WorkspacesService;
@@ -25,20 +28,7 @@ describe('WorkspacesController', () => {
       imports: [DatabaseModule],
       controllers: [WorkspacesController],
       providers: [WorkspacesService, ...WorkspaceProviders],
-    })
-      .overrideProvider('DATABASE_CONNECTION')
-      .useFactory({
-        factory: async (): Promise<typeof mongoose> =>
-          await mongoose.connect(
-            'mongodb://localhost/maid_care_service_database',
-            {
-              useNewUrlParser: true,
-              useUnifiedTopology: true,
-              useFindAndModify: false,
-            },
-          ),
-      })
-      .compile();
+    }).compile();
 
     const usersModule: TestingModule = await Test.createTestingModule({
       imports: [
@@ -51,20 +41,7 @@ describe('WorkspacesController', () => {
       ],
       controllers: [UsersController],
       providers: [UsersService, ...UsersProviders],
-    })
-      .overrideProvider('DATABASE_CONNECTION')
-      .useFactory({
-        factory: async (): Promise<typeof mongoose> =>
-          await mongoose.connect(
-            'mongodb://localhost/maid_care_service_database',
-            {
-              useNewUrlParser: true,
-              useUnifiedTopology: true,
-              useFindAndModify: false,
-            },
-          ),
-      })
-      .compile();
+    }).compile();
 
     workspacesController = workspacesModule.get<WorkspacesController>(
       WorkspacesController,

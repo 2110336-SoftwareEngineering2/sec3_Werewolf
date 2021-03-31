@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchedulerRegistry } from '@nestjs/schedule';
+import * as dotenv from 'dotenv';
 import * as mongoose from 'mongoose';
 import { MaidsModule } from '../maids/maids.module';
 import { NotificationModule } from '../notification/notification.module';
@@ -22,6 +23,8 @@ import { RefundProviders } from './refund.providers';
 import { RefundService } from './refund.service';
 import { PromotionModule } from '../promotion/promotion.module';
 
+dotenv.config();
+
 describe('RefundController', () => {
   let refundController: RefundController;
   let refundService: RefundService;
@@ -36,20 +39,7 @@ describe('RefundController', () => {
       imports: [DatabaseModule, JobModule, UsersModule],
       controllers: [RefundController],
       providers: [RefundService, ...RefundProviders],
-    })
-      .overrideProvider('DATABASE_CONNECTION')
-      .useFactory({
-        factory: async (): Promise<typeof mongoose> =>
-          await mongoose.connect(
-            'mongodb://localhost/maid_care_service_database',
-            {
-              useNewUrlParser: true,
-              useUnifiedTopology: true,
-              useFindAndModify: false,
-            },
-          ),
-      })
-      .compile();
+    }).compile();
 
     const usersModule: TestingModule = await Test.createTestingModule({
       imports: [
@@ -62,39 +52,13 @@ describe('RefundController', () => {
       ],
       controllers: [UsersController],
       providers: [UsersService, ...UsersProviders],
-    })
-      .overrideProvider('DATABASE_CONNECTION')
-      .useFactory({
-        factory: async (): Promise<typeof mongoose> =>
-          await mongoose.connect(
-            'mongodb://localhost/maid_care_service_database',
-            {
-              useNewUrlParser: true,
-              useUnifiedTopology: true,
-              useFindAndModify: false,
-            },
-          ),
-      })
-      .compile();
+    }).compile();
 
     const workspacesModule: TestingModule = await Test.createTestingModule({
       imports: [DatabaseModule],
       controllers: [WorkspacesController],
       providers: [WorkspacesService, ...WorkspaceProviders],
-    })
-      .overrideProvider('DATABASE_CONNECTION')
-      .useFactory({
-        factory: async (): Promise<typeof mongoose> =>
-          await mongoose.connect(
-            'mongodb://localhost/maid_care_service_database',
-            {
-              useNewUrlParser: true,
-              useUnifiedTopology: true,
-              useFindAndModify: false,
-            },
-          ),
-      })
-      .compile();
+    }).compile();
 
     const jobModule: TestingModule = await Test.createTestingModule({
       imports: [
@@ -107,20 +71,7 @@ describe('RefundController', () => {
       ],
       controllers: [JobController],
       providers: [JobService, SchedulerRegistry, ...JobProviders],
-    })
-      .overrideProvider('DATABASE_CONNECTION')
-      .useFactory({
-        factory: async (): Promise<typeof mongoose> =>
-          await mongoose.connect(
-            'mongodb://localhost/maid_care_service_database',
-            {
-              useNewUrlParser: true,
-              useUnifiedTopology: true,
-              useFindAndModify: false,
-            },
-          ),
-      })
-      .compile();
+    }).compile();
 
     refundController = refundModule.get<RefundController>(RefundController);
     refundService = refundModule.get<RefundService>(RefundService);
