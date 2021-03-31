@@ -6,8 +6,8 @@ import { SchedulerRegistry } from '@nestjs/schedule';
 import { DatabaseModule } from '../database/database.module';
 import { NotificationModule } from '../notification/notification.module';
 import { MaidsModule } from '../maids/maids.module';
-import { WorkspacesModule } from 'src/workspaces/workspaces.module';
-import { PromotionModule } from 'src/promotion/promotion.module';
+import { WorkspacesModule } from '../workspaces/workspaces.module';
+import { PromotionModule } from '../promotion/promotion.module';
 import { WalletModule } from '../wallet/wallet.module';
 
 @Module({

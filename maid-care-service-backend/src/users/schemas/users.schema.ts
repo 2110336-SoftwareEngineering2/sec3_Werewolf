@@ -7,7 +7,6 @@ export const UserSchema = new mongoose.Schema({
   lastname: String,
   birthdate: Date,
   citizenId: String,
-  nationality: String,
   bankAccountNumber: String,
   role: String,
   valid: { type: Boolean, default: false },

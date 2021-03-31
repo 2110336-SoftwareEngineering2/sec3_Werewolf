@@ -2,7 +2,6 @@ import {
   Injectable,
   Inject,
   BadRequestException,
-  ForbiddenException,
   NotFoundException,
   ConflictException,
 } from '@nestjs/common';
@@ -10,12 +9,12 @@ import { Model } from 'mongoose';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { NotificationService } from '../notification/notification.service';
 import { MaidsService } from '../maids/maids.service';
-import { WorkspacesService } from 'src/workspaces/workspaces.service';
-import { PromotionService } from 'src/promotion/promotion.service';
+import { WorkspacesService } from '../workspaces/workspaces.service';
+import { PromotionService } from '../promotion/promotion.service';
 import { Job } from './interfaces/job.interface';
-import { Maid } from 'src/maids/interfaces/maids.interface';
+import { Maid } from '../maids/interfaces/maids.interface';
 import { CreateJobDto } from './dto/create-job.dto';
-import { WorkType } from 'src/maids/workType';
+import { WorkType } from '../maids/workType';
 import { WorkCost } from './workCost';
 import { JobState } from './jobState';
 
@@ -63,6 +62,10 @@ export class JobService {
           work.typeOfWork + ' is not valid type of work',
         );
       }
+      if (!work.description)
+        throw new BadRequestException('description should not be empty');
+      if (isNaN(Number(work.quantity)))
+        throw new BadRequestException('quantity must be a number');
     });
     // create new job
     const createdJob = new this.jobModel(createJobDto);
@@ -89,12 +92,13 @@ export class JobService {
   async calculatePromotion(cost: number, code: string) {
     const promotion = await this.promotionService.findPromotion(code);
     if (!promotion) throw new NotFoundException('Promotion not valid');
+    // check promotion date
     const cerrentDate = new Date();
     if (
       (promotion.expiredDate && promotion.expiredDate < cerrentDate) ||
       promotion.availableDate > cerrentDate
     )
-      throw new ConflictException('invalid promotion date');
+      throw new ConflictException('unavailable promotion date');
     return cost * (1 - promotion.discountRate / 100);
   }
 
@@ -154,6 +158,7 @@ export class JobService {
   async accept(job: Job): Promise<Job> {
     await this.deleteTimeout(job);
     job.state = JobState.matched;
+    job.acceptedTime = new Date();
     // send nofication to customer
     console.log('maid found');
     await this.notificationService.sendNotification(
@@ -192,6 +197,7 @@ export class JobService {
 
   async jobDone(job: Job): Promise<Job> {
     job.state = JobState.done;
+    job.finishTime = new Date();
     // send nofication to customer
     console.log('job done');
     await this.notificationService.sendNotification(job.customerId, 'job done');
@@ -227,7 +233,7 @@ export class JobService {
         return 'ตารางเมตร';
       }
       default: {
-        throw new ForbiddenException(workType + ' is not valid type of work');
+        throw new BadRequestException(workType + ' is not valid type of work');
       }
     }
   }

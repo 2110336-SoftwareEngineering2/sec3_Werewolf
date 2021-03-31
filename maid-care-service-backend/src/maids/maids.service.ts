@@ -2,10 +2,10 @@ import {
   Injectable,
   Inject,
   BadRequestException,
-  ForbiddenException,
+  NotFoundException,
 } from '@nestjs/common';
 import { Model } from 'mongoose';
-import { Job } from 'src/job/interfaces/job.interface';
+import { Job } from '../job/interfaces/job.interface';
 import { Maid } from './interfaces/maids.interface';
 import { WorkType } from './workType';
 
@@ -33,16 +33,25 @@ export class MaidsService {
     return maidRegistered;
   }
 
-  async updateWork(id: string, work: [string]): Promise<Maid> {
+  async updateWork(id: string, works: string[]): Promise<Maid> {
     const maidFromDb = await this.findMaid(id);
-    if (!maidFromDb) throw new ForbiddenException('invalid maid');
+    if (!maidFromDb) throw new NotFoundException('invalid maid');
     // update works
-    if (work) {
-      work.forEach((work) => {
+    if (works) {
+      // validate work
+      works.forEach((work) => {
         if (!this.isValidTypeOfWork(work))
           throw new BadRequestException(work + ' is not valid type of work');
+        //maidFromDb.work.push(work);
       });
-      maidFromDb.work = work;
+      // clear old work
+      while (maidFromDb.work.length > 0) {
+        maidFromDb.work.pop();
+      }
+      // push new work
+      works.forEach((work) => {
+        maidFromDb.work.push(work);
+      });
       await maidFromDb.save();
     }
     return maidFromDb;
@@ -50,7 +59,7 @@ export class MaidsService {
 
   async updateNote(id: string, note: string): Promise<Maid> {
     const maidFromDb = await this.findMaid(id);
-    if (!maidFromDb) throw new ForbiddenException('invalid maid');
+    if (!maidFromDb) throw new NotFoundException('invalid maid');
     // update note
     if (note) {
       maidFromDb.note = note;
@@ -64,11 +73,8 @@ export class MaidsService {
     latitude: number,
     longitude: number,
   ): Promise<Maid> {
-    // validate latitude and Longitude
-    if (isNaN(latitude) || isNaN(longitude))
-      throw new BadRequestException('invalid latitude or longitude');
     const maidFromDb = await this.findMaid(id);
-    if (!maidFromDb) throw new ForbiddenException('invalid maid');
+    if (!maidFromDb) throw new NotFoundException('invalid maid');
     // update latitude and Longitude
     maidFromDb.cerrentLocation.latitude = latitude;
     maidFromDb.cerrentLocation.longitude = longitude;
@@ -78,7 +84,7 @@ export class MaidsService {
 
   async setAvailability(id: string, availability: boolean): Promise<Maid> {
     const maidFromDb = await this.findMaid(id);
-    if (!maidFromDb) throw new ForbiddenException('Invalid maid');
+    if (!maidFromDb) throw new NotFoundException('Invalid maid');
     maidFromDb.availability = availability;
     await maidFromDb.save();
     return maidFromDb;

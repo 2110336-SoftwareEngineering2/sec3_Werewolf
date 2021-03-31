@@ -2,7 +2,6 @@ import {
   Injectable,
   Inject,
   BadRequestException,
-  ForbiddenException,
   NotFoundException,
   ConflictException,
 } from '@nestjs/common';
@@ -12,7 +11,7 @@ import { NotificationService } from '../notification/notification.service';
 import { WalletService } from '../wallet/wallet.service';
 import { MaidsService } from '../maids/maids.service';
 import { JobService } from '../job/job.service';
-import { WorkspacesService } from 'src/workspaces/workspaces.service';
+import { WorkspacesService } from '../workspaces/workspaces.service';
 import { User } from './interfaces/users.interface';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ProfileDto } from './dto/profile.dto';
@@ -54,11 +53,6 @@ export class UsersService {
   }
 
   async register(createUserDto: CreateUserDto): Promise<User> {
-    // validate email
-    if (!this.isValidEmail(createUserDto.email))
-      throw new BadRequestException('Bad email');
-    // validate password
-    if (!createUserDto.password) throw new BadRequestException('No password');
     // validate role
     if (!this.isValidRole(createUserDto.role))
       throw new BadRequestException(
@@ -92,7 +86,7 @@ export class UsersService {
 
   async updateProfile(id: string, newProfile: ProfileDto): Promise<User> {
     const userFromDb = await this.findUser(id);
-    if (!userFromDb) throw new ForbiddenException('Invalid user');
+    if (!userFromDb) throw new NotFoundException('Invalid user');
     if (newProfile.password) {
       newProfile.password = await bcrypt.hash(newProfile.password, saltRounds);
       userFromDb.password = newProfile.password;
@@ -101,7 +95,6 @@ export class UsersService {
     if (newProfile.lastname) userFromDb.lastname = newProfile.lastname;
     if (newProfile.birthdate) userFromDb.birthdate = newProfile.birthdate;
     if (newProfile.citizenId) userFromDb.citizenId = newProfile.citizenId;
-    if (newProfile.nationality) userFromDb.nationality = newProfile.nationality;
     if (newProfile.bankAccountNumber)
       userFromDb.bankAccountNumber = newProfile.bankAccountNumber;
     await userFromDb.save();
@@ -141,23 +134,16 @@ export class UsersService {
 
   async checkPassword(email: string, pass: string): Promise<boolean> {
     const user = await this.findUserByEmail(email);
-    if (!user) throw new NotFoundException('Invalid user');
+    if (!user) return false;
     return await bcrypt.compare(pass, user.password);
   }
 
   async setPassword(email: string, newPassword: string): Promise<boolean> {
     const user = await this.findUserByEmail(email);
-    if (!user) throw new ForbiddenException('Invalid user');
+    if (!user) throw new NotFoundException('Invalid user');
     user.password = await bcrypt.hash(newPassword, saltRounds);
     const savedUser = await user.save();
     return !!savedUser;
-  }
-
-  isValidEmail(email: string) {
-    if (email) {
-      const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-      return re.test(email);
-    } else return false;
   }
 
   isValidRole(role: string) {

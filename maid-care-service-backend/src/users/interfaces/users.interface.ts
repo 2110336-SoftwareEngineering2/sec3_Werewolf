@@ -1,13 +1,13 @@
 import { Document } from 'mongoose';
 
 export interface User extends Document {
+  _id: string;
   email: string;
   password: string;
   firstname: string;
   lastname: string;
   birthdate: Date;
   citizenId: string;
-  nationality: string;
   bankAccountNumber: string;
   role: string;
   valid: boolean;

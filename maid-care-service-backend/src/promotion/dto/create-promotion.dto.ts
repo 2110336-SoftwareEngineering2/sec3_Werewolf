@@ -1,26 +1,37 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import {
+  IsNotEmpty,
+  IsNumber,
+  Min,
+  Max,
+  IsDateString,
+  IsOptional,
+} from 'class-validator';
 
 export class CreatePromotionDto {
-  constructor(object: any) {
-    this.code = object.code;
-    this.description = object.description;
-    this.discountRate = object.discountRate;
-    this.availableDate = object.availableDate;
-    this.expiredDate = object.expiredDate;
-  }
+  @ApiProperty({ type: String })
+  @IsNotEmpty()
+  code: string;
 
   @ApiProperty({ type: String })
-  readonly code: string;
-
-  @ApiProperty({ type: String })
-  readonly description: string;
+  @IsNotEmpty()
+  description: string;
 
   @ApiProperty({ type: Number })
-  readonly discountRate: number;
+  @Type(() => Number)
+  @IsNumber()
+  @Min(0)
+  @Max(100)
+  discountRate: number;
 
   @ApiProperty({ type: Date })
-  readonly availableDate: Date;
+  @IsOptional()
+  @IsDateString()
+  availableDate: Date;
 
   @ApiProperty({ type: Date })
-  readonly expiredDate: Date;
+  @IsOptional()
+  @IsDateString()
+  expiredDate: Date;
 }

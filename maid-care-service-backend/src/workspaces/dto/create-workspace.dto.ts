@@ -1,15 +1,23 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import { IsNotEmpty, IsNumber } from 'class-validator';
 
 export class CreateWorkspaceDto {
   @ApiProperty({ type: String })
-  readonly customerId: string;
+  @IsNotEmpty()
+  customerId: string;
 
   @ApiProperty({ type: String })
-  readonly description: string;
+  @IsNotEmpty()
+  description: string;
 
   @ApiProperty({ type: Number })
-  readonly latitude: number;
+  @Type(() => Number)
+  @IsNumber()
+  latitude: number;
 
   @ApiProperty({ type: Number })
-  readonly longitude: number;
+  @Type(() => Number)
+  @IsNumber()
+  longitude: number;
 }

@@ -1,14 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsOptional, IsString } from 'class-validator';
 import { WorkType } from '../workType';
 
 export class UpdateMaidDto {
-  constructor(object: any) {
-    this.note = object.note;
-    this.work = object.work;
-  }
-
   @ApiProperty({ type: String })
-  readonly note: string;
+  note: string;
 
   @ApiProperty({
     type: 'array',
@@ -16,5 +12,7 @@ export class UpdateMaidDto {
       enum: Object.values(WorkType),
     },
   })
-  readonly work: [string];
+  @IsOptional()
+  @IsString({ each: true })
+  work: string[];
 }
