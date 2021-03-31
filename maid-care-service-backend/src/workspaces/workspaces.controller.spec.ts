@@ -91,13 +91,10 @@ describe('WorkspacesController', () => {
   });
 
   describe('findAll', () => {
-    it('return an array of workspaces', async () => {
-      const result = await workspacesService.findAllWorkspaceByCustomerId(
-        customerReq.user._id,
-      );
+    it('return an empty array when there are no workspace', async () => {
       expect(
         await workspacesController.findAllWorkspace(customerReq),
-      ).toStrictEqual(result);
+      ).toStrictEqual([]);
     });
   });
 
@@ -124,6 +121,13 @@ describe('WorkspacesController', () => {
       expect(
         await workspacesController.findWorkspacebyWorkspaceId(workspaceDto._id),
       ).toStrictEqual(workspaceDto);
+
+      const result = await workspacesService.findAllWorkspaceByCustomerId(
+        customerReq.user._id,
+      );
+      expect(
+        await workspacesController.findAllWorkspace(customerReq),
+      ).toStrictEqual(result);
 
       // create duplicate workspace
       try {

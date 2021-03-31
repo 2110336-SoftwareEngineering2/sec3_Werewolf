@@ -124,7 +124,7 @@ export class RefundController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   @ApiBearerAuth('acess-token')
-  async removePromotion(@Param('id') id: string) {
+  async removeRefund(@Param('id') id: string) {
     try {
       const refund = await this.refundService.removeRefund(id);
       return await this.refundService.makeRefundDto(refund);

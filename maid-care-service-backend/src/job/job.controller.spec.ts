@@ -426,7 +426,7 @@ describe('JobController', () => {
   });
 
   describe('findByMaid', () => {
-    it('return an array of jobs belong to the maid', async () => {
+    it('return an empty array when maid has no job', async () => {
       expect(await jobController.findByMaid(maidReq.user._id)).toStrictEqual(
         [],
       );

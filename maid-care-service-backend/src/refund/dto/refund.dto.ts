@@ -17,7 +17,7 @@ export class RefundDto {
   readonly description: string;
 
   @ApiProperty({ type: [String] })
-  readonly photo: string[];
+  photo: string[];
 
   @ApiProperty({ type: Date })
   readonly createDate: Date;
