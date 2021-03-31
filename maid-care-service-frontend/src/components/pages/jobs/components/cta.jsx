@@ -6,10 +6,10 @@ import {
   AlertDialogBody,
   AlertDialogContent,
   AlertDialogFooter,
-  AlertDialogHeader,
   AlertDialogOverlay,
   Modal,
   ModalBody,
+  ModalCloseButton,
   ModalContent,
   ModalFooter,
   ModalHeader,
@@ -18,9 +18,9 @@ import {
 } from '@chakra-ui/modal';
 import { Icon, Image, Input } from '@chakra-ui/react';
 import { Spinner } from '@chakra-ui/spinner';
-import { useRef, useState } from 'react';
-import { FaImages, FaPhotoVideo } from 'react-icons/fa';
-import { CONFIRMED, MATCHED, POSTED } from '../../../../constants/post-state';
+import { useEffect, useRef, useState } from 'react';
+import { FaCheckCircle, FaImages } from 'react-icons/fa';
+import { CONFIRMED, DONE, MATCHED, POSTED } from '../../../../constants/post-state';
 import { useStores } from '../../../../hooks/use-stores';
 
 const Actions = ({ job, state }) => {
@@ -30,6 +30,8 @@ const Actions = ({ job, state }) => {
     <MatchedActions />
   ) : state === CONFIRMED ? (
     <ConfirmActions />
+  ) : state === DONE ? (
+    <DoneActions />
   ) : (
     <Text>Error!</Text>
   );
@@ -78,48 +80,6 @@ const ConfirmActions = () => {
   const { isOpen: isConfirmOpen, onOpen: onConfirmOpen, onClose: onConfirmClose } = useDisclosure();
   const cancelRef = useRef();
 
-  const uploadBtnRef = useRef();
-
-  const handleClick = () => {
-    uploadBtnRef.current.click();
-  };
-
-  const [images, setImages] = useState([{}]);
-
-  const handleChange = (event) => {
-    const fileUpload = event.target.files[0];
-    console.log(fileUpload);
-    // TODO: Upload file to Firebase FireStore
-    // 1. Upload To Firebase
-    // 2. Get URL from Firebase, then POST the URL to SERVER
-    // 3. Get Image to Display in Frontend
-    // Done!
-  };
-
-  const renderImages = () => {
-    if (images.length > 0) {
-      return (
-        <Grid
-          templateColumns={`repeat(3, 1fr)`}
-          gap={2}
-          justifyContent={`center`}
-          alignItems={`center`}>
-          {images.map((image, idx) => (
-            <GridItem>
-              <Center>{/* <Image /> */}</Center>
-            </GridItem>
-          ))}
-          <GridItem>
-            <Center>
-              <Icon as={FaImages} h={`30%`} minH={120} w={`30%`} minW={120} onClick={handleClick} />
-            </Center>
-          </GridItem>
-        </Grid>
-      );
-    }
-    return <Icon as={FaImages} h={`30%`} minH={120} w={`30%`} minW={120} onClick={handleClick} />;
-  };
-
   return (
     <>
       <Button colorScheme={`red`} onClick={onDiscardOpen}>
@@ -164,6 +124,74 @@ const ConfirmActions = () => {
         </AlertDialogContent>
       </AlertDialog>
 
+      <ConfirmModal
+        isConfirmOpen={isConfirmOpen}
+        onConfirmOpen={onConfirmOpen}
+        onConfirmClose={onConfirmClose}
+      />
+    </>
+  );
+};
+
+const ConfirmModal = ({ isConfirmOpen, onConfirmOpen, onConfirmClose }) => {
+  const uploadBtnRef = useRef();
+
+  const handleClick = () => {
+    uploadBtnRef.current.click();
+  };
+
+  const [images, setImages] = useState([{}]);
+
+  const renderImages = () => {
+    if (images.length > 0) {
+      return (
+        <Grid
+          templateColumns={`repeat(3, 1fr)`}
+          gap={2}
+          justifyContent={`center`}
+          alignItems={`center`}>
+          {images.map((image, idx) => (
+            <GridItem>
+              <Center>{/* <Image /> */}</Center>
+            </GridItem>
+          ))}
+          <GridItem>
+            <Center>
+              <Icon as={FaImages} h={`30%`} minH={120} w={`30%`} minW={120} onClick={handleClick} />
+            </Center>
+          </GridItem>
+        </Grid>
+      );
+    }
+    return <Icon as={FaImages} h={`30%`} minH={120} w={`30%`} minW={120} onClick={handleClick} />;
+  };
+
+  const handleChange = (event) => {
+    const fileUpload = event.target.files[0];
+    console.log(fileUpload);
+    // TODO: Upload file to Firebase FireStore
+    // 1. Upload To Firebase
+    // 2. Get URL from Firebase, update state
+    // 3. Get Image from Firebase to Display Preview
+    // Done!
+  };
+
+  const handleSubmit = async () => {
+    // Send Photo path to server with POST
+    onConfirmClose();
+    onOpen();
+  };
+
+  // for Done modal
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  useEffect(() => {
+    const t = setTimeout(() => onClose(), 2000);
+    return () => clearTimeout(t);
+  }, [isOpen]);
+
+  return (
+    <>
       <Modal size={`xl`} isCentered isOpen={isConfirmOpen} onClose={onConfirmClose}>
         <ModalOverlay />
         <ModalContent as={VStack} h={`60hv`} minH={300} maxH={400}>
@@ -176,14 +204,34 @@ const ConfirmActions = () => {
             <Button variant={`outline`} colorScheme={`red`} onClick={onConfirmClose}>
               Go back
             </Button>
-            <Button colorScheme={`green`} onClick={onConfirmClose} ml={3}>
+            <Button colorScheme={`green`} onClick={handleSubmit} ml={3}>
               Submit
             </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
+
+      <Modal size={`xl`} closeOnOverlayClick={false} isCentered isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent as={VStack} h={`60hv`} minH={300} maxH={400} p={12}>
+          <ModalCloseButton />
+          <ModalHeader fontSize={`4xl`} color={`green.400`}>
+            Your job is done!
+          </ModalHeader>
+          <ModalBody as={VStack}>
+            <Text mb={4}>Please wait for the rating from customer</Text>
+            <Center h={`50%`} w={`50%`}>
+              <Icon as={FaCheckCircle} h={`full`} w={`full`} color={`green.400`} />
+            </Center>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </>
   );
+};
+
+const DoneActions = () => {
+  return <></>;
 };
 
 export default Actions;

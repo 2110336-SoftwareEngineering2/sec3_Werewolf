@@ -4,7 +4,7 @@ import { Box, Grid, GridItem, Heading, HStack, List, ListItem, Text } from '@cha
 import { observer } from 'mobx-react-lite';
 import { FaTshirt } from 'react-icons/fa';
 import Address from './Address';
-import Actions from './cta';
+import Actions from './CTA';
 import Status from './Status';
 import UserStatus from './UserStatus';
 
@@ -26,12 +26,13 @@ const JobItemModal = observer(({ job }) => {
         <UserStatus uid={customerId} />
       </GridItem>
       <GridItem as={List} rowStart={3} rowSpan={3} colStart={0} colSpan={1} p={4}>
-        {work && work.map(({ quantity }, idx) => (
-          <ListItem as={HStack} key={jobId + idx}>
-            <Icon as={FaTshirt} w={8} h={8} color={`gray.800`} />
-            <Text>{quantity} ตัว</Text>
-          </ListItem>
-        ))}
+        {work &&
+          work.map(({ quantity }, idx) => (
+            <ListItem as={HStack} key={jobId + idx}>
+              <Icon as={FaTshirt} w={8} h={8} color={`gray.800`} />
+              <Text>{quantity} ตัว</Text>
+            </ListItem>
+          ))}
       </GridItem>
       <GridItem rowSpan={2} colSpan={3} p={4} alignItems={`baseline`}>
         <Address workplaceId={workplaceId} />
