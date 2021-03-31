@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { login, fetchCurrentUser } from './auth';
+import { login, fetchCurrentUser, registerMaid } from './auth';
 import { workspace, fetchWorkspaceById } from './workspace';
 import { user, fetchUserById } from './user';
 import { promotion } from './promotion';
@@ -11,7 +11,7 @@ axios.interceptors.request.use((config) => {
   return config;
 });
 
-export { login, fetchCurrentUser };
+export { login, fetchCurrentUser, registerMaid };
 export { user, fetchUserById };
 export { workspace, fetchWorkspaceById };
 export { promotion };

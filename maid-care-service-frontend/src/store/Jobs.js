@@ -1,6 +1,6 @@
 import { action, makeAutoObservable, observable, toJS } from 'mobx';
 import { job as JobAPI } from '../api';
-import { CONFIRMED, MATCHED } from '../constants/post-state';
+import { CANCELED, CONFIRMED, DONE, MATCHED, POSTED, REVIEWED } from '../constants/post-state';
 
 class JobsStore {
   jobs = [];
@@ -16,12 +16,14 @@ class JobsStore {
       fetchAllJobs: action,
       accept: action,
       reject: action,
+      done: action,
+      discard: action,
     });
   }
 
   async fetchAllJobs() {
     /** test state */
-    let test_state = CONFIRMED;
+    // let test_state = CONFIRMED;
 
     this.loading = true;
     this.error = false;
@@ -29,23 +31,9 @@ class JobsStore {
     const uid = user._id;
     return JobAPI.get(`/maid/${uid}`)
       .then((response) => {
-        // const { data: jobs } = response;
-        let { data: jobs } = response;
-        /** test state */
-        jobs = jobs.map((job) => {
-          if (job.state === MATCHED) return { ...job, state: test_state };
-          return job;
-        });
-
+        const { data: jobs } = response;
         this.jobs = jobs;
-
-        // if current job is existed, assume that there is only one job
-        const cur = jobs.filter((job) => job.state === test_state);
-        // if (cur.length >= 0) this.currentJob = { ...cur[0] };
-
-        /** test state */
-        if (cur.length > 0) this.currentJob = { ...cur[0], state: test_state };
-        console.log(toJS(this.currentJob));
+        this.currentJob = this.getCurrentJobFromJobList({ jobs });
         this.loading = false;
       })
       .catch((error) => {
@@ -54,6 +42,12 @@ class JobsStore {
         this.loading = false;
         throw error;
       });
+  }
+
+  getCurrentJobFromJobList({ jobs }) {
+    const filteredJobs = jobs.filter((job) => ![POSTED, REVIEWED, CANCELED].includes(job.state));
+    if (filteredJobs.length <= 0) return null;
+    return filteredJobs[0];
   }
 
   async accept({ jobId }) {
@@ -79,6 +73,23 @@ class JobsStore {
     return JobAPI.put(`/${jobId}/reject`)
       .then((response) => {
         this.currentJob = null;
+        this.loading = false;
+        this.fetchAllJobs();
+      })
+      .catch((error) => {
+        console.error(error);
+        this.error = error;
+        this.loading = false;
+        throw error;
+      });
+  }
+
+  async done({ jobId }) {
+    this.loading = true;
+    this.error = false;
+    return JobAPI.put(`/${jobId}/done`)
+      .then((response) => {
+        this.currentJob = response.data;
         this.loading = false;
         this.fetchAllJobs();
       })

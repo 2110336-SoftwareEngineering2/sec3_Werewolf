@@ -40,3 +40,11 @@ export const fetchCurrentUser = async () => {
   axiosRetry(auth, { retries: 3 });
   return auth.get('/user');
 };
+
+/**
+ * register maid
+ * @return Promise
+ */
+export const registerMaid = async (payload) => {
+  return auth.post('/register', payload);
+};

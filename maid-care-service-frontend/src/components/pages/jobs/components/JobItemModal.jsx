@@ -4,11 +4,11 @@ import { Box, Grid, GridItem, Heading, HStack, List, ListItem, Text } from '@cha
 import { observer } from 'mobx-react-lite';
 import { FaTshirt } from 'react-icons/fa';
 import Address from './Address';
-import Actions from './CTA';
+import Actions from './cta';
 import Status from './Status';
 import UserStatus from './UserStatus';
 
-const JobItemModal = observer(({ job }) => {
+const JobItemModal = ({ job }) => {
   const { _id: jobId, work, workplaceId, customerId, state } = job;
 
   return (
@@ -63,6 +63,6 @@ const JobItemModal = observer(({ job }) => {
       </GridItem>
     </Grid>
   );
-});
+};
 
 export default JobItemModal;
