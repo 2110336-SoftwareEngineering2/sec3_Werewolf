@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { WorkType } from 'src/maids/workType';
+import { WorkType } from '../../maids/workType';
 import { JobState } from '../jobState';
 
 export class JobDto {
@@ -26,7 +26,7 @@ export class JobDto {
   readonly workplaceId: string;
 
   @ApiProperty({ type: () => [Work] })
-  readonly work: [Work];
+  work: Work[];
 
   @ApiProperty({ type: Number })
   cost: number;
@@ -50,7 +50,7 @@ export class JobDto {
   readonly review: string;
 
   @ApiProperty({ type: [String] })
-  readonly photos: string[];
+  photos: string[];
 
   @ApiProperty({ type: Date })
   readonly acceptedTime: Date;

@@ -1,4 +1,4 @@
-import { Injectable, Inject, ForbiddenException } from '@nestjs/common';
+import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { Wallet } from './interfaces/wallet.interface';
 
@@ -24,7 +24,7 @@ export class WalletService {
 
   async addCoin(id: string, g_coin: number): Promise<Wallet> {
     const walletFromDb = await this.findWallet(id);
-    if (!walletFromDb) throw new ForbiddenException('invalid wallet');
+    if (!walletFromDb) throw new NotFoundException('invalid wallet');
     // update note
     walletFromDb.g_coin += g_coin;
     return await walletFromDb.save();
@@ -32,7 +32,7 @@ export class WalletService {
 
   async removeCoin(id: string, g_coin: number): Promise<Wallet> {
     const walletFromDb = await this.findWallet(id);
-    if (!walletFromDb) throw new ForbiddenException('invalid wallet');
+    if (!walletFromDb) throw new NotFoundException('invalid wallet');
     // update note
     walletFromDb.g_coin -= g_coin;
     return await walletFromDb.save();

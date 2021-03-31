@@ -8,7 +8,6 @@ import {
   Delete,
   UseGuards,
   NotFoundException,
-  UnauthorizedException,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -17,10 +16,11 @@ import {
   ApiResponse,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/passport/jwt-auth.guard';
-import { RolesGuard } from 'src/common/guard/roles.guard';
-import { Roles } from 'src/common/decorators/roles.decorator';
+import { RolesGuard } from '../common/guard/roles.guard';
+import { Roles } from '../common/decorators/roles.decorator';
 import { WorkspacesService } from './workspaces.service';
 import { CreateWorkspaceDto } from './dto/create-workspace.dto';
+import { WorkspaceDto } from './dto/workspace.dto';
 
 @Controller('workspaces')
 @ApiTags('workspace')
@@ -30,7 +30,7 @@ export class WorkspacesController {
   @Post()
   @ApiCreatedResponse({
     description: 'Add Workspace',
-    type: CreateWorkspaceDto,
+    type: WorkspaceDto,
   })
   @ApiResponse({ status: 401, description: 'user is not customer' })
   @UseGuards(JwtAuthGuard)
@@ -39,7 +39,10 @@ export class WorkspacesController {
   @Roles('customer')
   async createWorkspace(@Body() createWorkspaceDto: CreateWorkspaceDto) {
     try {
-      return await this.workspacesService.addNewWorkspace(createWorkspaceDto);
+      const workspace = await this.workspacesService.addNewWorkspace(
+        createWorkspaceDto,
+      );
+      return new WorkspaceDto(workspace);
     } catch (error) {
       throw error;
     }
@@ -48,7 +51,7 @@ export class WorkspacesController {
   @Get()
   @ApiCreatedResponse({
     description: 'Get All Workspace By CustomerId from Request',
-    type: CreateWorkspaceDto,
+    type: [WorkspaceDto],
   })
   @ApiResponse({ status: 401, description: 'user is not customer' })
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -68,30 +71,24 @@ export class WorkspacesController {
   @Get(':id')
   @ApiCreatedResponse({
     description: 'Get workspace by workspace id',
-    type: CreateWorkspaceDto,
+    type: WorkspaceDto,
   })
   async findWorkspacebyWorkspaceId(@Param('id') id: string) {
     const foundWorkspace = await this.workspacesService.findOne(id);
     if (!foundWorkspace) throw new NotFoundException('invalid id');
-    const result = {
-      customerId: foundWorkspace.customerId,
-      description: foundWorkspace.description,
-      latitude: foundWorkspace.latitude,
-      longitude: foundWorkspace.longitude,
-    };
-    return result;
+    return new WorkspaceDto(foundWorkspace);
   }
 
   @Delete(':id')
   @ApiCreatedResponse({
     description: 'Delete Workspace By Workspace Id',
-    type: CreateWorkspaceDto,
+    type: WorkspaceDto,
   })
+  @ApiResponse({ status: 401, description: 'user is not customer or admin' })
   @ApiResponse({
-    status: 401,
-    description: 'can only delete your workspace unless user is admin',
+    status: 404,
+    description: 'workspace not found or it is not your workspace',
   })
-  @ApiResponse({ status: 401, description: 'user is not customer' })
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('customer', 'admin')
   @ApiBearerAuth('acess-token')
@@ -102,11 +99,11 @@ export class WorkspacesController {
       const targetWorkspace = await this.workspacesService.findOne(id);
       if (
         req.user.role === 'admin' ||
-        requestCustomerId == targetWorkspace.customerId
+        (targetWorkspace && requestCustomerId == targetWorkspace.customerId)
       ) {
         const result = await this.workspacesService.removeWorkspace(id);
-        return result;
-      } else throw new UnauthorizedException('it is not your workspace');
+        return new WorkspaceDto(result);
+      } else throw new NotFoundException("This workspace doesn't exist!");
     } catch (error) {
       throw error;
     }

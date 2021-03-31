@@ -5,19 +5,19 @@ import { IsNotEmpty, IsNumber } from 'class-validator';
 export class CreateWorkspaceDto {
   @ApiProperty({ type: String })
   @IsNotEmpty()
-  readonly customerId: string;
+  customerId: string;
 
   @ApiProperty({ type: String })
   @IsNotEmpty()
-  readonly description: string;
+  description: string;
 
   @ApiProperty({ type: Number })
   @Type(() => Number)
   @IsNumber()
-  readonly latitude: number;
+  latitude: number;
 
   @ApiProperty({ type: Number })
   @Type(() => Number)
   @IsNumber()
-  readonly longitude: number;
+  longitude: number;
 }

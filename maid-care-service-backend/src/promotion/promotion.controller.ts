@@ -17,8 +17,8 @@ import {
   ApiResponse,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/passport/jwt-auth.guard';
-import { RolesGuard } from 'src/common/guard/roles.guard';
-import { Roles } from 'src/common/decorators/roles.decorator';
+import { RolesGuard } from '../common/guard/roles.guard';
+import { Roles } from '../common/decorators/roles.decorator';
 import { PromotionService } from './promotion.service';
 import { CreatePromotionDto } from './dto/create-promotion.dto';
 import { PromotionDto } from './dto/promotion.dto';
@@ -65,6 +65,7 @@ export class PromotionController {
   @ApiResponse({ status: 404, description: 'promotion not valid' })
   async findPromotion(@Param('code') code: string) {
     const promotion = await this.promotionService.findPromotion(code);
+    // check promotion date
     const cerrentDate = new Date();
     if (!promotion) throw new NotFoundException('Promotion not valid');
     if (

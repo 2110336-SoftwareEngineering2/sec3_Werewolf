@@ -13,5 +13,5 @@ export class PromotionDto extends CreatePromotionDto {
   }
 
   @ApiProperty({ type: String })
-  readonly creater: string;
+  creater: string;
 }

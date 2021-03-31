@@ -15,12 +15,12 @@ import {
   ApiResponse,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/passport/jwt-auth.guard';
-import { RolesGuard } from 'src/common/guard/roles.guard';
+import { RolesGuard } from '../common/guard/roles.guard';
+import { Roles } from '../common/decorators/roles.decorator';
 import { MaidsService } from './maids.service';
 import { UpdateMaidDto } from './dto/update-maid.dto';
 import { CerrentLocationDto } from './dto/location.dto';
 import { MaidDto } from './dto/maid.dto';
-import { Roles } from 'src/common/decorators/roles.decorator';
 
 @Controller('maids')
 @ApiTags('maid')
@@ -45,7 +45,7 @@ export class MaidsController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('maid')
   @ApiBearerAuth('acess-token')
-  async updateWork(@Request() req, @Body() updateMaidDto: UpdateMaidDto) {
+  async updateMaid(@Request() req, @Body() updateMaidDto: UpdateMaidDto) {
     try {
       await this.maidsService.updateWork(req.user._id, updateMaidDto.work);
       const maid = await this.maidsService.updateNote(

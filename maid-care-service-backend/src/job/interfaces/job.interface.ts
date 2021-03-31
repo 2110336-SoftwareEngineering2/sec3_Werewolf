@@ -5,10 +5,10 @@ export interface Job extends Document {
   _id: string;
   customerId: string;
   workplaceId: string;
-  work: [Work];
+  work: Work[];
   cost: number;
   maidId: string;
-  requestedMaid: [string];
+  requestedMaid: string[];
   expiryTime: Date;
   state: string;
   rating: number;

@@ -9,12 +9,12 @@ import { Model } from 'mongoose';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { NotificationService } from '../notification/notification.service';
 import { MaidsService } from '../maids/maids.service';
-import { WorkspacesService } from 'src/workspaces/workspaces.service';
-import { PromotionService } from 'src/promotion/promotion.service';
+import { WorkspacesService } from '../workspaces/workspaces.service';
+import { PromotionService } from '../promotion/promotion.service';
 import { Job } from './interfaces/job.interface';
-import { Maid } from 'src/maids/interfaces/maids.interface';
+import { Maid } from '../maids/interfaces/maids.interface';
 import { CreateJobDto } from './dto/create-job.dto';
-import { WorkType } from 'src/maids/workType';
+import { WorkType } from '../maids/workType';
 import { WorkCost } from './workCost';
 import { JobState } from './jobState';
 
@@ -92,6 +92,7 @@ export class JobService {
   async calculatePromotion(cost: number, code: string) {
     const promotion = await this.promotionService.findPromotion(code);
     if (!promotion) throw new NotFoundException('Promotion not valid');
+    // check promotion date
     const cerrentDate = new Date();
     if (
       (promotion.expiredDate && promotion.expiredDate < cerrentDate) ||

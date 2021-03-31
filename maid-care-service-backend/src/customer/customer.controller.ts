@@ -16,12 +16,12 @@ import {
   ApiResponse,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/passport/jwt-auth.guard';
-import { RolesGuard } from 'src/common/guard/roles.guard';
-import { Roles } from 'src/common/decorators/roles.decorator';
+import { RolesGuard } from '../common/guard/roles.guard';
+import { Roles } from '../common/decorators/roles.decorator';
 import { CustomerService } from './customer.service';
 import { WalletService } from '../wallet/wallet.service';
 import { JobService } from '../job/job.service';
-import { JobDto } from 'src/job/dto/job.dto';
+import { JobDto } from '../job/dto/job.dto';
 
 @Controller('customer')
 @ApiTags('customer')

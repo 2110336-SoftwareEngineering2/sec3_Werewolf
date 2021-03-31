@@ -8,7 +8,6 @@ import {
   Put,
   Delete,
   UseGuards,
-  UnauthorizedException,
   NotFoundException,
   ConflictException,
 } from '@nestjs/common';
@@ -19,13 +18,13 @@ import {
   ApiResponse,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/passport/jwt-auth.guard';
-import { RolesGuard } from 'src/common/guard/roles.guard';
-import { Roles } from 'src/common/decorators/roles.decorator';
+import { RolesGuard } from '../common/guard/roles.guard';
+import { Roles } from '../common/decorators/roles.decorator';
 import { JobService } from './job.service';
 import { CostDto } from './dto/cost.dto';
 import { CreateJobDto } from './dto/create-job.dto';
 import { JobDto } from './dto/job.dto';
-import { MaidsService } from 'src/maids/maids.service';
+import { MaidsService } from '../maids/maids.service';
 import { JobState } from './jobState';
 import { PhotoDto } from './dto/photo.dto';
 
@@ -47,7 +46,7 @@ export class JobController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('customer')
   @ApiBearerAuth('acess-token')
-  async postJob(@Request() req, @Body() createJobDto: CreateJobDto) {
+  async createJob(@Request() req, @Body() createJobDto: CreateJobDto) {
     const job = await this.jobService.createJob(req.user._id, createJobDto);
     return new JobDto(job);
   }
@@ -143,10 +142,9 @@ export class JobController {
   @Delete(':id')
   @ApiCreatedResponse({ description: 'Delete job by id', type: JobDto })
   @ApiResponse({
-    status: 401,
-    description: 'can only delete your own job unless user is admin',
+    status: 404,
+    description: 'job not found or it is not your job',
   })
-  @ApiResponse({ status: 404, description: 'job not found' })
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('customer', 'admin')
   @ApiBearerAuth('acess-token')
@@ -160,7 +158,7 @@ export class JobController {
       } catch (error) {
         throw error;
       }
-    } else throw new UnauthorizedException('can only delete your job');
+    } else throw new NotFoundException('job not found');
   }
 
   @Post('photo')
@@ -177,7 +175,7 @@ export class JobController {
     if (!job) throw new NotFoundException('job not found');
     if (job && req.user._id == job.maidId) {
       try {
-        job.photos.push(photoDto.url);
+        if (!job.photos.includes(photoDto.url)) job.photos.push(photoDto.url);
         await job.save();
         return new JobDto(job);
       } catch (error) {
@@ -191,13 +189,12 @@ export class JobController {
     description: 'maid delete a photo of the job',
     type: [JobDto],
   })
-  @ApiResponse({ status: 404, description: 'job not found' })
+  @ApiResponse({ status: 404, description: 'photo not found' })
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('maid')
   @ApiBearerAuth('acess-token')
   async deletePhoto(@Request() req, @Body() photoDto: PhotoDto) {
     const job = await this.jobService.findJob(photoDto.jobId);
-    if (!job) throw new NotFoundException('job not found');
     if (job && req.user._id == job.maidId) {
       try {
         if (!job.photos.includes(photoDto.url))
@@ -208,7 +205,7 @@ export class JobController {
       } catch (error) {
         throw error;
       }
-    } else throw new NotFoundException('job not found');
+    } else throw new NotFoundException('photo not found');
   }
 
   @Get('maid/:uid')

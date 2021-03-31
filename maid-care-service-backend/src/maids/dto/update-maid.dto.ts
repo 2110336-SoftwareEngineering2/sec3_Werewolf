@@ -14,5 +14,5 @@ export class UpdateMaidDto {
   })
   @IsOptional()
   @IsString({ each: true })
-  work: [string];
+  work: string[];
 }
