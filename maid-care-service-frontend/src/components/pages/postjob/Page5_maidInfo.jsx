@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 import { maid, user, job } from '../../../api';
 import profileImage from './Image/profileImage.png';
-import { VStack, Text, HStack, Box, chakra } from '@chakra-ui/react';
+import { VStack, Text, HStack, Box, chakra, ButtonGroup } from '@chakra-ui/react';
 import StarRating from './components/StarRating.jsx';
 import AlertButton from './components/AlertButton.jsx';
 import Timer from './components/Timer.jsx';
@@ -103,33 +103,44 @@ const Page5_maidInfo = ({ handleIncrement, maidId, jobId, setConfirm }) => {
               : parseInt(userInfo.birthdate.substring(0, 4)))}{' '}
           years old
         </Text>
-        <Box mt="10px" mb="10px" bg="white" width="100%" height="150px" fontSize="12px" overflow="hidden">
+        <Box
+          mt="10px"
+          mb="10px"
+          bg="white"
+          width="100%"
+          height="150px"
+          fontSize="12px"
+          overflow="hidden">
           {maidInfo == null ? '' : maidInfo.note}
         </Box>
-        <AlertButton
-          mainbtnName="Confirm"
-          mainbtnColor="buttonGreen"
-          lbtnName="Cancel"
-          rbtnName="Confirm"
-          headerText="Do you want to confirm ?"
-          bodyText="We will send confirmation message to your maid."
-          lbtnFunction={testHandle}
-          rbtnFunction={customerConfirm_API}
-        />
-        <AlertButton
-          mainbtnName="Cancel"
-          mainbtnColor="red"
-          lbtnName="Cancel"
-          rbtnName="Confirm"
-          headerText="Do you want to confirm ?"
-          bodyText="We will send canceled message to your maid."
-          lbtnFunction={testHandle}
-          rbtnFunction={customerCancel_API}
-        />
-        <Text mt="5px" color="red">
-          You have only <Timer countdown={40} timerFunction={customerConfirm_API} /> sec(s)
-          left to cancel the job
-        </Text>
+        <VStack pos="absolute" bottom={-20} right={0} left={0}>
+          <ButtonGroup>
+            <AlertButton
+              mainbtnName="Confirm"
+              mainbtnColor="buttonGreen"
+              lbtnName="Cancel"
+              rbtnName="Confirm"
+              headerText="Do you want to confirm ?"
+              bodyText="We will send confirmation message to your maid."
+              lbtnFunction={testHandle}
+              rbtnFunction={customerConfirm_API}
+            />
+            <AlertButton
+              mainbtnName="Cancel"
+              mainbtnColor="red"
+              lbtnName="Cancel"
+              rbtnName="Confirm"
+              headerText="Do you want to confirm ?"
+              bodyText="We will send canceled message to your maid."
+              lbtnFunction={testHandle}
+              rbtnFunction={customerCancel_API}
+            />
+          </ButtonGroup>
+          <Text mt="5px" color="red" right="0">
+            You have only <Timer countdown={40} timerFunction={customerConfirm_API} /> sec(s) left
+            to cancel the job
+          </Text>
+        </VStack>
       </Box>
     </HStack>
   );
