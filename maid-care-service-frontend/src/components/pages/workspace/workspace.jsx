@@ -37,6 +37,7 @@ import { GoogleMap, useLoadScript, Marker } from '@react-google-maps/api';
 // this package is for relocating when user enters the location in the search box
 import PlacesAutocomplete, { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
 import { Formik, Form, useFormikContext, Field } from 'formik';
+import { string } from 'yup/lib/locale';
 
 const libraries = ['places'];
 
@@ -117,7 +118,7 @@ const InfoSidebar = observer(({ panTo, markers, setMarkers }) => {
   const [error, setError] = useState(false);
   const [isFormCorrect, setFormCorrect] = useState(false);
   const { userStore } = useStores();
-  
+
   const user = userStore.userData;
 
   const yup = Yup.object({
@@ -137,7 +138,7 @@ const InfoSidebar = observer(({ panTo, markers, setMarkers }) => {
         customerId: user._id,
         description: `${houseNo} ${address1} ${address2} ${city} ${state} ${country}`,
         latitude: markers[0].lat,
-        longitude: markers[0].lng
+        longitude: markers[0].lng,
       })
       .then(response => {
         console.log(response);
@@ -158,7 +159,7 @@ const InfoSidebar = observer(({ panTo, markers, setMarkers }) => {
 
   return (
     <FlexBox>
-      <VStack spacing="20x" h="850px" w="350px">
+      <VStack spacing="20x" h="850px" w="100%" alignItems="center" border="1px">
         <Box fontSize="3xl" mb="15px" fontWeight="extrabold">
           New workspace
         </Box>
@@ -174,8 +175,8 @@ const InfoSidebar = observer(({ panTo, markers, setMarkers }) => {
           }}
           validationSchema={yup}
           onSubmit={handleSubmit}>
-          <Form>
-            <Box pos="absolute" top="250px" left="25px" width="400px" justifyContent="center">
+          <Form style={{width: "100%"}}>
+            <Box pos="relative" width="100%" justifyContent="center" border="1px">
               <FormControl id="country" width={{ sm: '270px', md: '368px' }}>
                 <TextInputField label="House NO." placeholder="Text Here" name="houseNo" />
                 <TextInputField label="Address 1" name="address1" placeholder="Text Here" />
@@ -356,9 +357,9 @@ const SearchLocation = ({ panTo, setMarkers }) => {
     <Box zIndex={1}>
       <PlacesAutocomplete value={address} onChange={setAddress} onSelect={handleSelect}>
         {({ getInputProps, suggestions, getSuggestionItemProps, loading }) => (
-          <Box>
+          <Box pos="relative">
             <Input w="300px" {...getInputProps({ placeholder: 'Search your location....' })} />
-            <Box w="300px">
+            <Box pos="absolute" w="300px">
               {loading ? <div>...loading</div> : null}
               {suggestions.map(suggestion => {
                 const style = {
