@@ -5,7 +5,7 @@ import { Modal, ModalCloseButton, ModalContent, ModalOverlay } from '@chakra-ui/
 import { Spinner } from '@chakra-ui/spinner';
 import { toJS } from 'mobx';
 import { observer } from 'mobx-react-lite';
-import React, { useEffect, useState } from 'react';
+import React, { createContext, useEffect, useMemo, useState } from 'react';
 import { CONFIRMED, DONE, MATCHED, POSTED } from '../../../constants/post-state';
 import { useStores } from '../../../hooks/use-stores';
 
@@ -16,7 +16,6 @@ const JobsPage = observer(() => {
   const { userStore, jobStore } = useStores();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [selected, setSelected] = useState();
-  const [haveJob, setHaveJob] = useState(false);
 
   // Mobx Job Store
   const jobs = jobStore.jobs;
@@ -29,16 +28,12 @@ const JobsPage = observer(() => {
 
   // Render Modal if already have a current job
   useEffect(() => {
-    console.log(toJS(currentJob));
-    if (currentJob == null) {
-      setSelected({ state: DONE });
-      onOpen();
-      // onClose();
+    if (currentJob === null) {
+      setSelected(null);
     } else {
       setSelected(currentJob);
-      onOpen();
     }
-  }, [currentJob, onOpen]);
+  }, [currentJob]);
 
   useEffect(() => {
     const fetchJobsInterval = setInterval(async () => {
@@ -65,7 +60,7 @@ const JobsPage = observer(() => {
     if (curUser) jobStore.fetchAllJobs(curUser._id);
   }, [curUser, jobStore]);
 
-  const renderModal = ({ job }) => {
+  const renderModal = () => {
     return (
       <Modal
         isCentered
@@ -77,7 +72,7 @@ const JobsPage = observer(() => {
         <ModalContent overflow={'hidden'} borderRadius={`xl`}>
           <ModalCloseButton zIndex={`tooltip`} />
           {/* Job Modal */}
-          <JobItemModal job={job} />
+          <JobItemModal job={selected} />
         </ModalContent>
       </Modal>
     );
@@ -114,7 +109,7 @@ const JobsPage = observer(() => {
           )}
         </List>
       </Container>
-      {selected && renderModal({ job: selected })}
+      {selected && renderModal()}
     </Flex>
   );
 });

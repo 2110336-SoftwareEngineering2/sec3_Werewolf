@@ -1,5 +1,4 @@
 import { Box, Container, Flex, HStack, Stack, Text, VStack } from '@chakra-ui/layout';
-import React, { memo } from 'react';
 
 import Status from './Status';
 import UserStatus from './UserStatus';

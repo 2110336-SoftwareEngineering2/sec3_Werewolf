@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { login, fetchCurrentUser, registerMaid } from './auth';
-import { workspace } from './workspace';
+import { workspace, fetchWorkspaceById } from './workspace';
 import { user, fetchUserById } from './user';
 import { promotion } from './promotion';
 import { job } from './job';

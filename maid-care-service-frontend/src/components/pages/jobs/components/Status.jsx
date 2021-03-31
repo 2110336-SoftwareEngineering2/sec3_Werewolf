@@ -4,7 +4,9 @@ import React, { useEffect, useState } from 'react';
 import { FaCalendarCheck, FaCheckCircle, FaClock } from 'react-icons/fa';
 import { CONFIRMED, DONE, MATCHED, POSTED } from '../../../../constants/post-state';
 
-const JobStatus = ({ job: { state, expiryTime } }) => {
+const JobStatus = ({ job }) => {
+  const { state, expiryTime } = job;
+
   return state === MATCHED ? (
     <>
       <HStack wrap={true}>
@@ -18,18 +20,24 @@ const JobStatus = ({ job: { state, expiryTime } }) => {
     <InProgressStatus />
   ) : state === DONE ? (
     <DoneStatus />
-  ) : (
+  ) : state === POSTED ? (
     <CounterStatus expiryTime={expiryTime} />
+  ) : (
+    <Text fontSize={`lg`} fontWeight={`bold`}>
+      No status
+    </Text>
   );
 };
 
-const CounterStatus = (expiryTime) => {
+const CounterStatus = ({ expiryTime }) => {
   const [remainingTime, setRemainingTime] = useState(null);
 
   // Create Interval if Job Still NOT Matched
   useEffect(() => {
     const interval = setInterval(() => {
-      const exp = new Date(expiryTime);
+      // const exp = new Date(expiryTime);
+      const exp = new Date('2021-04-1');
+      console.log(exp);
       const cur = new Date();
       const diff = (exp.getTime() - cur.getTime()) / 1000;
       console.log('diff', diff);
@@ -59,12 +67,12 @@ const CounterStatus = (expiryTime) => {
 const InProgressStatus = () => {
   return (
     <>
-      {/* <HStack wrap={true}>
+      <HStack wrap={true}>
         <Icon as={FaCalendarCheck} w={6} h={6} />
         <Text fontSize={`lg`} fontWeight={`bold`}>
           Confirmed
         </Text>
-      </HStack> */}
+      </HStack>
       <VStack>
         <Text>{new Date().toDateString()}</Text>
         <Text>{new Date().toTimeString()}</Text>
