@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import * as dotenv from 'dotenv';
 import * as mongoose from 'mongoose';
 import { DatabaseModule } from '../database/database.module';
 import { JobModule } from '../job/job.module';
@@ -14,6 +15,8 @@ import { MaidsModule } from './maids.module';
 import { MaidsProviders } from './maids.providers';
 import { MaidsService } from './maids.service';
 
+dotenv.config();
+
 describe('MaidsController', () => {
   let maidController: MaidsController;
   let maidsService: MaidsService;
@@ -26,20 +29,7 @@ describe('MaidsController', () => {
       imports: [DatabaseModule],
       controllers: [MaidsController],
       providers: [MaidsService, ...MaidsProviders],
-    })
-      .overrideProvider('DATABASE_CONNECTION')
-      .useFactory({
-        factory: async (): Promise<typeof mongoose> =>
-          await mongoose.connect(
-            'mongodb://localhost/maid_care_service_database',
-            {
-              useNewUrlParser: true,
-              useUnifiedTopology: true,
-              useFindAndModify: false,
-            },
-          ),
-      })
-      .compile();
+    }).compile();
 
     const usersModule: TestingModule = await Test.createTestingModule({
       imports: [
@@ -52,20 +42,7 @@ describe('MaidsController', () => {
       ],
       controllers: [UsersController],
       providers: [UsersService, ...UsersProviders],
-    })
-      .overrideProvider('DATABASE_CONNECTION')
-      .useFactory({
-        factory: async (): Promise<typeof mongoose> =>
-          await mongoose.connect(
-            'mongodb://localhost/maid_care_service_database',
-            {
-              useNewUrlParser: true,
-              useUnifiedTopology: true,
-              useFindAndModify: false,
-            },
-          ),
-      })
-      .compile();
+    }).compile();
 
     maidController = maidModule.get<MaidsController>(MaidsController);
     maidsService = maidModule.get<MaidsService>(MaidsService);

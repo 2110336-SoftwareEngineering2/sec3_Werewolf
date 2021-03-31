@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
-import { DatabaseModule } from 'src/database/database.module';
-import { JobModule } from 'src/job/job.module';
-import { UsersModule } from 'src/users/users.module';
+import { DatabaseModule } from '../database/database.module';
+import { JobModule } from '../job/job.module';
+import { UsersModule } from '../users/users.module';
 import { RefundController } from './refund.controller';
 import { RefundProviders } from './refund.providers';
 import { RefundService } from './refund.service';
