@@ -36,7 +36,7 @@ const Page1_TaskDescription = observer(() => {
   return (
     <>
       <FormControl mb="20px" id="house-no" width={{ sm: '270px', md: '368px' }}>
-        <FormLabel mb="0">Location</FormLabel>
+        <FormLabel mb="0" fontWeight="bold" fontSize="lg">Location</FormLabel>
         <Field as={Select} id="selectButton" name="workplaceId" mb="5px">
           <option value="">Select your workplace location</option>
           {myWorkspaces.map(myWorkspace => {
@@ -47,7 +47,7 @@ const Page1_TaskDescription = observer(() => {
             );
           })}
         </Field>
-        <Link as={RouterLink} to="/workspace" mt="10px">
+        <Link color="green.400" as={RouterLink} to="/workspace" mt="20px">
           Add new workspace
         </Link>
       </FormControl>

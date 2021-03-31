@@ -111,9 +111,10 @@ const PostjobForm = observer(props => {
         workplaceId: '',
       }}
       validationSchema={yup}
-      onSubmit={handleSubmit}>
-      <Form>
-        <VStack spacing="4" width={{ sm: '72', md: '96' }}>
+      onSubmit={handleSubmit}
+      >
+      <Form style={{ width:"100%" }}>
+        <VStack spacing="4">
           {switchPage()}
         </VStack>
         <ButtonField steps={props.steps} handleDecrement={handleDecrement} handleIncrement={handleIncrement}/>
