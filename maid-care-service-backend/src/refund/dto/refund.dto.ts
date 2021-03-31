@@ -7,6 +7,7 @@ export class RefundDto {
     this._id = object._id;
     this.description = object.description;
     this.createDate = object.createDate;
+    this.photo = object.photo;
   }
 
   @ApiProperty({ type: String })
@@ -14,6 +15,9 @@ export class RefundDto {
 
   @ApiProperty({ type: String })
   readonly description: string;
+
+  @ApiProperty({ type: [String] })
+  readonly photo: string[];
 
   @ApiProperty({ type: Date })
   readonly createDate: Date;

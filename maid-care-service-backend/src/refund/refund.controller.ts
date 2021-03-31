@@ -8,6 +8,7 @@ import {
   Request,
   UseGuards,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -57,6 +58,9 @@ export class RefundController {
     description: 'Get all refunds',
     type: [RefundDto],
   })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  @ApiBearerAuth('acess-token')
   async findAll() {
     const refunds = await this.refundService.findAll();
     const refundDtos = new Array(refunds.length);
@@ -72,9 +76,16 @@ export class RefundController {
     type: RefundDto,
   })
   @ApiResponse({ status: 404, description: 'refund not found' })
-  async findRefund(@Param('id') id: string) {
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('customer', 'admin')
+  @ApiBearerAuth('acess-token')
+  async findRefund(@Request() req, @Param('id') id: string) {
     const refund = await this.refundService.findRefund(id);
-    if (!refund) throw new NotFoundException('refund not found');
+    if (
+      !refund ||
+      (req.user.role === 'customer' && req.user._id != refund.customerId)
+    )
+      throw new NotFoundException('refund not found');
     return await this.refundService.makeRefundDto(refund);
   }
 
@@ -83,13 +94,24 @@ export class RefundController {
     description: 'Get all refunds of a customer',
     type: [RefundDto],
   })
-  async findByCustomer(@Param('uid') uid: string) {
-    const refunds = await this.refundService.findByCustomer(uid);
-    const refundDtos = new Array(refunds.length);
-    for (let i = 0; i < refunds.length; i++) {
-      refundDtos[i] = await this.refundService.makeRefundDto(refunds[i]);
+  @ApiResponse({
+    status: 401,
+    description: 'can only get your refund unless user is admin',
+  })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('customer', 'admin')
+  @ApiBearerAuth('acess-token')
+  async findByCustomer(@Request() req, @Param('uid') uid: string) {
+    if (req.user.role === 'admin' || req.user._id == uid) {
+      const refunds = await this.refundService.findByCustomer(uid);
+      const refundDtos = new Array(refunds.length);
+      for (let i = 0; i < refunds.length; i++) {
+        refundDtos[i] = await this.refundService.makeRefundDto(refunds[i]);
+      }
+      return refundDtos;
+    } else {
+      throw new UnauthorizedException('can not get refund of other user');
     }
-    return refundDtos;
   }
 
   @Delete(':id')
