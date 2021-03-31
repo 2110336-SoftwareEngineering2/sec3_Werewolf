@@ -4,7 +4,7 @@ import { Box, Flex, VStack, HStack, chakra } from '@chakra-ui/react';
 import PostjobForm from './form';
 
 export const Postjob = () => {
-  const [steps, setSteps] = useState(5);
+  const [steps, setSteps] = useState(1);
 
   return (
     <Flex bg="brandGreen" align="center" justify="center" minH="100vh">
