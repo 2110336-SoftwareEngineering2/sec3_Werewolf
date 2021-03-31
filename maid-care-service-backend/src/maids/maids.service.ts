@@ -3,6 +3,7 @@ import {
   Inject,
   BadRequestException,
   NotFoundException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { Job } from '../job/interfaces/job.interface';

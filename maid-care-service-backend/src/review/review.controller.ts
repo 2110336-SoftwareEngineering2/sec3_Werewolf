@@ -1,4 +1,4 @@
-import { Body, Controller, Put, Request, UnauthorizedException, UseGuards } from '@nestjs/common';
+import { Body, Controller, Put, Get, Request, UnauthorizedException, UseGuards } from '@nestjs/common';
 import {
     ApiBearerAuth,
     ApiTags,
@@ -9,13 +9,14 @@ import { UpdateMaidDto } from 'src/maids/dto/update-maid.dto';
 import { JwtAuthGuard } from '../auth/passport/jwt-auth.guard';
 import { CreateReviewDto } from './dto/review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
-import { ReviewService } from './review.service';
+import { ReviewService, ReviewTest } from './review.service';
 
 @Controller('review')
 @ApiTags('review')
 export class ReviewController {
     constructor(
         private readonly reviewService: ReviewService,
+        private readonly reviewTest: ReviewTest,
     ){}
 
     @Put()
@@ -38,4 +39,15 @@ export class ReviewController {
     }
 
 
+    @Get('/test')
+    @ApiCreatedResponse({description: 'This controller update STATES, rating, review of job and Update Maid rating', type: CreateReviewDto})
+    @ApiResponse({ status: 400, description: 'wrong Job Id, maid Id' })
+    @ApiResponse({
+    status: 401,
+    description: 'user not match job owner',
+  })
+    async testupdateJobReviewd(){
+        const job = await this.reviewTest.testReview();
+        return job;
+    }
 }
