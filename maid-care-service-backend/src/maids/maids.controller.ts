@@ -45,7 +45,7 @@ export class MaidsController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('maid')
   @ApiBearerAuth('acess-token')
-  async updateWork(@Request() req, @Body() updateMaidDto: UpdateMaidDto) {
+  async updateMaid(@Request() req, @Body() updateMaidDto: UpdateMaidDto) {
     try {
       await this.maidsService.updateWork(req.user._id, updateMaidDto.work);
       const maid = await this.maidsService.updateNote(

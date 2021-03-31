@@ -17,7 +17,6 @@ import { WorkspaceDto } from './dto/workspace.dto';
 describe('WorkspacesController', () => {
   let workspacesController: WorkspacesController;
   let workspacesService: WorkspacesService;
-
   let usersController: UsersController;
   let customerReq;
 
@@ -88,9 +87,7 @@ describe('WorkspacesController', () => {
       work: null,
     };
     const createdCustomer = await usersController.createUser(createUserDto);
-    customerReq = {
-      user: { _id: createdCustomer._id, role: 'customer' },
-    };
+    customerReq = { user: createdCustomer };
   });
 
   describe('findAll', () => {
@@ -138,6 +135,21 @@ describe('WorkspacesController', () => {
     });
 
     it('delete workspace', async () => {
+      const otherReq = {
+        user: { _id: '602a73161507755ee8e094e1', role: 'customer' },
+      };
+
+      // other customer try to delete your workspace
+      try {
+        await workspacesController.removeWorkspaceByWorkspaceId(
+          otherReq,
+          workspaceDto._id,
+        );
+        expect(true).toBeFalsy();
+      } catch (error) {
+        expect(error.status).toBe(404);
+      }
+
       // delete workspace
       expect(
         await workspacesController.removeWorkspaceByWorkspaceId(

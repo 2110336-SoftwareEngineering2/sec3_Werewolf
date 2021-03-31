@@ -33,16 +33,25 @@ export class MaidsService {
     return maidRegistered;
   }
 
-  async updateWork(id: string, work: [string]): Promise<Maid> {
+  async updateWork(id: string, works: string[]): Promise<Maid> {
     const maidFromDb = await this.findMaid(id);
     if (!maidFromDb) throw new NotFoundException('invalid maid');
     // update works
-    if (work) {
-      work.forEach((work) => {
+    if (works) {
+      // validate work
+      works.forEach((work) => {
         if (!this.isValidTypeOfWork(work))
           throw new BadRequestException(work + ' is not valid type of work');
+        //maidFromDb.work.push(work);
       });
-      maidFromDb.work = work;
+      // clear old work
+      while (maidFromDb.work.length > 0) {
+        maidFromDb.work.pop();
+      }
+      // push new work
+      works.forEach((work) => {
+        maidFromDb.work.push(work);
+      });
       await maidFromDb.save();
     }
     return maidFromDb;

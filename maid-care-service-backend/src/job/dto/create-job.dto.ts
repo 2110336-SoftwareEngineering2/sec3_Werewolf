@@ -9,7 +9,7 @@ export class CreateJobDto {
 
   @ApiProperty({ type: () => [CreateWork] })
   @IsArray()
-  readonly work: [CreateWork];
+  readonly work: CreateWork[];
 
   @ApiProperty({ type: String })
   readonly promotionCode: string;

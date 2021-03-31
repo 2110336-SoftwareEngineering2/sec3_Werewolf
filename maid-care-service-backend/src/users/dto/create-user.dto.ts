@@ -41,5 +41,5 @@ export class CreateUserDto {
       enum: Object.values(WorkType),
     },
   })
-  readonly work: [string];
+  readonly work: string[];
 }

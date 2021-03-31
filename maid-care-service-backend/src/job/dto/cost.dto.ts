@@ -8,7 +8,7 @@ export class CostDto {
   }
 
   @ApiProperty({ type: () => [WorkCost] })
-  work: [WorkCost];
+  work: WorkCost[];
 
   @ApiProperty({ type: Number })
   cost: number;

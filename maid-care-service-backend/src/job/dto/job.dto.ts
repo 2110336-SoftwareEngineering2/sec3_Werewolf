@@ -26,7 +26,7 @@ export class JobDto {
   readonly workplaceId: string;
 
   @ApiProperty({ type: () => [Work] })
-  readonly work: [Work];
+  readonly work: Work[];
 
   @ApiProperty({ type: Number })
   cost: number;
