@@ -18,7 +18,8 @@ describe('MaidsController', () => {
   let maidController: MaidsController;
   let maidsService: MaidsService;
   let usersController: UsersController;
-  let maidReq, maidDto;
+  let maidReq: any;
+  let maidDto: any;
 
   beforeAll(async () => {
     const maidModule: TestingModule = await Test.createTestingModule({
@@ -73,7 +74,7 @@ describe('MaidsController', () => {
     // create a testing user
     const work = ['House Cleaning', 'Dish Washing', 'Laundry'];
     const createUserDto = {
-      email: 'testmaid@example.com',
+      email: 'aqua@example.com',
       password: 'password',
       firstname: 'Aqua',
       lastname: 'Minato',
@@ -102,7 +103,6 @@ describe('MaidsController', () => {
       const updateMaidDto = { note: messege, work: null };
       maidDto.note = messege;
       const maid = await maidController.updateMaid(maidReq, updateMaidDto);
-      // convert CoreMongooseArray to Array
       maid.work = Array.from(maid.work);
       expect(maid).toStrictEqual(maidDto);
     });
@@ -112,7 +112,6 @@ describe('MaidsController', () => {
       const updateMaidDto = { note: null, work: work };
       maidDto.work = work;
       const maid = await maidController.updateMaid(maidReq, updateMaidDto);
-      // convert CoreMongooseArray to Array
       maid.work = Array.from(maid.work);
       expect(maid).toStrictEqual(maidDto);
     });
@@ -132,21 +131,18 @@ describe('MaidsController', () => {
       // set to true
       maidDto.availability = true;
       let maid = await maidController.setAvailability(maidReq, true);
-      // convert CoreMongooseArray to Array
       maid.work = Array.from(maid.work);
       expect(maid).toStrictEqual(maidDto);
 
       // set to false
       maidDto.availability = false;
       maid = await maidController.setAvailability(maidReq, false);
-      // convert CoreMongooseArray to Array
       maid.work = Array.from(maid.work);
       expect(maid).toStrictEqual(maidDto);
     });
 
     it('get the maid', async () => {
       const maid = await maidController.getMaid(maidReq.user._id);
-      // convert CoreMongooseArray to Array
       maid.work = Array.from(maid.work);
       expect(maid).toStrictEqual(maidDto);
     });

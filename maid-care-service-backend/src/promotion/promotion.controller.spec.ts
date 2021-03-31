@@ -48,12 +48,12 @@ describe('PromotionController', () => {
     const createPromotionDto = {
       code: testCode,
       description: 'test promotion code',
-      discountRate: 0.15,
+      discountRate: 15,
       availableDate: null,
       expiredDate: null,
     };
     const promotionDto = new PromotionDto(createPromotionDto);
-    promotionDto.creater = '602a4e322b8caf19b4c4e962';
+    promotionDto.creater = adminReq.user._id;
 
     it('create new promotion', async () => {
       // create new promotion
@@ -89,7 +89,7 @@ describe('PromotionController', () => {
         expect(error.status).toBe(404);
       }
 
-      // delete non exist promotion
+      // delete nonexistent promotion
       try {
         await promotionController.removePromotion(testCode);
         expect(true).toBeFalsy();
@@ -104,12 +104,12 @@ describe('PromotionController', () => {
     const createPromotionDto = {
       code: expiredCode,
       description: 'expired promotion code',
-      discountRate: 0.5,
+      discountRate: 50,
       availableDate: null,
       expiredDate: new Date(new Date().getTime() - 1),
     };
     const promotionDto = new PromotionDto(createPromotionDto);
-    promotionDto.creater = '602a4e322b8caf19b4c4e962';
+    promotionDto.creater = adminReq.user._id;
 
     it('create expired promotion', async () => {
       expect(
@@ -138,12 +138,12 @@ describe('PromotionController', () => {
     const createPromotionDto = {
       code: unavailableCode,
       description: 'unavailable promotion code',
-      discountRate: 0.25,
+      discountRate: 25,
       availableDate: new Date(new Date().getTime() + 6000000),
       expiredDate: null,
     };
     const promotionDto = new PromotionDto(createPromotionDto);
-    promotionDto.creater = '602a4e322b8caf19b4c4e962';
+    promotionDto.creater = adminReq.user._id;
 
     it('create unavailable promotion', async () => {
       expect(

@@ -18,7 +18,7 @@ describe('WorkspacesController', () => {
   let workspacesController: WorkspacesController;
   let workspacesService: WorkspacesService;
   let usersController: UsersController;
-  let customerReq;
+  let customerReq: any;
 
   beforeAll(async () => {
     const workspacesModule: TestingModule = await Test.createTestingModule({
@@ -76,7 +76,7 @@ describe('WorkspacesController', () => {
 
     // create a testing user
     const createUserDto = {
-      email: 'testcustomer@example.com',
+      email: 'amelia@example.com',
       password: 'password',
       firstname: 'Amelia',
       lastname: 'Watson',
@@ -102,7 +102,7 @@ describe('WorkspacesController', () => {
   });
 
   describe('newWorkspace', () => {
-    let workspaceDto;
+    let workspaceDto: WorkspaceDto;
 
     it('create new workspace', async () => {
       const createWorkspaceDto = {
@@ -122,7 +122,7 @@ describe('WorkspacesController', () => {
 
       // find workspace
       expect(
-        await workspacesController.findWorkspacebyWorkspaceId(newWorkspace._id),
+        await workspacesController.findWorkspacebyWorkspaceId(workspaceDto._id),
       ).toStrictEqual(workspaceDto);
 
       // create duplicate workspace
@@ -135,11 +135,10 @@ describe('WorkspacesController', () => {
     });
 
     it('delete workspace', async () => {
+      // other customer try to delete your workspace
       const otherReq = {
         user: { _id: '602a73161507755ee8e094e1', role: 'customer' },
       };
-
-      // other customer try to delete your workspace
       try {
         await workspacesController.removeWorkspaceByWorkspaceId(
           otherReq,
@@ -166,13 +165,13 @@ describe('WorkspacesController', () => {
         expect(error.status).toBe(404);
       }
 
-      // delete non exist workspace
+      // delete nonexistent workspace
       try {
         await workspacesController.removeWorkspaceByWorkspaceId(
           customerReq,
           workspaceDto._id,
         );
-        // expect(true).toBeFalsy();
+        expect(true).toBeFalsy();
       } catch (error) {
         expect(error.status).toBe(404);
       }

@@ -46,7 +46,7 @@ export class JobController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('customer')
   @ApiBearerAuth('acess-token')
-  async postJob(@Request() req, @Body() createJobDto: CreateJobDto) {
+  async createJob(@Request() req, @Body() createJobDto: CreateJobDto) {
     const job = await this.jobService.createJob(req.user._id, createJobDto);
     return new JobDto(job);
   }
@@ -175,7 +175,7 @@ export class JobController {
     if (!job) throw new NotFoundException('job not found');
     if (job && req.user._id == job.maidId) {
       try {
-        job.photos.push(photoDto.url);
+        if (!job.photos.includes(photoDto.url)) job.photos.push(photoDto.url);
         await job.save();
         return new JobDto(job);
       } catch (error) {
