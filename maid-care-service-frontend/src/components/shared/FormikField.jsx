@@ -1,5 +1,5 @@
 import React from 'react';
-import { useField } from 'formik';
+import { useField,Field } from 'formik';
 import {
   FormControl,
   FormErrorMessage,
@@ -12,6 +12,8 @@ import {
   Stack,
   Text,
   Textarea,
+  Checkbox,
+  Flex
 } from '@chakra-ui/react';
 
 const TextInputField = ({ label, left, right, helperText, ...props }) => {
@@ -78,4 +80,14 @@ const DatetimeField = ({ label, direction = ['column', 'row'], helperText, ...pr
   );
 };
 
-export { TextInputField, TextareaFeild, DateField, DatetimeField };
+const CheckField = ({label,...props}) => {
+  const [field,meta] = useField(props)
+  return(
+    <FormControl>
+    <Checkbox id={field.name} {...field} {...props} type="checkbox">{label}</Checkbox>
+    </FormControl>
+    
+  )
+}
+
+export { TextInputField, TextareaFeild, DateField, DatetimeField,CheckField  };
