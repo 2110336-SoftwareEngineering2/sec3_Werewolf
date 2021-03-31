@@ -1,8 +1,8 @@
 import Icon from '@chakra-ui/icon';
-import { HStack, Text } from '@chakra-ui/layout';
+import { HStack, Text, VStack } from '@chakra-ui/layout';
 import React, { useEffect, useState } from 'react';
 import { FaCalendarCheck, FaCheckCircle, FaClock } from 'react-icons/fa';
-import { CONFIRMED, MATCHED, POSTED } from '../../../../constants/post-state';
+import { CONFIRMED, DONE, MATCHED, POSTED } from '../../../../constants/post-state';
 
 const JobStatus = ({ job: { state, expiryTime } }) => {
   return state === MATCHED ? (
@@ -16,6 +16,8 @@ const JobStatus = ({ job: { state, expiryTime } }) => {
     </>
   ) : state === CONFIRMED ? (
     <InProgressStatus />
+  ) : state === DONE ? (
+    <DoneStatus />
   ) : (
     <CounterStatus expiryTime={expiryTime} />
   );
@@ -57,16 +59,33 @@ const CounterStatus = (expiryTime) => {
 const InProgressStatus = () => {
   return (
     <>
-      <HStack wrap={true}>
+      {/* <HStack wrap={true}>
         <Icon as={FaCalendarCheck} w={6} h={6} />
         <Text fontSize={`lg`} fontWeight={`bold`}>
           Confirmed
         </Text>
-      </HStack>
-      <HStack>
+      </HStack> */}
+      <VStack>
         <Text>{new Date().toDateString()}</Text>
         <Text>{new Date().toTimeString()}</Text>
+      </VStack>
+    </>
+  );
+};
+
+const DoneStatus = () => {
+  return (
+    <>
+      <HStack wrap={true} alignItems={`center`}>
+        <Icon as={FaCalendarCheck} w={6} h={6} color={`green.400`} p={0} />
+        <Text fontSize={`lg`} fontWeight={`bold`}>
+          Done
+        </Text>
       </HStack>
+      <VStack>
+        <Text>{new Date().toDateString()}</Text>
+        <Text>{new Date().toTimeString()}</Text>
+      </VStack>
     </>
   );
 };

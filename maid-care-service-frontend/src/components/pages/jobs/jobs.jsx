@@ -6,7 +6,7 @@ import { Spinner } from '@chakra-ui/spinner';
 import { toJS } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import React, { useEffect, useState } from 'react';
-import { CONFIRMED, MATCHED, POSTED } from '../../../constants/post-state';
+import { CONFIRMED, DONE, MATCHED, POSTED } from '../../../constants/post-state';
 import { useStores } from '../../../hooks/use-stores';
 
 import JobItemList from './components/JobItemList';
@@ -31,7 +31,7 @@ const JobsPage = observer(() => {
   useEffect(() => {
     console.log(toJS(currentJob));
     if (currentJob == null) {
-      setSelected({ state: CONFIRMED });
+      setSelected({ state: DONE });
       onOpen();
       // onClose();
     } else {
