@@ -13,6 +13,7 @@ import Promotion from './components/pages/promotion/promotion.jsx';
 import Navbar from './components/layouts/Navbar.jsx';
 import JobsPage from './components/pages/jobs/jobs.jsx';
 import { Postjob } from './components/pages/postjob/postjob.jsx';
+import Post from './components/pages/post/post.jsx';
 import Verification from './components/pages/signup/verfification.jsx';
 
 export const App = () => {
@@ -30,6 +31,7 @@ export const App = () => {
         <Route exact path="/workspace" component={Workspace} />
         <ProtectedRoute exact path="/home" component={Home} />
         <Route exact path="/register" component={SignUp} />
+        <Route exact path="/post" component={Post} />
         <Route exact path="/auth/verify/:token" component={Verification} />
         <ProtectedRoute path="/promotion" component={Promotion} />
         <ProtectedRoute exact path="/profile/edit" component={EditProfile} />
