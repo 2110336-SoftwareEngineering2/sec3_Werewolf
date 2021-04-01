@@ -21,4 +21,7 @@ export class ProfileDto {
 
   @ApiProperty({ type: String })
   readonly bankAccountNumber: string;
+
+  @ApiProperty({ type: String })
+  readonly profilePicture: string;
 }
