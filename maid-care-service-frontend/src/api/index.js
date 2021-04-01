@@ -18,4 +18,3 @@ export { workspace, fetchWorkspaceById };
 export { promotion };
 export { job };
 export { maid };
-export { maid };

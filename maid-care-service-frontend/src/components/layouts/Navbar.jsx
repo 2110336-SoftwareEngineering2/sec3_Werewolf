@@ -28,6 +28,7 @@ import { Avatar } from '@chakra-ui/avatar';
 import { observer } from 'mobx-react-lite';
 import { useStores } from '../../hooks/use-stores';
 import { Menu, MenuButton, MenuDivider, MenuGroup, MenuItem, MenuList } from '@chakra-ui/menu';
+import { useHistory } from 'react-router-dom';
 
 const Navbar = observer(() => {
   const { isOpen, onOpen, onClose } = useDisclosure();
