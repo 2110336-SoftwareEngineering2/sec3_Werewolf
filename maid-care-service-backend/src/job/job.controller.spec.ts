@@ -12,6 +12,7 @@ import { PromotionModule } from '../promotion/promotion.module';
 import { PromotionController } from '../promotion/promotion.controller';
 import { PromotionService } from '../promotion/promotion.service';
 import { PromotionProviders } from '../promotion/promotion.providers';
+import { UsersModule } from '../users/users.module';
 import { UsersController } from '../users/users.controller';
 import { UsersProviders } from '../users/users.providers';
 import { UsersService } from '../users/users.service';
@@ -28,6 +29,8 @@ import { JobDto } from './dto/job.dto';
 import { WorkCost } from './workCost';
 import { WorkType } from '../maids/workType';
 import { JobState } from './jobState';
+import { ReviewController } from '../review/review.controller';
+import { ReviewService, ReviewTest } from '../review/review.service';
 
 dotenv.config();
 
@@ -37,6 +40,7 @@ describe('JobController', () => {
   let maidsController: MaidsController;
   let workspacesController: WorkspacesController;
   let promotionController: PromotionController;
+  let reviewController: ReviewController;
   let customerReq: any;
   let maidReq: any;
   let workspaceId: string;
@@ -112,6 +116,12 @@ describe('JobController', () => {
       providers: [PromotionService, ...PromotionProviders],
     }).compile();
 
+    const reviewModule: TestingModule = await Test.createTestingModule({
+      imports: [JobModule, MaidsModule, UsersModule, WorkspacesModule],
+      controllers: [ReviewController],
+      providers: [ReviewService, ReviewTest],
+    }).compile();
+
     jobController = jobModule.get<JobController>(JobController);
     usersController = usersModule.get<UsersController>(UsersController);
     maidsController = maidModule.get<MaidsController>(MaidsController);
@@ -121,6 +131,7 @@ describe('JobController', () => {
     promotionController = promotionModule.get<PromotionController>(
       PromotionController,
     );
+    reviewController = reviewModule.get<ReviewController>(ReviewController);
 
     // create a testing user
     const createUserDto = {
@@ -408,8 +419,10 @@ describe('JobController', () => {
       expect(job.acceptedTime).not.toBeNull();
 
       // maid availability must be false
-      const nearestMaid = maidsController.getMaid(nearestMaidReq.user._id);
-      expect((await nearestMaid).availability).toBeFalsy();
+      const nearestMaid = await maidsController.getMaid(
+        nearestMaidReq.user._id,
+      );
+      expect(nearestMaid.availability).toBeFalsy();
 
       // customer confirm
       job = await jobController.confirm(customerReq, jobId);
@@ -423,8 +436,10 @@ describe('JobController', () => {
       expect(job.finishTime).not.toBeNull();
 
       // maid availability must be true
-      const nearestMaid = maidsController.getMaid(nearestMaidReq.user._id);
-      expect((await nearestMaid).availability).toBeTruthy();
+      const nearestMaid = await maidsController.getMaid(
+        nearestMaidReq.user._id,
+      );
+      expect(nearestMaid.availability).toBeTruthy();
     });
 
     it('maid post photos', async () => {
@@ -435,7 +450,7 @@ describe('JobController', () => {
 
       // other customer try to apply promotion
       const otherReq = {
-        user: { _id: '602a73161507755ee8e094e1', role: 'maid' },
+        user: { _id: '602a73161507755ee8e094e1', role: 'customer' },
       };
       try {
         await jobController.addPhoto(otherReq, firstPhotoDto);
@@ -463,6 +478,57 @@ describe('JobController', () => {
       job = await jobController.deletePhoto(nearestMaidReq, firstPhotoDto);
       job.photos = Array.from(job.photos);
       expect(job.photos).toStrictEqual([secondPhotoUrl]);
+    });
+
+    it('customer write review', async () => {
+      const rating = 3.5;
+      const messege = 'すばらしい';
+      const reviewDto = {
+        rating: rating,
+        reviewDescription: messege,
+        jobId: jobId,
+        maidId: nearestMaidReq.user._id,
+      };
+
+      // save maid's old rating
+      let nearestMaid = await maidsController.getMaid(nearestMaidReq.user._id);
+      const oldRating = nearestMaid.avgRating;
+      const totalReviews = nearestMaid.totalReviews;
+
+      // other customer try to write review
+      const otherReq = {
+        user: { _id: '602a73161507755ee8e094e1', role: 'customer' },
+      };
+      try {
+        await reviewController.updateJobReview(otherReq, reviewDto);
+        expect(true).toBeFalsy();
+      } catch (error) {
+        expect(error.status).toBe(404);
+      }
+
+      // write review
+      const reviewedJob = await reviewController.updateJobReview(
+        customerReq,
+        reviewDto,
+      );
+      expect(reviewedJob.state).toBe(JobState.reviewed);
+      expect(reviewedJob.rating).toBe(rating);
+      expect(reviewedJob.review).toBe(messege);
+
+      // maid rating should be updated
+      nearestMaid = await maidsController.getMaid(nearestMaidReq.user._id);
+      expect(nearestMaid.avgRating).toBe(
+        (totalReviews * oldRating + rating) / (totalReviews + 1),
+      );
+      expect(nearestMaid.totalReviews).toBe(totalReviews + 1);
+
+      // try to write review again
+      try {
+        await reviewController.updateJobReview(customerReq, reviewDto);
+        expect(true).toBeFalsy();
+      } catch (error) {
+        expect(error.status).toBe(404);
+      }
     });
   });
 

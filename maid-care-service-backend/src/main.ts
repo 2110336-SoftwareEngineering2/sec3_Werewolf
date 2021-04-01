@@ -24,6 +24,7 @@ async function bootstrap() {
     .addTag('notification')
     .addTag('workspace')
     .addTag('refund')
+    .addTag('review')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
