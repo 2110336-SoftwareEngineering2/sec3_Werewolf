@@ -1,11 +1,11 @@
 import Icon from '@chakra-ui/icon';
-import { HStack, Text, VStack } from '@chakra-ui/layout';
+import { HStack, Spacer, Text, VStack } from '@chakra-ui/layout';
 import React, { useEffect, useState } from 'react';
 import { FaCalendarCheck, FaCheckCircle, FaClock } from 'react-icons/fa';
 import { CONFIRMED, DONE, MATCHED, POSTED } from '../../../../constants/post-state';
 
 const JobStatus = ({ job }) => {
-  const { state, expiryTime } = job;
+  const { state, expiryTime, finishTime } = job;
 
   return state === MATCHED ? (
     <>
@@ -19,7 +19,7 @@ const JobStatus = ({ job }) => {
   ) : state === CONFIRMED ? (
     <InProgressStatus />
   ) : state === DONE ? (
-    <DoneStatus />
+    <DoneStatus finishTime={finishTime} />
   ) : state === POSTED ? (
     <CounterStatus expiryTime={expiryTime} />
   ) : (
@@ -36,7 +36,7 @@ const CounterStatus = ({ expiryTime }) => {
   useEffect(() => {
     const interval = setInterval(() => {
       // const exp = new Date(expiryTime);
-      const exp = new Date('2021-04-1');
+      const exp = new Date(expiryTime);
       console.log(exp);
       const cur = new Date();
       const diff = (exp.getTime() - cur.getTime()) / 1000;
@@ -64,9 +64,11 @@ const CounterStatus = ({ expiryTime }) => {
   );
 };
 
-const InProgressStatus = () => {
+const InProgressStatus = ({ acceptedTime }) => {
   return (
     <>
+      <Text fontSize={`lg`}>{new Date().toDateString()}</Text>
+      <Text>{new Date(acceptedTime).toTimeString().slice(0, 8)}</Text>
       <HStack wrap={true}>
         <Icon as={FaCalendarCheck} w={6} h={6} />
         <Text fontSize={`lg`} fontWeight={`bold`}>
@@ -74,25 +76,26 @@ const InProgressStatus = () => {
         </Text>
       </HStack>
       <VStack>
-        <Text>{new Date().toDateString()}</Text>
+        <Text fontSize={`xl`}>{new Date().toDateString()}</Text>
         <Text>{new Date().toTimeString()}</Text>
       </VStack>
     </>
   );
 };
 
-const DoneStatus = () => {
+const DoneStatus = ({ finishTime }) => {
   return (
     <>
-      <HStack wrap={true} alignItems={`center`}>
-        <Icon as={FaCalendarCheck} w={6} h={6} color={`green.400`} p={0} />
-        <Text fontSize={`lg`} fontWeight={`bold`}>
-          Done
-        </Text>
-      </HStack>
-      <VStack>
-        <Text>{new Date().toDateString()}</Text>
-        <Text>{new Date().toTimeString()}</Text>
+      <VStack flex={2} alignItems={'flex-end'} p={2}>
+        <Text fontSize={`lg`}>{new Date().toDateString()}</Text>
+        <Text>{new Date(finishTime).toTimeString().slice(0, 8)}</Text>
+
+        <HStack justifyContent={`flex-end`} alignItems={`center`} pt={8}>
+          <Icon as={FaCheckCircle} w={8} h={8} color={`green.400`} p={0} />
+          <Text fontSize={`2xl`} fontWeight={`bold`}>
+            Done
+          </Text>
+        </HStack>
       </VStack>
     </>
   );

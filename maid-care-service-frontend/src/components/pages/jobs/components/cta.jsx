@@ -1,25 +1,27 @@
 import { Button } from '@chakra-ui/button';
-import { useDisclosure } from '@chakra-ui/hooks';
 import { Text } from '@chakra-ui/layout';
 import { useModalContext } from '@chakra-ui/modal';
-import { Portal } from '@chakra-ui/portal';
 import { Spinner } from '@chakra-ui/spinner';
-import { toast } from '@chakra-ui/toast';
+import { useContext } from 'react';
 import { CONFIRMED, DONE, MATCHED, POSTED } from '../../../../constants/post-state';
 import { useStores } from '../../../../hooks/use-stores';
-import { AlertModal, ConfirmModal, SuccessModal } from './modals';
+import { ConfirmContext } from './context/confirmContext';
 
 const Actions = ({ job, state }) => {
-  return state === POSTED ? (
-    <PostedActions job={job} />
-  ) : state === MATCHED ? (
-    <MatchedActions />
-  ) : state === CONFIRMED ? (
-    <ConfirmActions job={job} />
-  ) : state === DONE ? (
-    <DoneActions />
-  ) : (
-    <Text>Error!</Text>
+  return (
+    <>
+      {state === POSTED ? (
+        <PostedActions job={job} />
+      ) : state === MATCHED ? (
+        <MatchedActions />
+      ) : state === CONFIRMED ? (
+        <ConfirmActions job={job} />
+      ) : state === DONE ? (
+        <DoneActions />
+      ) : (
+        <Text>Error!</Text>
+      )}
+    </>
   );
 };
 
@@ -70,28 +72,24 @@ const MatchedActions = () => {
 };
 
 const ConfirmActions = ({ job }) => {
-  const alertDisclosure = useDisclosure();
-  const confirmDisclosure = useDisclosure();
-  const successDisclosure = useDisclosure();
+  const { setIsConfirmModalOpen } = useContext(ConfirmContext);
 
   return (
     <>
-      <Button colorScheme={`red`} onClick={alertDisclosure.onOpen}>
+      <Button
+        colorScheme={`red`}
+        onClick={() => {
+          console.log('discard!');
+        }}>
         Discard
       </Button>
-      <Button colorScheme={`orange`} onClick={confirmDisclosure.onOpen}>
-        Make a job done
+      <Button
+        colorScheme={`orange`}
+        onClick={() => {
+          setIsConfirmModalOpen(true);
+        }}>
+        Finish
       </Button>
-
-      <AlertModal {...alertDisclosure} />
-
-      <Portal>
-        <ConfirmModal
-          job={job}
-          {...confirmDisclosure}
-          onSuccess={() => toast({ description: 'some text' })}
-        />
-      </Portal>
     </>
   );
 };

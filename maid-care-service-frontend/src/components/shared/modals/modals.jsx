@@ -13,48 +13,58 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  useModalContext,
 } from '@chakra-ui/modal';
-import { Icon, Input } from '@chakra-ui/react';
+import { Icon, Input, Portal, useToast } from '@chakra-ui/react';
 import { useEffect, useRef, useState } from 'react';
 import { FaCheckCircle, FaImages } from 'react-icons/fa';
-import { useStores } from '../../../../hooks/use-stores';
+import { useStores } from '../../../hooks/use-stores';
 
-export const AlertModal = ({ isOpen, onOpen, onClose }) => {
+export const MaidDiscardJobModal = ({ isOpen, onOpen, onClose }) => {
   const cancelRef = useRef();
+  const { onClose: jobModalonClose } = useModalContext();
+
+  const handleConfirm = () => {
+    jobModalonClose();
+    onClose();
+  };
 
   return (
-    <AlertDialog
-      isCentered
-      size={`xl`}
-      isOpen={isOpen}
-      leastDestructiveRef={cancelRef}
-      onClose={onClose}>
-      <AlertDialogOverlay />
-      <AlertDialogContent as={VStack} h={`60vh`} minH={300} maxH={500}>
-        <AlertDialogBody as={VStack} justifyContent={`center`} alignItems={`center`}>
-          <Heading textAlign={`center`} fontSize={`4xl`} lineHeight={1.25}>
-            Are you sure you want to cancel the work?
-          </Heading>
-          <Text mt={4} textAlign={`center`} as={`span`} color={`red`}>
-            You will be automatically rate with 1 star
-          </Text>
-        </AlertDialogBody>
-        <AlertDialogFooter>
-          <Button ref={cancelRef} variant={`outline`} colorScheme={`red`} onClick={onClose}>
-            Go back
-          </Button>
-          <Button colorScheme={`red`} onClick={onClose} ml={3}>
-            Confirm
-          </Button>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+    <Portal>
+      <AlertDialog
+        isCentered
+        size={`xl`}
+        isOpen={isOpen}
+        leastDestructiveRef={cancelRef}
+        onClose={onClose}>
+        <AlertDialogOverlay />
+        <AlertDialogContent as={VStack} h={`60vh`} minH={300} maxH={500}>
+          <AlertDialogBody as={VStack} justifyContent={`center`} alignItems={`center`}>
+            <Heading textAlign={`center`} fontSize={`4xl`} lineHeight={1.25}>
+              Are you sure you want to cancel the work?
+            </Heading>
+            <Text mt={4} textAlign={`center`} as={`span`} color={`red`}>
+              You will be automatically rate with 1 star
+            </Text>
+          </AlertDialogBody>
+          <AlertDialogFooter>
+            <Button ref={cancelRef} variant={`outline`} colorScheme={`red`} onClick={onClose}>
+              Go back
+            </Button>
+            <Button colorScheme={`red`} onClick={handleConfirm} ml={3}>
+              Confirm
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </Portal>
   );
 };
 
 export const ConfirmModal = ({ job, isOpen, onOpen, onClose, onSuccess = () => {} }) => {
   const [images] = useState([]);
   const { jobStore } = useStores();
+  const toast = useToast();
 
   const uploadBtnRef = useRef();
 
@@ -101,7 +111,8 @@ export const ConfirmModal = ({ job, isOpen, onOpen, onClose, onSuccess = () => {
   const handleSubmit = async () => {
     try {
       await jobStore.done({ jobId });
-      onSuccess();
+      toast({ title: 'Fuck you Bitch!', status: 'success' });
+      onClose();
     } catch (error) {
       console.error(error);
     }
