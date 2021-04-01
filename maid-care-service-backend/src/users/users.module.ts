@@ -7,7 +7,7 @@ import { NotificationModule } from '../notification/notification.module';
 import { WalletModule } from '../wallet/wallet.module';
 import { MaidsModule } from '../maids/maids.module';
 import { JobModule } from '../job/job.module';
-import { WorkspacesModule } from 'src/workspaces/workspaces.module';
+import { WorkspacesModule } from '../workspaces/workspaces.module';
 
 @Module({
   imports: [
