@@ -3,6 +3,7 @@ import {
   Inject,
   BadRequestException,
   NotFoundException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { Job } from '../job/interfaces/job.interface';
@@ -135,5 +136,13 @@ export class MaidsService {
 
   isValidTypeOfWork(workType: string) {
     return (<any>Object).values(WorkType).includes(workType);
+  }
+
+  async updateMaidRating(id: string, newRating: number): Promise<Maid>{
+    const maid = await this.findMaid(id);
+    if (!maid) throw new ForbiddenException('can\'t find maid');
+    maid.avgRating = ((maid.totalReviews * maid.avgRating) + newRating)/ (maid.totalReviews + 1);
+    maid.totalReviews += 1;
+    return await maid.save();
   }
 }
