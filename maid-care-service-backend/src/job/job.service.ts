@@ -17,6 +17,7 @@ import { CreateJobDto } from './dto/create-job.dto';
 import { WorkType } from '../maids/workType';
 import { WorkCost } from './workCost';
 import { JobState } from './jobState';
+import { ReviewService } from 'src/review/review.service';
 
 @Injectable()
 export class JobService {
@@ -27,6 +28,7 @@ export class JobService {
     private maidsService: MaidsService,
     private workspacesService: WorkspacesService,
     private promotionService: PromotionService,
+    private reviewService: ReviewService,
   ) {}
 
   async findJob(id: string): Promise<Job> {
@@ -275,5 +277,25 @@ export class JobService {
       }
     }
     return cost;
+  }
+
+  async maidCancleJob(maidId: string, jobId: string): Promise<Job>{
+    const maid = await this.maidsService.findMaid(maidId);
+    const job = await this.findJob(jobId);
+    if(!maid){
+      throw new NotFoundException('can\'t find maid');
+    }
+    if(!job){
+      throw new NotFoundException('can\'t find job');
+    }
+    const updateReviewDto = {
+      rating: 0,
+      jobId: jobId,
+      maidId: maidId,
+      reviewDescription: 'This job was canceled by maid',
+    }
+    const reviewedMaid = await this.reviewService.updateMaidRating(maidId, updateReviewDto.rating);
+    const reviewedJob = await this.reviewService.updateJobReview(updateReviewDto);
+    return reviewedJob;
   }
 }

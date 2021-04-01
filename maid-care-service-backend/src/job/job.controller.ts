@@ -344,4 +344,22 @@ export class JobController {
       return new JobDto(job);
     } else throw new NotFoundException('job not found');
   }
+
+  @Put(':id/maid-cancel-job')
+  @ApiCreatedResponse({description: 'maid cancel job', type: JobDto})
+  @ApiResponse({ status: 401, description: 'user is not maid' })
+  @ApiResponse({
+    status: 404,
+    description: 'job not found'
+  })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('maid')
+  @ApiBearerAuth('acess-token')
+  async jobMaidCancel(@Request() req, @Param('id') id: string ) {
+    const job = await this.jobService.maidCancleJob(req.users._id, id);
+    if(!job){
+      throw new NotFoundException('job not found');
+    }
+    return new JobDto(job);
+  }
 }
