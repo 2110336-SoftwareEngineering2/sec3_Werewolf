@@ -1,23 +1,16 @@
 import Icon from '@chakra-ui/icon';
 import { HStack, Spacer, Text, VStack } from '@chakra-ui/layout';
 import React, { useEffect, useState } from 'react';
-import { FaCalendarCheck, FaCheckCircle, FaClock } from 'react-icons/fa';
+import { FaBroom, FaCalendarCheck, FaCheckCircle, FaClock } from 'react-icons/fa';
 import { CONFIRMED, DONE, MATCHED, POSTED } from '../../../../constants/post-state';
 
 const JobStatus = ({ job }) => {
-  const { state, expiryTime, finishTime } = job;
+  const { state, expiryTime, finishTime, acceptedTime } = job;
 
   return state === MATCHED ? (
-    <>
-      <HStack wrap={true}>
-        <Icon as={FaCheckCircle} w={6} h={6} />
-        <Text fontSize={`lg`} fontWeight={`bold`}>
-          Matched
-        </Text>
-      </HStack>
-    </>
+    <MatchedStatus />
   ) : state === CONFIRMED ? (
-    <InProgressStatus />
+    <InProgressStatus acceptedTime={acceptedTime} />
   ) : state === DONE ? (
     <DoneStatus finishTime={finishTime} />
   ) : state === POSTED ? (
@@ -26,6 +19,21 @@ const JobStatus = ({ job }) => {
     <Text fontSize={`lg`} fontWeight={`bold`}>
       No status
     </Text>
+  );
+};
+
+const MatchedStatus = () => {
+  return (
+    <>
+      <VStack alignItems={`flex-end`}>
+        <HStack wrap={true}>
+          <Icon as={FaCheckCircle} w={8} h={8} />
+          <Text fontSize={`lg`} fontWeight={`bold`}>
+            Matched
+          </Text>
+        </HStack>
+      </VStack>
+    </>
   );
 };
 
@@ -54,12 +62,14 @@ const CounterStatus = ({ expiryTime }) => {
 
   return (
     <>
-      <HStack>
-        <Icon as={FaClock} w={6} h={6} />
-        <Text fontSize={`lg`} fontWeight={`bold`}>
-          {remainingTime}
-        </Text>
-      </HStack>
+      <VStack flex={3} alignItems={`flex-end`}>
+        <HStack>
+          <Icon as={FaClock} w={8} h={8} />
+          <Text fontSize={`lg`} fontWeight={`bold`}>
+            {remainingTime}
+          </Text>
+        </HStack>
+      </VStack>
     </>
   );
 };
@@ -67,17 +77,15 @@ const CounterStatus = ({ expiryTime }) => {
 const InProgressStatus = ({ acceptedTime }) => {
   return (
     <>
-      <Text fontSize={`lg`}>{new Date().toDateString()}</Text>
-      <Text>{new Date(acceptedTime).toTimeString().slice(0, 8)}</Text>
-      <HStack wrap={true}>
-        <Icon as={FaCalendarCheck} w={6} h={6} />
-        <Text fontSize={`lg`} fontWeight={`bold`}>
-          Confirmed
-        </Text>
-      </HStack>
-      <VStack>
-        <Text fontSize={`xl`}>{new Date().toDateString()}</Text>
-        <Text>{new Date().toTimeString()}</Text>
+      <VStack alignItems={`flex-end`}>
+        <Text fontSize={`lg`}>{new Date().toDateString()}</Text>
+        <Text>{new Date(acceptedTime).toTimeString().slice(0, 8)}</Text>
+        <HStack wrap={true} alignItems={`center`} pt={8}>
+          <Icon as={FaBroom} w={9} h={9} />
+          <Text fontSize={`lg`} fontWeight={`bold`}>
+            In Progress
+          </Text>
+        </HStack>
       </VStack>
     </>
   );

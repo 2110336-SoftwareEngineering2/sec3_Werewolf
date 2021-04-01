@@ -5,7 +5,7 @@ import { Spinner } from '@chakra-ui/spinner';
 import { useContext } from 'react';
 import { CONFIRMED, DONE, MATCHED, POSTED } from '../../../../constants/post-state';
 import { useStores } from '../../../../hooks/use-stores';
-import { ConfirmContext } from './context/confirmContext';
+import { ConfirmContext, DiscardJobContext } from './context/ctx';
 
 const Actions = ({ job, state }) => {
   return (
@@ -73,13 +73,14 @@ const MatchedActions = () => {
 
 const ConfirmActions = ({ job }) => {
   const { setIsConfirmModalOpen } = useContext(ConfirmContext);
+  const { setIsDiscardModalOpen } = useContext(DiscardJobContext);
 
   return (
     <>
       <Button
         colorScheme={`red`}
         onClick={() => {
-          console.log('discard!');
+          setIsDiscardModalOpen(true);
         }}>
         Discard
       </Button>
@@ -95,7 +96,15 @@ const ConfirmActions = ({ job }) => {
 };
 
 const DoneActions = () => {
-  return <></>;
+  const { onClose } = useModalContext();
+
+  return (
+    <>
+      <Button variant={`outline`} onClick={onClose}>
+        Close
+      </Button>
+    </>
+  );
 };
 
 export default Actions;

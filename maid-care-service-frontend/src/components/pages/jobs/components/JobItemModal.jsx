@@ -1,29 +1,86 @@
 import { ButtonGroup } from '@chakra-ui/button';
-import { useDisclosure } from '@chakra-ui/hooks';
+
 import Icon from '@chakra-ui/icon';
 import { Box, Grid, GridItem, Heading, HStack, List, ListItem, Text } from '@chakra-ui/layout';
 import { Modal, ModalCloseButton, ModalContent, ModalOverlay } from '@chakra-ui/modal';
 import { useToast } from '@chakra-ui/toast';
+
 import { useState } from 'react';
 import { FaTshirt } from 'react-icons/fa';
-import { ConfirmModal } from '../../../shared/modals/modals';
+import { useStores } from '../../../../hooks/use-stores';
+import { ConfirmModal, DiscardJobModal } from '../../../shared/modals/modals';
 import Address from './Address';
-import { ConfirmContext } from './context/confirmContext';
+import { ConfirmContext, DiscardJobContext } from './context/ctx';
 import Actions from './cta';
 import Status from './Status';
 import UserStatus from './UserStatus';
 
 const JobItemModal = ({ job, isOpen, onClose }) => {
   const { _id: jobId, work, workplaceId, customerId, state } = job;
+  const { jobStore } = useStores();
+  const toast = useToast();
 
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
-  const handleConfirm = () => {
-    setIsConfirmModalOpen(false);
-  };
+  const [isDiscardJobModalOpen, setIsDiscardModalOpen] = useState(false);
 
+  /** Maid confirm that job is done */
+  const handleConfirm = () => {
+    jobStore
+      .done({ jobId })
+      .then(() => {
+        setIsConfirmModalOpen(false); // Close Confirm Modal
+        toast({
+          title: 'Successfully Confirmed!',
+          status: 'success',
+          isClosable: true,
+          position: 'top',
+          duration: 3000,
+        });
+      })
+      .catch((error) => {
+        console.error(error);
+        toast({
+          title: 'Something went wrong!',
+          status: 'error',
+          isClosable: true,
+          position: 'top',
+          duration: 3000,
+        });
+      });
+  };
+  const handleDiscard = () => {
+    jobStore
+      .discard({ jobId })
+      .then(() => {
+        setIsDiscardModalOpen(false); // Close Confirm Modal
+        toast({
+          title: 'Successfully Discarded!',
+          status: 'success',
+          isClosable: true,
+          position: 'top',
+          duration: 3000,
+        });
+      })
+      .catch((error) => {
+        console.error(error);
+        toast({
+          title: 'Something went wrong!',
+          status: 'error',
+          isClosable: true,
+          position: 'top',
+          duration: 3000,
+        });
+      });
+  };
   return (
     <>
-      <Modal isCentered closeOnOverlayClick={false} isOpen={isOpen} onClose={onClose} size={`3xl`}>
+      <Modal
+        isCentered
+        closeOnOverlayClick={false}
+        isOpen={isOpen}
+        onClose={onClose}
+        size={`3xl`}
+        scrollBehavior={`inside`}>
         <ModalOverlay />
         <ModalContent overflow={'hidden'} borderRadius={`xl`}>
           <ModalCloseButton zIndex={`tooltip`} />
@@ -36,7 +93,7 @@ const JobItemModal = ({ job, isOpen, onClose }) => {
               bg={`green.300`}
               borderRadius={`xl`}
               zIndex={`toast`}></GridItem>
-            <GridItem as={HStack} rowStart={2} rowSpan={1} colSpan={2} px={2} py={2}>
+            <GridItem as={HStack} rowStart={2} rowSpan={1} colSpan={2} p={4}>
               <UserStatus uid={customerId} />
             </GridItem>
             <GridItem as={List} rowStart={3} rowSpan={3} colStart={0} colSpan={2} p={4}>
@@ -48,10 +105,10 @@ const JobItemModal = ({ job, isOpen, onClose }) => {
                   </ListItem>
                 ))}
             </GridItem>
-            <GridItem rowSpan={2} colSpan={4} p={4} alignItems={`baseline`}>
+            <GridItem rowSpan={2} colStart={3} colEnd={7} p={4} alignItems={`baseline`}>
               <Address workplaceId={workplaceId} />
             </GridItem>
-            <GridItem rowStart={4} rowSpan={2} colStart={0} colSpan={4} p={4}>
+            <GridItem rowStart={4} rowSpan={2} colStart={3} colEnd={7} p={4}>
               {/* TODO: add note to return value of api */}
               <Heading as={`h6`} fontSize={`lg`} fontWeight={`bold`}>
                 Note
@@ -61,7 +118,7 @@ const JobItemModal = ({ job, isOpen, onClose }) => {
                 ipsum dolor.
               </Text>
             </GridItem>
-            <GridItem rowSpan={4} colSpan={2} p={4}>
+            <GridItem rowSpan={4} colStart={7} colEnd={-1} p={4}>
               {/* Map State to What Component we want to Render Here! */}
               <Status job={job} />
             </GridItem>
@@ -71,22 +128,39 @@ const JobItemModal = ({ job, isOpen, onClose }) => {
               justifyContent={`flex-end`}
               alignItems={`center`}
               rowStart={-2}
-              colSpan={5}
+              colStart={1}
+              colEnd={-1}
               p={4}>
               <ConfirmContext.Provider
                 value={{
                   isConfirmModalOpen,
                   setIsConfirmModalOpen,
-                  handleConfirm,
                 }}>
-                <Actions job={job} state={state} />
+                <DiscardJobContext.Provider
+                  value={{
+                    isDiscardJobModalOpen,
+                    setIsDiscardModalOpen,
+                  }}>
+                  <Actions job={job} state={state} />
+                </DiscardJobContext.Provider>
               </ConfirmContext.Provider>
             </GridItem>
           </Grid>
         </ModalContent>
       </Modal>
 
-      <ConfirmModal job={job} isOpen={isConfirmModalOpen} onClose={handleConfirm} />
+      <ConfirmModal
+        job={job}
+        isOpen={isConfirmModalOpen}
+        onClose={() => setIsConfirmModalOpen(false)}
+        onConfirm={handleConfirm}
+      />
+      <DiscardJobModal
+        job={job}
+        isOpen={isDiscardJobModalOpen}
+        onClose={() => setIsDiscardModalOpen(false)}
+        onDiscard={() => {}}
+      />
     </>
   );
 };
