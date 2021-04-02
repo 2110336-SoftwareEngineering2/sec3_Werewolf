@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import {toJS} from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { Box, Flex, Stack, VStack, HStack, Text, Image, Switch } from '@chakra-ui/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -22,18 +21,24 @@ export const ProfilePage = observer(() => {
   useEffect(() => {
     if (userStore && userStore.userData) {
       const userID = userStore.userData._id;
-      setUser(toJS(userStore.userData))
+      fetchUserById(userID)
+        .then((res) => {
+          setUser(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+
       fetchMaidById(userID)
       .then((res) => {
         setMaid(res.data);
         setAvail(maidInfo.availability)
-        console.log(maidInfo)
       })
       .catch((err) => {
         console.log(err)
       })
     }
-  }, [userStore.userData, maidInfo]);
+  }, [userStore.userData]);
 
   // generate star icons per review score
   const stars = (score) => {
@@ -71,18 +76,6 @@ export const ProfilePage = observer(() => {
 
   //toggle status
 
-  const onToggleStatus = () => {
-      setAvailability(!avail)
-      .then((res) => {
-        setAvail(res.data.availability)
-        console.log(res)
-      })
-      .catch(err => {
-        console.log(err)
-        window.confirm("Sorry, cannot change your status right now. Please try again later")
-      })
-  }
-
   return (
     <Flex bg="brandGreen" align="center" justify="center" minH="100vh">
       <FlexBox>
@@ -114,13 +107,6 @@ export const ProfilePage = observer(() => {
 
               <HStack justifyContent="space-between" width="100%">
                 <Box fontSize="xl">{userInfo.firstname + ' ' + userInfo.lastname}</Box>
-
-                {/*status */} 
-                <HStack spacing="2">
-                  <Text>Status: {avail ? 'On': 'Off'}</Text>
-                  <Switch size="md" onChange={onToggleStatus} isChecked={avail} />
-                </HStack>
-
               </HStack>
 
               <Box fontSize="md">{age(userInfo.birthdate) + " years old"}</Box>
