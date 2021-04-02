@@ -89,6 +89,37 @@ describe('PromotionController', () => {
     });
   });
 
+  describe('limitedPromotion', () => {
+    const limitedCode = 'du2mhjQL1ZT';
+    const createPromotionDto = {
+      code: limitedCode,
+      description: 'this promotion code will be expired soon',
+      discountRate: 35,
+      availableDate: new Date(new Date().getTime()),
+      expiredDate: new Date(new Date().getTime() + 6000000),
+    };
+    const promotionDto = new PromotionDto(createPromotionDto);
+    promotionDto.creater = adminReq.user._id;
+
+    it('create limited promotion', async () => {
+      expect(
+        await promotionController.createPromotion(adminReq, createPromotionDto),
+      ).toStrictEqual(promotionDto);
+    });
+
+    it('get limited promotion', async () => {
+      expect(
+        await promotionController.findPromotion(limitedCode),
+      ).toStrictEqual(promotionDto);
+    });
+
+    it('delete limited promotion', async () => {
+      expect(
+        await promotionController.removePromotion(limitedCode),
+      ).toStrictEqual(promotionDto);
+    });
+  });
+
   describe('expiredPromotion', () => {
     const expiredCode = '153YUSAENH';
     const createPromotionDto = {
