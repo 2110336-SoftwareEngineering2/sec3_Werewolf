@@ -56,7 +56,10 @@ export class ReviewController {
         updateReviewDto.maidId,
         updateReviewDto.rating,
       );
-      return await this.reviewService.updateJobReview(updateReviewDto);
+      const reviewedJob = await this.reviewService.updateJobReview(
+        updateReviewDto,
+      );
+      return new JobDto(reviewedJob);
     } else {
       throw new UnprocessableEntityException('maid not match job owner');
     }

@@ -1,4 +1,4 @@
-import { forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Job } from '../job/interfaces/job.interface';
 import { JobService } from '../job/job.service';
 import { UpdateReviewDto } from './dto/update-review.dto';
@@ -6,20 +6,18 @@ import { MaidsService } from '../maids/maids.service';
 import { Maid } from '../maids/interfaces/maids.interface';
 import { UsersService } from '../users/users.service';
 import { WorkspacesService } from '../workspaces/workspaces.service';
-import { JobState } from '../job/jobState';
 
 @Injectable()
 export class ReviewService {
   constructor(
     private maidService: MaidsService,
-    private readonly jobService: JobService
+    private readonly jobService: JobService,
   ) {}
 
   async updateJobReview(updateJobReview: UpdateReviewDto): Promise<Job> {
     const job = await this.jobService.updateJobReview(updateJobReview);
     return job;
   }
-
 
   async updateMaidRating(maidId: string, newRating: number): Promise<Maid> {
     const maid = await this.maidService.updateMaidRating(maidId, newRating);

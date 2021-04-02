@@ -507,11 +507,18 @@ describe('JobController', () => {
       }
 
       // write review
-      const reviewedJob = await reviewController.updateJobReview(
+      let reviewedJob = await reviewController.updateJobReview(
         customerReq,
         reviewDto,
       );
       expect(reviewedJob.state).toBe(JobState.reviewed);
+      expect(reviewedJob.rating).toBe(rating);
+      expect(reviewedJob.review).toBe(messege);
+
+      // get job
+      reviewedJob = await jobController.findJob(jobId);
+      expect(reviewedJob.state).toBe(JobState.reviewed);
+      expect(reviewedJob.maidId).toBe(nearestMaidReq.user._id);
       expect(reviewedJob.rating).toBe(rating);
       expect(reviewedJob.review).toBe(messege);
 
@@ -561,6 +568,87 @@ describe('JobController', () => {
       } catch (error) {
         expect(error.status).toBe(404);
       }
+    });
+  });
+
+  describe('maidCancelJob', () => {
+    let jobId: string;
+    let nearestMaidReq: any;
+
+    it('maid accept job', async () => {
+      const createJobDto = {
+        workplaceId: workspaceId,
+        work: testWork,
+        promotionCode: null,
+      };
+      // create new job
+      let job = await jobController.createJob(customerReq, createJobDto);
+      jobId = job._id;
+      expect(job.state).toStrictEqual(JobState.creating);
+
+      // find maid
+      job = await jobController.findMaid(customerReq, jobId);
+      expect(job.state).toBe(JobState.posted);
+
+      // maid see job
+      while (job.maidId === null) {
+        job = await jobController.findJob(jobId);
+      }
+      nearestMaidReq = {
+        user: { _id: job.maidId, role: 'maid' },
+      };
+      expect(
+        await jobController.findByMaid(nearestMaidReq.user._id),
+      ).not.toStrictEqual([]);
+
+      // maid accept
+      expect(job.acceptedTime).toBeNull();
+      job = await jobController.accept(nearestMaidReq, jobId);
+      expect(job.state).toBe(JobState.matched);
+      expect(job.acceptedTime).not.toBeNull();
+
+      // maid availability must be false
+      const nearestMaid = await maidsController.getMaid(
+        nearestMaidReq.user._id,
+      );
+      expect(nearestMaid.availability).toBeFalsy();
+
+      // customer confirm
+      job = await jobController.confirm(customerReq, jobId);
+      expect(job.state).toBe(JobState.confirmed);
+      expect(job.finishTime).toBeNull();
+    });
+
+    it('maid cancel job', async () => {
+      // save maid's old rating
+      let nearestMaid = await maidsController.getMaid(nearestMaidReq.user._id);
+      const oldRating = nearestMaid.avgRating;
+      const totalReviews = nearestMaid.totalReviews;
+
+      // maid cancel
+      let canceledJob = await jobController.jobMaidCancel(
+        nearestMaidReq,
+        jobId,
+      );
+      expect(canceledJob.state).toBe(JobState.canceled);
+      expect(canceledJob.rating).toBe(0);
+      expect(canceledJob.review).toBe('This job was canceled by maid');
+
+      // get job
+      canceledJob = await jobController.findJob(jobId);
+      expect(canceledJob.state).toBe(JobState.canceled);
+      expect(canceledJob.maidId).toBe(nearestMaidReq.user._id);
+      expect(canceledJob.finishTime).toBeNull();
+      expect(canceledJob.rating).toBe(0);
+      expect(canceledJob.review).toBe('This job was canceled by maid');
+
+      // maid rating should be updated
+      nearestMaid = await maidsController.getMaid(nearestMaidReq.user._id);
+      expect(nearestMaid.availability).toBeTruthy();
+      expect(nearestMaid.avgRating).toBe(
+        (totalReviews * oldRating) / (totalReviews + 1),
+      );
+      expect(nearestMaid.totalReviews).toBe(totalReviews + 1);
     });
   });
 

@@ -4,7 +4,6 @@ import {
   BadRequestException,
   NotFoundException,
   ConflictException,
-  forwardRef,
 } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { SchedulerRegistry } from '@nestjs/schedule';
@@ -279,24 +278,26 @@ export class JobService {
     return cost;
   }
 
-  async maidCancleJob(maidId: string, jobId: string): Promise<Job>{
+  async maidCancleJob(maidId: string, jobId: string): Promise<Job> {
     const maid = await this.maidsService.findMaid(maidId);
     const job = await this.findJob(jobId);
-    if(!maid){
-      throw new NotFoundException('can\'t find maid');
+    if (!maid) {
+      throw new NotFoundException("can't find maid");
     }
-    if(!job){
-      throw new NotFoundException('can\'t find job');
+    if (!job || job.maidId != maidId) {
+      throw new NotFoundException("can't find job");
     }
     const updateReviewDto = {
       rating: 0,
       jobId: jobId,
       maidId: maidId,
       reviewDescription: 'This job was canceled by maid',
-    }
-    const reviewedMaid = await this.updateMaidRating(maidId, updateReviewDto.rating);
+    };
+    await this.updateMaidRating(maidId, updateReviewDto.rating);
+    await this.maidsService.setAvailability(maidId, true);
     const reviewedJob = await this.updateJobReview(updateReviewDto);
-    return reviewedJob;
+    reviewedJob.state = JobState.canceled;
+    return reviewedJob.save();
   }
 
   async updateJobReview(updateJobReview: UpdateReviewDto): Promise<Job> {
@@ -322,5 +323,4 @@ export class JobService {
     const maid = await this.maidsService.updateMaidRating(maidId, newRating);
     return maid;
   }
-  
 }
