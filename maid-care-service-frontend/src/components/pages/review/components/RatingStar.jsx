@@ -1,8 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { HStack, Text} from '@chakra-ui/react';
 
-const RatingStar = () => {
-  const [rating, setRating] = useState(0);
+const RatingStar = ( {rating, setRating} ) => {
   const [hoverRating, setHoverRating] = useState(0);
   const onMouseEnter = (index) => {
     setHoverRating(index);
@@ -14,7 +13,7 @@ const RatingStar = () => {
     setRating(index);
   };
   return (
-    <HStack border="1px" width={230} alignItems="center">
+    <HStack width={230} alignItems="center">
       {[1, 2, 3, 4, 5].map((index) => {
         return (
           <RatingIcon
