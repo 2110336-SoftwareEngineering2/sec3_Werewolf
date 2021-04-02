@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Job } from '../job/interfaces/job.interface';
 import { JobService } from '../job/job.service';
 import { UpdateReviewDto } from './dto/update-review.dto';
@@ -6,32 +6,17 @@ import { MaidsService } from '../maids/maids.service';
 import { Maid } from '../maids/interfaces/maids.interface';
 import { UsersService } from '../users/users.service';
 import { WorkspacesService } from '../workspaces/workspaces.service';
-import { JobState } from '../job/jobState';
 
 @Injectable()
 export class ReviewService {
   constructor(
-    private jobService: JobService,
     private maidService: MaidsService,
+    private readonly jobService: JobService,
   ) {}
 
   async updateJobReview(updateJobReview: UpdateReviewDto): Promise<Job> {
-    const job = await this.jobService.findJob(updateJobReview.jobId);
-    job.review = updateJobReview.reviewDescription;
-    job.rating = updateJobReview.rating;
-    const jobSaved = this.jobService.jobReviewd(job);
-    return await jobSaved;
-  }
-
-  async checkUserWithJob(
-    jobId: string,
-    customerId: string,
-    maidId: string,
-  ): Promise<boolean> {
-    const job = await this.jobService.findJob(jobId);
-    if (!job || job.state !== JobState.done || job.customerId != customerId)
-      throw new NotFoundException('job not found or already reviewed');
-    return job.maidId == maidId;
+    const job = await this.jobService.updateJobReview(updateJobReview);
+    return job;
   }
 
   async updateMaidRating(maidId: string, newRating: number): Promise<Maid> {
@@ -46,7 +31,6 @@ export class ReviewTest {
     private jobService: JobService,
     private maidService: MaidsService,
     private userService: UsersService,
-    private reviewService: ReviewService,
     private workspacesService: WorkspacesService,
   ) {}
 
@@ -118,8 +102,8 @@ export class ReviewTest {
     maid.avgRating = 0;
     maid.totalReviews = 0;
     maid.save();
-    await this.reviewService.updateMaidRating(maid._id, 4);
-    const jobReview = await this.reviewService.updateJobReview(updateReviewDto);
+    await this.jobService.updateMaidRating(maid._id, 4);
+    const jobReview = await this.jobService.updateJobReview(updateReviewDto);
 
     return jobReview;
   }

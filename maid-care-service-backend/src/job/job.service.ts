@@ -17,6 +17,7 @@ import { CreateJobDto } from './dto/create-job.dto';
 import { WorkType } from '../maids/workType';
 import { WorkCost } from './workCost';
 import { JobState } from './jobState';
+import { UpdateReviewDto } from 'src/review/dto/update-review.dto';
 
 @Injectable()
 export class JobService {
@@ -275,5 +276,51 @@ export class JobService {
       }
     }
     return cost;
+  }
+
+  async maidCancleJob(maidId: string, jobId: string): Promise<Job> {
+    const maid = await this.maidsService.findMaid(maidId);
+    const job = await this.findJob(jobId);
+    if (!maid) {
+      throw new NotFoundException("can't find maid");
+    }
+    if (!job || job.maidId != maidId) {
+      throw new NotFoundException("can't find job");
+    }
+    const updateReviewDto = {
+      rating: 0,
+      jobId: jobId,
+      maidId: maidId,
+      reviewDescription: 'This job was canceled by maid',
+    };
+    await this.updateMaidRating(maidId, updateReviewDto.rating);
+    await this.maidsService.setAvailability(maidId, true);
+    const reviewedJob = await this.updateJobReview(updateReviewDto);
+    reviewedJob.state = JobState.canceled;
+    return reviewedJob.save();
+  }
+
+  async updateJobReview(updateJobReview: UpdateReviewDto): Promise<Job> {
+    const job = await this.findJob(updateJobReview.jobId);
+    job.review = updateJobReview.reviewDescription;
+    job.rating = updateJobReview.rating;
+    const jobSaved = this.jobReviewd(job);
+    return await jobSaved;
+  }
+
+  async checkUserWithJob(
+    jobId: string,
+    customerId: string,
+    maidId: string,
+  ): Promise<boolean> {
+    const job = await this.findJob(jobId);
+    if (!job || job.state !== JobState.done || job.customerId != customerId)
+      throw new NotFoundException('job not found or already reviewed');
+    return job.maidId == maidId;
+  }
+
+  async updateMaidRating(maidId: string, newRating: number): Promise<Maid> {
+    const maid = await this.maidsService.updateMaidRating(maidId, newRating);
+    return maid;
   }
 }

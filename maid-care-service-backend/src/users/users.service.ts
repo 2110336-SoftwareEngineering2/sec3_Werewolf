@@ -97,6 +97,8 @@ export class UsersService {
     if (newProfile.citizenId) userFromDb.citizenId = newProfile.citizenId;
     if (newProfile.bankAccountNumber)
       userFromDb.bankAccountNumber = newProfile.bankAccountNumber;
+    if (newProfile.profilePicture)
+      userFromDb.profilePicture = newProfile.profilePicture;
     await userFromDb.save();
     return userFromDb;
   }

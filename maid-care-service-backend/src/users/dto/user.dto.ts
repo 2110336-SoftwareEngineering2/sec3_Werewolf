@@ -9,6 +9,7 @@ export class UserDto {
     this.birthdate = object.birthdate;
     this.citizenId = object.citizenId;
     this.bankAccountNumber = object.bankAccountNumber;
+    this.profilePicture = object.profilePicture;
     this.role = object.role;
   }
 
@@ -32,6 +33,9 @@ export class UserDto {
 
   @ApiProperty({ type: String })
   readonly bankAccountNumber: string;
+
+  @ApiProperty({ type: String })
+  readonly profilePicture: string;
 
   @ApiProperty({ enum: ['customer', 'maid', 'admin'] })
   readonly role: string;
