@@ -7,12 +7,19 @@ const JobItem = ({ job }) => {
   const { customerId } = job;
 
   const renderMap = () => {
-    return <Box flex={3} minW={`10rem`} bgColor="green.400" h={`12rem`}></Box>;
+    return <Box flex={3} minW={`10rem`} bgColor="green.400" alignSelf={`stretch`}></Box>;
   };
 
   return (
-    <Container boxShadow="md" borderRadius={4} overflow="hidden" m={0} px={0} minW={`100%`}>
-      <Flex direction="row" alignItems="center">
+    <Container
+      boxShadow="md"
+      borderRadius={4}
+      overflow="hidden"
+      m={0}
+      px={0}
+      minW={`100%`}
+      minH={36}>
+      <HStack alignItems="center">
         {renderMap()}
         <HStack flex={6} p={4}>
           <VStack flex={6} alignItems="felx-start" spacing={4}>
@@ -33,7 +40,7 @@ const JobItem = ({ job }) => {
           </VStack>
           <Status job={job} />
         </HStack>
-      </Flex>
+      </HStack>
     </Container>
   );
 };

@@ -80,16 +80,18 @@ const InProgressStatus = ({ acceptedTime }) => {
       <VStack alignItems={`flex-end`}>
         <Text fontSize={`lg`}>{new Date().toDateString()}</Text>
         <Text>{new Date(acceptedTime).toTimeString().slice(0, 8)}</Text>
-        <HStack wrap={true} alignItems={`center`} pt={8}>
+        <VStack wrap={true} alignItems={`center`} pt={8}>
           <Icon as={FaBroom} w={9} h={9} />
           <Text fontSize={`lg`} fontWeight={`bold`}>
             In Progress
           </Text>
-        </HStack>
+        </VStack>
       </VStack>
     </>
   );
 };
+
+const WaitForReviewStatus = ({ acceptedTime }) => {};
 
 const DoneStatus = ({ finishTime }) => {
   return (
@@ -98,12 +100,12 @@ const DoneStatus = ({ finishTime }) => {
         <Text fontSize={`lg`}>{new Date().toDateString()}</Text>
         <Text>{new Date(finishTime).toTimeString().slice(0, 8)}</Text>
 
-        <HStack justifyContent={`flex-end`} alignItems={`center`} pt={8}>
-          <Icon as={FaCheckCircle} w={8} h={8} color={`green.400`} p={0} />
-          <Text fontSize={`2xl`} fontWeight={`bold`}>
-            Done
+        <VStack justifyContent={`flex-end`} alignItems={`flex-end`} pt={8}>
+          <Icon as={FaCheckCircle} w={10} h={10} color={`green.400`} p={0} />
+          <Text fontSize={`2xl`} color={`green.400`}>
+            All Done
           </Text>
-        </HStack>
+        </VStack>
       </VStack>
     </>
   );
