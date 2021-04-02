@@ -17,6 +17,7 @@ import { JobDto } from '../job/dto/job.dto';
 import { JwtAuthGuard } from '../auth/passport/jwt-auth.guard';
 import { UpdateReviewDto } from './dto/update-review.dto';
 import { ReviewService, ReviewTest } from './review.service';
+import { JobService } from '../job/job.service';
 
 @Controller('review')
 @ApiTags('review')
@@ -24,6 +25,7 @@ export class ReviewController {
   constructor(
     private readonly reviewService: ReviewService,
     private readonly reviewTest: ReviewTest,
+    private readonly jobService: JobService,
   ) {}
 
   @Put()
@@ -44,7 +46,7 @@ export class ReviewController {
     @Request() req,
     @Body() updateReviewDto: UpdateReviewDto,
   ) {
-    const isSameUser = await this.reviewService.checkUserWithJob(
+    const isSameUser = await this.jobService.checkUserWithJob(
       updateReviewDto.jobId,
       req.user._id,
       updateReviewDto.maidId,

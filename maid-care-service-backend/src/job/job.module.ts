@@ -9,7 +9,6 @@ import { MaidsModule } from '../maids/maids.module';
 import { WorkspacesModule } from '../workspaces/workspaces.module';
 import { PromotionModule } from '../promotion/promotion.module';
 import { WalletModule } from '../wallet/wallet.module';
-import { ReviewModule } from 'src/review/review.module';
 
 @Module({
   imports: [
@@ -19,7 +18,6 @@ import { ReviewModule } from 'src/review/review.module';
     WorkspacesModule,
     PromotionModule,
     WalletModule,
-    ReviewModule,
   ],
   controllers: [JobController],
   providers: [JobService, SchedulerRegistry, ...JobProviders],
