@@ -1,5 +1,5 @@
 import firebase from 'firebase/app';
-import storage from '../firebase/firebase.js';
+import storage from '../../../firebase.js';
 
 var storageRef = storage.ref();
 
@@ -9,7 +9,7 @@ const uploader = async (file) => {
   var uploadTask = storageRef.child('images/' + file.name).put(file);
 
   // Listen for state changes, errors, and completion of the upload.
-  const URL = await uploadTask.on(
+  uploadTask.on(
     firebase.storage.TaskEvent.STATE_CHANGED, // or 'state_changed'
     (snapshot) => {
       // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
@@ -42,15 +42,12 @@ const uploader = async (file) => {
           break;
       }
     },
-    async() => {
+    () => {
       // Upload completed successfully, now we can get the download URL
-      const downloadURL = await uploadTask.snapshot.ref.getDownloadURL()
-      console.log('download URL', downloadURL)
-      return downloadURL
+      const downloadURL = uploadTask.snapshot.ref.getDownloadURL()
     }
   )
-  console.log(URL)
-  return URL
+  
 };
 
 export { uploader };
