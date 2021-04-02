@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {toJS} from 'mobx';
 import { observer } from 'mobx-react-lite';
-import { Box, Flex, Stack, VStack, HStack, Text, Image, Switch } from '@chakra-ui/react';
+import { Box, Flex, Stack, VStack, HStack, Text, Image, Switch, Button, Link, Spinner } from '@chakra-ui/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar, faStarHalf } from '@fortawesome/free-solid-svg-icons';
 import {setAvailability} from '../../../api/maid';
@@ -9,9 +9,10 @@ import {setAvailability} from '../../../api/maid';
 import FlexBox from '../../shared/FlexBox';
 import MaidLogo from '../../../MaidLogo.svg';
 import ProfilePic from './Pic.svg';
-import { fetchUserById} from '../../../api/user';
+
 import {fetchMaidById} from '../../../api/maid'
 import { useStores } from '../../../hooks/use-stores';
+
 
 export const ProfilePage = observer(() => {
   const { userStore } = useStores();
@@ -22,12 +23,11 @@ export const ProfilePage = observer(() => {
   useEffect(() => {
     if (userStore && userStore.userData) {
       const userID = userStore.userData._id;
-      setUser(toJS(userStore.userData))
+      setUser(toJS(userStore.userData)) //maid self view
       fetchMaidById(userID)
       .then((res) => {
         setMaid(res.data);
         setAvail(maidInfo.availability)
-        console.log(maidInfo)
       })
       .catch((err) => {
         console.log(err)
@@ -72,6 +72,7 @@ export const ProfilePage = observer(() => {
   //toggle status
 
   const onToggleStatus = () => {
+      setAvail('loading')
       setAvailability(!avail)
       .then((res) => {
         setAvail(res.data.availability)
@@ -88,13 +89,17 @@ export const ProfilePage = observer(() => {
       <FlexBox>
         <VStack spacing={4}>
 
-          <Image
-            width="9rem"
-            height="2.5rem"
-            objectFit="contain"
-            src={MaidLogo}
-            alt="Grab MaidCare Logo"
-          />
+          <HStack justify="space-between" width="100%" direction={['column','row']}>
+            <Image
+              width="9rem"
+              height="2.5rem"
+              objectFit="contain"
+              src={MaidLogo}
+              alt="Grab MaidCare Logo"
+            />
+            <Button className="button" background="buttonGreen"><Link href="/profile/edit">Edit Profile</Link></Button>
+          </HStack>
+
           <Text fontSize="2xl" fontWeight="bold" mb="5">
             Maid Profile
           </Text>
@@ -118,6 +123,8 @@ export const ProfilePage = observer(() => {
                 {/*status */} 
                 <HStack spacing="2">
                   <Text>Status: {avail ? 'On': 'Off'}</Text>
+                  { //loading spinner in case of slow network connection
+                   avail === 'loading' ? <Spinner size="xs" />:null} 
                   <Switch size="md" onChange={onToggleStatus} isChecked={avail} />
                 </HStack>
 
