@@ -18,10 +18,8 @@ import { useRef, useState } from 'react';
 import { FaImages } from 'react-icons/fa';
 import { useStores } from '../../../hooks/use-stores';
 
-export const DiscardJobModal = ({ job, isOpen, onOpen, onClose }) => {
+export const DiscardJobModal = ({ job, isOpen, onOpen, onClose, onDiscard }) => {
   const cancelRef = useRef();
-
-  const handleConfirm = () => {};
 
   return (
     <AlertDialog
@@ -44,7 +42,7 @@ export const DiscardJobModal = ({ job, isOpen, onOpen, onClose }) => {
           <Button ref={cancelRef} variant={`outline`} colorScheme={`red`} onClick={onClose}>
             Go back
           </Button>
-          <Button colorScheme={`red`} onClick={handleConfirm} ml={3}>
+          <Button colorScheme={`red`} onClick={onDiscard} ml={3}>
             Confirm
           </Button>
         </AlertDialogFooter>

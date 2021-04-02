@@ -159,7 +159,7 @@ const JobItemModal = ({ job, isOpen, onClose }) => {
         job={job}
         isOpen={isDiscardJobModalOpen}
         onClose={() => setIsDiscardModalOpen(false)}
-        onDiscard={() => {}}
+        onDiscard={handleDiscard}
       />
     </>
   );
