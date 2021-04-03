@@ -1,21 +1,39 @@
 import React from 'react';
-import { Box, Text, Flex, Container, Textarea, VStack } from '@chakra-ui/react';
-import ReviewForm from './components/ReviewForm.jsx'
+import {
+  Box,
+  Text,
+  Flex,
+  Container,
+  Textarea,
+  VStack,
+  Button,
+  HStack,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  useDisclosure,
+  Grid,
+  GridItem,
+  List,
+  ButtonGroup,
+  Heading,
+} from '@chakra-ui/react';
+import PostModal from './components/PostModal.jsx'
+
+// Re
 
 const Review = () => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
-    <Flex
-      direction="column"
-      minH={`100vh`}
-      bgColor="gray.300"
-      padding={'20vh'}
-      justifyContent="flex-start"
-      alignItems="center">
-      <Container borderRadius={4} bgColor="gray.100" p={6} w={`70vw`} maxW={1200}>
-        <ReviewForm />
-      </Container>
-    </Flex>
+    <>
+      <Button onClick={onOpen}>Open Modal</Button>
+      <PostModal isOpen={isOpen} onClose={onClose}/>
+    </>
   );
 };
 
