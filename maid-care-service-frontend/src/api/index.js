@@ -5,6 +5,7 @@ import { user, fetchUserById } from './user';
 import { promotion } from './promotion';
 import { job } from './job';
 import { maid } from './maid';
+import { review } from "./review";
 // use cors
 axios.interceptors.request.use((config) => {
   // enable cors
@@ -18,3 +19,4 @@ export { workspace, fetchWorkspaceById };
 export { promotion };
 export { job };
 export { maid };
+export { review };
