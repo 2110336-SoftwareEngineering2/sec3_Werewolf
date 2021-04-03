@@ -33,6 +33,7 @@ import { ReviewController } from '../review/review.controller';
 import { ReviewService, ReviewTest } from '../review/review.service';
 
 dotenv.config();
+jest.useFakeTimers();
 
 describe('JobController', () => {
   let jobController: JobController;
@@ -423,9 +424,10 @@ describe('JobController', () => {
         nearestMaidReq.user._id,
       );
       expect(nearestMaid.availability).toBeFalsy();
+    });
 
-      // customer confirm
-      job = await jobController.confirm(customerReq, jobId);
+    it('customer confirm', async () => {
+      const job = await jobController.confirm(customerReq, jobId);
       expect(job.state).toBe(JobState.confirmed);
       expect(job.finishTime).toBeNull();
     });
@@ -569,6 +571,31 @@ describe('JobController', () => {
         expect(error.status).toBe(404);
       }
     });
+
+    it('all maid ignore the job', async () => {
+      const createJobDto = {
+        workplaceId: workspaceId,
+        work: testWork,
+        promotionCode: null,
+      };
+      // create new job
+      let job = await jobController.createJob(customerReq, createJobDto);
+      const jobId = job._id;
+
+      // find maid
+      await jobController.findMaid(customerReq, jobId);
+
+      // every maid ignore job
+      try {
+        while (true) {
+          job = await jobController.findJob(jobId);
+          expect(job.state).toBe(JobState.posted);
+          jest.advanceTimersByTime(60000);
+        }
+      } catch (error) {
+        expect(error.status).toBe(404);
+      }
+    });
   });
 
   describe('maidCancelJob', () => {
@@ -612,11 +639,15 @@ describe('JobController', () => {
         nearestMaidReq.user._id,
       );
       expect(nearestMaid.availability).toBeFalsy();
+    });
 
-      // customer confirm
-      job = await jobController.confirm(customerReq, jobId);
-      expect(job.state).toBe(JobState.confirmed);
-      expect(job.finishTime).toBeNull();
+    it('auto confirm', async () => {
+      jest.advanceTimersByTime(60000);
+      let job = await jobController.findJob(jobId);
+      while (job.state !== JobState.confirmed) {
+        job = await jobController.findJob(jobId);
+        expect(job).not.toBeNull();
+      }
     });
 
     it('maid cancel job', async () => {
@@ -659,5 +690,6 @@ describe('JobController', () => {
     // delete promotion
     await promotionController.removePromotion(promotionCode);
     mongoose.connection.close();
+    jest.runAllTimers();
   });
 });
