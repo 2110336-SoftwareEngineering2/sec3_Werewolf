@@ -2,36 +2,36 @@ import React, { useState } from 'react';
 import {
   Box,
   Text,
-  Flex,
-  Container,
-  Textarea,
-  VStack,
   Button,
   HStack,
   Modal,
   ModalOverlay,
   ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
   ModalCloseButton,
-  useDisclosure,
   Grid,
   GridItem,
   List,
   ButtonGroup,
   Heading,
+  ListItem,
 } from '@chakra-ui/react';
 import UserStatus from './../../jobs/components/UserStatus.jsx';
-import Status from './../../jobs/components/Status.jsx';
+import Icon from '@chakra-ui/icon';
+import { FaTshirt, FaRing, FaBroom } from 'react-icons/fa';
 import Address from './../../jobs/components/Address.jsx';
 import ReviewFormModal from './ReviewFormModal.jsx';
 
 // Re
 
-const PostModal = ({ isOpen, onClose }) => {
-  const [isOpenReview, setIsOpenReview] = useState(false);
+const PostModal = ({ isOpen, onClose, job }) => {
+  const { _id: jobId, work, workplaceId, customerId, state, maidId, review, rating } = job;
+  const [isOpenReview, setOpenReview] = useState(false);
+  // Is user write review.
   var d = new Date();
+
+  const handleConfirmReview = () => {
+    setOpenReview(false);
+  };
 
   return (
     <>
@@ -55,19 +55,35 @@ const PostModal = ({ isOpen, onClose }) => {
               borderRadius={`xl`}
               zIndex={`toast`}></GridItem>
             <GridItem as={HStack} rowStart={2} rowSpan={1} colSpan={2} p={4}>
-              <UserStatus />
+              <UserStatus uid={maidId} />
             </GridItem>
             <GridItem as={List} rowStart={3} rowSpan={3} colStart={0} colSpan={2} p={4}>
-              <Status job={''} />
+              {work &&
+                work.map(({ quantity }, idx) => (
+                  <ListItem as={HStack} key={jobId + idx} mt="1vw">
+                    <Icon
+                      as={idx === 0 ? FaRing : idx === 1 ? FaBroom : FaTshirt}
+                      w={8}
+                      h={8}
+                      color={`gray.800`}
+                    />
+                    <Text>
+                      {quantity} {idx === 0 ? 'จาน' : idx === 1 ? 'ตารางเมตร' : 'ตัว'}
+                    </Text>
+                  </ListItem>
+                ))}
             </GridItem>
-            <GridItem rowSpan={2} colStart={3} colEnd={7} p={4} alignItems={`baseline`}>
-              <Address workplaceId={''} />
+            <GridItem rowSpan={1} colStart={3} colEnd={7} p={4} alignItems={`baseline`}>
+              <Address workplaceId={workplaceId} />
+            </GridItem>
+            <GridItem rowStart={3} rowSpan={1} colStart={3} colEnd={7} p={4}>
+              <Heading as={`h6`} fontSize={`lg`} fontWeight={`bold`}>
+                Review
+              </Heading>
+              <Text>{review === null ? 'อยากบอกอะไรเมต ไหมจ๊ะ? อิอิ' : review}</Text>
             </GridItem>
             <GridItem rowStart={4} rowSpan={2} colStart={3} colEnd={7} p={4}>
-              <Heading as={`h6`} fontSize={`lg`} fontWeight={`bold`}>
-                Note
-              </Heading>
-              <Text>อยากบอกอะไรเมต ไหมจ๊ะ? อิอิ</Text>
+              <Text fontWeight="bold">This job is waiting for your review</Text>
             </GridItem>
             <GridItem rowSpan={4} colStart={7} colEnd={-1} p={4}>
               <Text>{d.toDateString()}</Text>
@@ -82,14 +98,20 @@ const PostModal = ({ isOpen, onClose }) => {
               colStart={1}
               colEnd={-1}
               p={4}>
-              <Button
-                onClick={() => {
-                  setIsOpenReview(true);
-                }}
-                bg="buttonGreen"
-                color="white">
-                Write your Review
-              </Button>
+              {review === null ? (
+                <Button
+                  onClick={() => {
+                    setOpenReview(true);
+                  }}
+                  bg="buttonGreen"
+                  color="white">
+                  Write your Review
+                </Button>
+              ) : (
+                <Button bg="white" color="buttonGreen" borderColor="green" border="1px">
+                  Request for Refund
+                </Button>
+              )}
             </GridItem>
           </Grid>
         </ModalContent>
@@ -97,8 +119,10 @@ const PostModal = ({ isOpen, onClose }) => {
       <ReviewFormModal
         isOpen={isOpenReview}
         onClose={() => {
-          setIsOpenReview(false);
+          setOpenReview(false);
         }}
+        job={job}
+        handleConfirmReview={handleConfirmReview}
       />
     </>
   );
