@@ -17,7 +17,6 @@ import {
   ModalCloseButton,
   Grid,
   GridItem,
-  List,
   ButtonGroup,
   ListItem,
   Icon,
