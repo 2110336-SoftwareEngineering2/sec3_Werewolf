@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
-import { HStack, Text} from '@chakra-ui/react';
+import { HStack, Text } from '@chakra-ui/react';
 
-export const PutRatingStar = ( {rating, setRating} ) => {
+export const PutRatingStar = ({ rating, setRating }) => {
   const [hoverRating, setHoverRating] = useState(0);
   const onMouseEnter = (index) => {
     setHoverRating(index);
@@ -16,8 +16,8 @@ export const PutRatingStar = ( {rating, setRating} ) => {
     <HStack width={230} alignItems="center">
       {[1, 2, 3, 4, 5].map((index) => {
         return (
-          <RatingIcon
-          key={index}
+          <PutRatingIcon
+            key={index}
             index={index}
             rating={rating}
             hoverRating={hoverRating}
@@ -32,19 +32,13 @@ export const PutRatingStar = ( {rating, setRating} ) => {
   );
 };
 
-
-export const GetRatingStar = ( { rating } ) => {
+export const GetRatingStar = ({ rating }) => {
   const [hoverRating, setHoverRating] = useState(rating);
   return (
     <HStack width={230} alignItems="center">
       {[1, 2, 3, 4, 5].map((index) => {
         return (
-          <RatingIcon
-          key={index}
-            index={index}
-            rating={rating}
-            hoverRating={hoverRating}
-          />
+          <GetRatingIcon key={index} index={index} rating={rating} hoverRating={hoverRating} />
         );
       })}
       <Text>{rating} / 5 stars</Text>
@@ -52,8 +46,29 @@ export const GetRatingStar = ( { rating } ) => {
   );
 };
 
-const RatingIcon = (props) => {
-  const { index, rating, hoverRating, } = props;
+const PutRatingIcon = (props) => {
+  const { index, rating, hoverRating, onMouseEnter, onMouseLeave, onSaveRating } = props;
+  const fill = useMemo(() => {
+    if (hoverRating >= index) {
+      return 'yellow';
+    } else if (!hoverRating && rating >= index) {
+      return 'yellow';
+    }
+    return 'none';
+  }, [rating, hoverRating, index]);
+  return (
+    <div
+      className="cursor-pointer"
+      onMouseEnter={() => onMouseEnter(index)}
+      onMouseLeave={() => onMouseLeave()}
+      onClick={() => onSaveRating(index)}>
+      <StarIcon fill={fill} />
+    </div>
+  );
+};
+
+const GetRatingIcon = (props) => {
+  const { index, rating, hoverRating } = props;
   const fill = useMemo(() => {
     if (hoverRating >= index) {
       return 'yellow';
@@ -72,12 +87,12 @@ const RatingIcon = (props) => {
 const StarIcon = (props) => {
   const { fill = 'none' } = props;
   return (
-    <svg 
-    width="20px"
-    fill={fill} 
-    stroke="currentColor" 
-    viewBox="0 0 24 24" 
-    xmlns="http://www.w3.org/2000/svg">
+    <svg
+      width="20px"
+      fill={fill}
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg">
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
