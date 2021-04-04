@@ -44,7 +44,8 @@ const RefundFormModal = ({ isOpen, onClose, job, handleConfirmRefund = () => {} 
   const toastRefundFail = () => {
     toast({
         title: `System fail`,
-        status: 'Please try again',
+        description: "Please try again",
+        status: 'error',
         isClosable: true,
       })
   }
