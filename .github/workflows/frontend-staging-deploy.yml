@@ -36,7 +36,17 @@ jobs:
         uses: actions/setup-node@v2.1.4
         with: 
           node-version: 14.x
-            
+
+      - name: Create .env
+        uses: SpicyPizza/create-envfile@v1
+        with:
+          envkey_NODE_ENV: "production"
+          envkey_REACT_APP_URL: ${{ secrets.STAGING_SERVER_URL }}
+          envkey_REACT_APP_SECRET: ${{ secrets.SECRET }}
+          envkey_REACT_APP_GOOGLE_AMPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
+          envkey_REACT_APP_PUBLIC_VAPID_KEY: ${{ secrets.PUBLIC_VAPID_KEY }}
+          file_name: .env
+
       - name: Build the site
         run: |
           yarn install --production 
@@ -45,20 +55,13 @@ jobs:
       - name: Install Netlify
         run: sudo npm install -g netlify-cli --unsafe-perm=true
         
-      - name: Netlify Actions
-        uses: nwtgck/actions-netlify@v1.1.11
+      - name: Deploy
+        uses: netlify/actions/cli@master
         with:
-          production-branch: 'main'
-          publish-dir: './maid-care-service-frontend/build/'
-          deploy-message: "Deploy Staging ${{ github.event.head_commit.message }}"
-          alias: 'staging'
+          args: deploy --dir=build --alias=staging
         env:
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NODE_ENV: "staging"
-          REACT_APP_SECRET: ${{ secrets.SECRET }}
-          REACT_APP_API_URL: ${{ secrets.SERVER_URL }}
-          REACT_APP_GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
           
       - uses: sarisia/actions-status-discord@v1
         if: success()
