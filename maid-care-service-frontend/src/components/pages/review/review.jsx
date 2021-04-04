@@ -39,7 +39,7 @@ const Review = ( ) => {
       })
       .then(response => {
         setMyJob(response.data);
-        console.log('get job/ : ', response);
+        console.log('get job/{uid} : ', response);
       })
       .catch(error => {
         console.error(error);
@@ -50,16 +50,11 @@ const Review = ( ) => {
     fetchJobById();
   }, [])
 
-  const workspaceId = '6056e37ab24470004087a7de';
-  const maidId = '605ca4cbfc41950040c4c1d9';
-
-  console.log('x', myJob);
-
 
   return (
     <>
       <Button onClick={onOpen}>Open Modal</Button>
-      <PostModal isOpen={isOpen} onClose={onClose} job={myJob}/>
+      <PostModal isOpen={isOpen} onClose={onClose} job={myJob} fetchJobById={fetchJobById}/>
     </>
   );
 };

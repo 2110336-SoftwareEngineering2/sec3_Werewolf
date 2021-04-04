@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import RatingStar from './RatingStar.jsx';
+import { PutRatingStar } from './RatingStar.jsx';
 import { FaTshirt, FaRing, FaBroom } from 'react-icons/fa';
 import {
   Box,
@@ -44,13 +44,14 @@ const ReviewFormModal = ({ isOpen, onClose, job, handleConfirmReview = () => {}}
         maidId: maidId,
       })
       .then(response => {
-        console.log('put job/cost', response);
+        console.log('put review/', response);
         setReviewText(response.data);
       })
       .catch(error => {
         console.error(error);
       });
   }
+
 
   return (
     <>
@@ -97,7 +98,7 @@ const ReviewFormModal = ({ isOpen, onClose, job, handleConfirmReview = () => {}}
             <GridItem rowSpan={1} colStart={3} colEnd={7} p={4} alignItems={`baseline`}>
               <VStack alignItems="flex-start" w={`30vw`}>
                 <Text>Rate this job</Text>
-                <RatingStar rating={rating} setRating={setRating} />
+                <PutRatingStar rating={rating} setRating={setRating} />
               </VStack>
             </GridItem>
             <GridItem rowStart={3} rowSpan={3} colStart={3} colEnd={-1} p={4}>
