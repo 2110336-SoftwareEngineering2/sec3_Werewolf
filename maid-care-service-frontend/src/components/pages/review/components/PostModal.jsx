@@ -17,9 +17,10 @@ import {
 } from '@chakra-ui/react';
 import UserStatus from './../../jobs/components/UserStatus.jsx';
 import Icon from '@chakra-ui/icon';
-import { FaTshirt, FaRing, FaBroom } from 'react-icons/fa';
+import { FaTshirt, FaRing, FaBroom, FaCheckCircle, FaExclamationCircle } from 'react-icons/fa';
 import Address from './../../jobs/components/Address.jsx';
 import ReviewFormModal from './ReviewFormModal.jsx';
+import StarRating from './../../postjob/components/StarRating.jsx';
 
 // Re
 
@@ -31,6 +32,18 @@ const PostModal = ({ isOpen, onClose, job }) => {
 
   const handleConfirmReview = () => {
     setOpenReview(false);
+  };
+
+  const reviewState = (STATE) => {
+    switch (STATE) {
+      case 'notReviewed':
+        return (
+          <>
+            <Icon as={FaExclamationCircle} w={7} h={7} color={`red.400`} p={0} />
+            <Text fontWeight="bold">This job is waiting for your review</Text>
+          </>
+        );
+    }
   };
 
   return (
@@ -83,7 +96,23 @@ const PostModal = ({ isOpen, onClose, job }) => {
               <Text>{review === null ? 'อยากบอกอะไรเมต ไหมจ๊ะ? อิอิ' : review}</Text>
             </GridItem>
             <GridItem rowStart={4} rowSpan={2} colStart={3} colEnd={7} p={4}>
-              <Text fontWeight="bold">This job is waiting for your review</Text>
+              {review === null ? (
+                <HStack>
+                  <Icon as={FaExclamationCircle} w={7} h={7} color={`red.400`} p={0} />
+                  <Text fontWeight="bold">This job is waiting for your review</Text>
+                </HStack>
+              ) : (
+                <>
+                  <HStack>
+                    <Icon as={FaCheckCircle} w={7} h={7} color={`green.400`} p={0} />
+                    <Text fontWeight="bold">Your review has been sent</Text>
+                  </HStack>
+                  <HStack>
+                    <StarRating rating={rating} />
+                    <Text>{rating} / 5 stars</Text>
+                  </HStack>
+                </>
+              )}
             </GridItem>
             <GridItem rowSpan={4} colStart={7} colEnd={-1} p={4}>
               <Text>{d.toDateString()}</Text>
