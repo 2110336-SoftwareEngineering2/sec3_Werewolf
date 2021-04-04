@@ -1,15 +1,24 @@
 import Icon from '@chakra-ui/icon';
-import { HStack, Spacer, Text, VStack } from '@chakra-ui/layout';
+import { HStack, Text, VStack } from '@chakra-ui/layout';
 import React, { useEffect, useState } from 'react';
+import { FaBroom, FaCheckCircle, FaClock, FaRegStar, FaRegTimesCircle } from 'react-icons/fa';
 import {
-  FaBroom,
-  FaCalendarCheck,
-  FaCheckCircle,
-  FaClock,
-  FaRegStar,
-  FaStar,
-} from 'react-icons/fa';
-import { CONFIRMED, DONE, MATCHED, POSTED, REVIEWED } from '../../../../constants/post-state';
+  CANCELED,
+  CONFIRMED,
+  DONE,
+  MATCHED,
+  POSTED,
+  REVIEWED,
+} from '../../../../constants/post-state';
+
+const DateAndTime = ({ datetime }) => {
+  return (
+    <>
+      <Text fontSize={`lg`}>{new Date(datetime).toDateString()}</Text>
+      <Text>{new Date(datetime).toTimeString().slice(0, 8)}</Text>
+    </>
+  );
+};
 
 const JobStatus = ({ job }) => {
   const { state, expiryTime, finishTime, acceptedTime } = job;
@@ -22,6 +31,8 @@ const JobStatus = ({ job }) => {
     <WaitForReviewStatus finishTime={finishTime} />
   ) : state === REVIEWED ? (
     <DoneStatus finishTime={finishTime} />
+  ) : state === CANCELED ? (
+    <CanceledStatus acceptedTime={acceptedTime} />
   ) : state === POSTED ? (
     <CounterStatus expiryTime={expiryTime} />
   ) : (
@@ -87,8 +98,7 @@ const InProgressStatus = ({ acceptedTime }) => {
   return (
     <>
       <VStack alignItems={`flex-end`}>
-        <Text fontSize={`lg`}>{new Date().toDateString()}</Text>
-        <Text>{new Date(acceptedTime).toTimeString().slice(0, 8)}</Text>
+        <DateAndTime datetime={acceptedTime} />
         <VStack wrap={true} alignItems={`center`} pt={8}>
           <Icon as={FaBroom} w={9} h={9} />
           <Text fontSize={`lg`} fontWeight={`bold`}>
@@ -104,9 +114,7 @@ const WaitForReviewStatus = ({ finishTime }) => {
   return (
     <>
       <VStack flex={2} alignItems={'flex-end'} p={2}>
-        <Text fontSize={`lg`}>{new Date().toDateString()}</Text>
-        <Text>{new Date(finishTime).toTimeString().slice(0, 8)}</Text>
-
+        <DateAndTime datetime={finishTime} />
         <VStack justifyContent={`flex-end`} alignItems={`flex-end`} pt={8}>
           <Icon as={FaRegStar} w={10} h={10} color={`orange.400`} p={0} />
           <Text fontSize={`xl`} color={`orange.400`}>
@@ -122,9 +130,7 @@ const DoneStatus = ({ finishTime }) => {
   return (
     <>
       <VStack flex={2} alignItems={'flex-end'} p={2}>
-        <Text fontSize={`lg`}>{new Date().toDateString()}</Text>
-        <Text>{new Date(finishTime).toTimeString().slice(0, 8)}</Text>
-
+        <DateAndTime datetime={finishTime} />
         <VStack justifyContent={`flex-end`} alignItems={`flex-end`} pt={8}>
           <Icon as={FaCheckCircle} w={10} h={10} color={`green.400`} p={0} />
           <Text fontSize={`2xl`} color={`green.400`}>
@@ -136,4 +142,19 @@ const DoneStatus = ({ finishTime }) => {
   );
 };
 
+const CanceledStatus = ({ acceptedTime }) => {
+  return (
+    <>
+      <VStack alignItems={`flex-end`}>
+        <DateAndTime datetime={acceptedTime} />
+        <VStack wrap={true} alignItems={`flex-end`} pt={8}>
+          <Icon as={FaRegTimesCircle} w={9} h={9} color={`red.400`} />
+          <Text fontSize={`lg`} fontWeight={`bold`} color={`red.400`}>
+            Canceled
+          </Text>
+        </VStack>
+      </VStack>
+    </>
+  );
+};
 export default JobStatus;

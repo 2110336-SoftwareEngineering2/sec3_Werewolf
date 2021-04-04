@@ -5,7 +5,7 @@ import { Box, Grid, GridItem, Heading, HStack, List, ListItem, Text } from '@cha
 import { Modal, ModalCloseButton, ModalContent, ModalOverlay } from '@chakra-ui/modal';
 import { useToast } from '@chakra-ui/toast';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FaTshirt } from 'react-icons/fa';
 import { useStores } from '../../../../hooks/use-stores';
 import { ConfirmModal, DiscardJobModal } from '../../../shared/modals/modals';
@@ -52,7 +52,6 @@ const JobItemModal = ({ job, isOpen, onClose }) => {
     jobStore
       .discard({ jobId })
       .then(() => {
-        setIsDiscardModalOpen(false); // Close Confirm Modal
         toast({
           title: 'Successfully Discarded!',
           status: 'success',
@@ -72,6 +71,14 @@ const JobItemModal = ({ job, isOpen, onClose }) => {
         });
       });
   };
+
+  useEffect(
+    () => () => {
+      setIsDiscardModalOpen(false);
+    },
+    []
+  );
+
   return (
     <>
       <Modal

@@ -3,7 +3,14 @@ import { Text } from '@chakra-ui/layout';
 import { useModalContext } from '@chakra-ui/modal';
 import { Spinner } from '@chakra-ui/spinner';
 import { useContext } from 'react';
-import { CONFIRMED, DONE, MATCHED, POSTED, REVIEWED } from '../../../../constants/post-state';
+import {
+  CANCELED,
+  CONFIRMED,
+  DONE,
+  MATCHED,
+  POSTED,
+  REVIEWED,
+} from '../../../../constants/post-state';
 import { useStores } from '../../../../hooks/use-stores';
 import { ConfirmContext, DiscardJobContext } from './context/ctx';
 
@@ -16,7 +23,7 @@ const Actions = ({ job, state }) => {
         <MatchedActions />
       ) : state === CONFIRMED ? (
         <ConfirmActions job={job} />
-      ) : state === DONE || state === REVIEWED ? (
+      ) : state === DONE || REVIEWED || CANCELED ? (
         <DoneActions />
       ) : (
         <Text>Error!</Text>
@@ -32,7 +39,6 @@ const PostedActions = ({ job }) => {
   const { onClose } = useModalContext();
   const { jobStore } = useStores();
   const { _id: jobId } = job;
-
   const currentJob = jobStore.currentJob;
   const loading = jobStore.loading;
 
