@@ -6,6 +6,7 @@ import { promotion } from './promotion';
 import { job } from './job';
 import { maid } from './maid';
 import { review } from "./review";
+import { refund } from "./refund";
 // use cors
 axios.interceptors.request.use((config) => {
   // enable cors
@@ -20,3 +21,4 @@ export { promotion };
 export { job };
 export { maid };
 export { review };
+export { refund };
