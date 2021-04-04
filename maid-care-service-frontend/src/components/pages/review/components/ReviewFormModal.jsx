@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { PutRatingStar } from './RatingStar.jsx';
 import { FaTshirt, FaRing, FaBroom } from 'react-icons/fa';
+import { useToast } from "@chakra-ui/react"
 import {
   Box,
   Text,
@@ -30,6 +31,7 @@ const ReviewFormModal = ({ isOpen, onClose, job, handleConfirmReview = () => {}}
   const [reviewText, setReviewText] = useState('');
   const [images] = useState([]); // TODO: change to Mobx State
   const uploadBtnRef = useRef();
+  const toast = useToast()
 
   const handleChange = event =>  {
     setReviewText(event.target.value);
@@ -46,10 +48,31 @@ const ReviewFormModal = ({ isOpen, onClose, job, handleConfirmReview = () => {}}
       .then(response => {
         console.log('put review/', response);
         setReviewText(response.data);
+        toastReviewSuccess();
       })
       .catch(error => {
         console.error(error);
+        toastReviewFail();
       });
+  }
+
+  const toastReviewSuccess = () => {
+    toast({
+      title: "Review form is submitted",
+      description: "Thank you for your review.",
+      status: "success",
+      duration: 9000,
+      isClosable: true,
+    })
+  }
+
+  const toastReviewFail = () => {
+    toast({
+        title: `System fail`,
+        description: "Please try again",
+        status: 'error',
+        isClosable: true,
+      })
   }
 
 
