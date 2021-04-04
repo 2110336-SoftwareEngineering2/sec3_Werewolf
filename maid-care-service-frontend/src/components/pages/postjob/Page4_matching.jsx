@@ -1,69 +1,92 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, Spinner, VStack, Text } from '@chakra-ui/react';
 import { useFormikContext } from 'formik';
 import { job } from '../../../api';
 
-const Page4_maidInfo = ({ setSteps, handleIncrement, isPromoAvailable, setConfirm, setMaidId, setJobId }) => {
+const Page4_maidInfo = ({
+  setSteps,
+  handleIncrement,
+  isPromoAvailable,
+  setConfirm,
+  setMaidId,
+  setJobId,
+}) => {
   const { values } = useFormikContext();
+  const [works, setWorks] = useState([]);
   let getStatusFindmaidInterval;
 
-  const postJob_findmaidAPI = () => {
+  const PostJob_findmaidAPI = () => {
     const n_dishes = () => (values.isDishes === false ? 0 : values.amountOfDishes);
     const n_rooms = () => (values.isRooms === false ? 0 : values.areaOfRooms);
     const n_clothes = () => (values.isClothes === false ? 0 : values.amountOfClothes);
+    let works = [];
+
+    console.log('isDishes', values.isDishes);
+    if (values.isDishes) {
+      works = [
+        ...works,
+        { typeOfWork: 'Dish Washing', description: 'None', quantity: parseInt(n_dishes()) },
+      ];
+    }
+
+    if (values.isClothes) {
+      works = [
+        ...works,
+        {
+          typeOfWork: 'House Cleaning',
+          description: 'None',
+          quantity: parseInt(n_rooms()),
+        },
+      ];
+    }
+
+    if (values.isRooms) {
+      works = [
+        ...works,
+        {
+          typeOfWork: 'Laundry',
+          description: 'None',
+          quantity: parseInt(n_clothes()),
+        },
+      ];
+    }
 
     job
       .post('/', {
         workplaceId: values.workplaceId,
-        work: [
-          {
-            typeOfWork: 'Dish Washing',
-            description: 'None',
-            quantity: parseInt(n_dishes()),
-          },
-          {
-            typeOfWork: 'House Cleaning',
-            description: 'None',
-            quantity: parseInt(n_rooms()),
-          },
-          {
-            typeOfWork: 'Laundry',
-            description: 'None',
-            quantity: parseInt(n_clothes()),
-          },
-        ],
+        work: works,
         promotionCode: isPromoAvailable === 'true' ? values.promotionCode : '',
       })
-      .then(response => {
+      .then((response) => {
         console.log('post job/ : ', response);
         var jobId = response.data._id;
         setJobId(jobId);
         jobPutFindmaidAPI(jobId);
       })
-      .catch(error => {
+      .catch((error) => {
         console.error(error);
       });
   };
 
-  const jobPutFindmaidAPI = jobID => {
+  const jobPutFindmaidAPI = (jobID) => {
     job
       .put(`/${jobID}/find-maid`)
-      .then(response => {
+      .then((response) => {
         console.log('put job/{uid}/find-maid : ', response);
         const findmaidID = response.data._id;
         getStatusFindmaidInterval = setInterval(() => getFindmaidStatusAPI(findmaidID), 5000);
       })
-      .catch(error => {
+      .catch((error) => {
         console.error(error);
       });
   };
 
-  const getFindmaidStatusAPI = findMaidID => {
+  const getFindmaidStatusAPI = (findMaidID) => {
     job
       .get(`/${findMaidID}`, {
         timeout: 5000,
       })
-      .then(response => {
+      .then((response) => {
         console.log('get job/{jobId} : ', response);
         if (response.data.state == 'matched') {
           clearInterval(getStatusFindmaidInterval);
@@ -73,7 +96,7 @@ const Page4_maidInfo = ({ setSteps, handleIncrement, isPromoAvailable, setConfir
           console.log('This is your maid', response.data.maidId);
         }
       })
-      .catch(error => {
+      .catch((error) => {
         console.error(error);
         clearInterval(getStatusFindmaidInterval);
         setConfirm('noMatch');
@@ -82,7 +105,7 @@ const Page4_maidInfo = ({ setSteps, handleIncrement, isPromoAvailable, setConfir
   };
 
   useEffect(() => {
-    postJob_findmaidAPI();
+    PostJob_findmaidAPI();
   }, []);
 
   return (
