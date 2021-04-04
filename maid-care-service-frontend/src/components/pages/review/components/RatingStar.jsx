@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { HStack, Text} from '@chakra-ui/react';
 
-const RatingStar = ( {rating, setRating} ) => {
+export const PutRatingStar = ( {rating, setRating} ) => {
   const [hoverRating, setHoverRating] = useState(0);
   const onMouseEnter = (index) => {
     setHoverRating(index);
@@ -32,10 +32,28 @@ const RatingStar = ( {rating, setRating} ) => {
   );
 };
 
-export default RatingStar;
+
+export const GetRatingStar = ( { rating } ) => {
+  const [hoverRating, setHoverRating] = useState(rating);
+  return (
+    <HStack width={230} alignItems="center">
+      {[1, 2, 3, 4, 5].map((index) => {
+        return (
+          <RatingIcon
+          key={index}
+            index={index}
+            rating={rating}
+            hoverRating={hoverRating}
+          />
+        );
+      })}
+      <Text>{rating} / 5 stars</Text>
+    </HStack>
+  );
+};
 
 const RatingIcon = (props) => {
-  const { index, rating, hoverRating, onMouseEnter, onMouseLeave, onSaveRating } = props;
+  const { index, rating, hoverRating, } = props;
   const fill = useMemo(() => {
     if (hoverRating >= index) {
       return 'yellow';
@@ -45,10 +63,7 @@ const RatingIcon = (props) => {
     return 'none';
   }, [rating, hoverRating, index]);
   return (
-    <div
-      onMouseEnter={() => onMouseEnter(index)}
-      onMouseLeave={() => onMouseLeave()}
-      onClick={() => onSaveRating(index)}>
+    <div>
       <StarIcon fill={fill} />
     </div>
   );
