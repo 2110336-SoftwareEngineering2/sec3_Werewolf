@@ -33,9 +33,9 @@ const Page4_maidInfo = ({
       works = [
         ...works,
         {
-          typeOfWork: 'House Cleaning',
+          typeOfWork: 'Laundry',
           description: 'None',
-          quantity: parseInt(n_rooms()),
+          quantity: parseInt(n_clothes()),
         },
       ];
     }
@@ -44,9 +44,9 @@ const Page4_maidInfo = ({
       works = [
         ...works,
         {
-          typeOfWork: 'Laundry',
+          typeOfWork: 'House Cleaning',
           description: 'None',
-          quantity: parseInt(n_clothes()),
+          quantity: parseInt(n_rooms()),
         },
       ];
     }
