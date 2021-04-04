@@ -16,35 +16,33 @@ import {
   ListItem,
 } from '@chakra-ui/react';
 import UserStatus from './../../jobs/components/UserStatus.jsx';
-import { useToast } from "@chakra-ui/react"
+import { useToast } from '@chakra-ui/react';
 import Icon from '@chakra-ui/icon';
 import { FaTshirt, FaRing, FaBroom, FaCheckCircle, FaExclamationCircle } from 'react-icons/fa';
 import Address from './../../jobs/components/Address.jsx';
 import ReviewFormModal from './ReviewFormModal.jsx';
 import RefundFormModal from './RefundFormModal.jsx';
-import { GetRatingStar, PutRatingStar } from './RatingStar.jsx';
+import { GetRatingStar } from './RatingStar.jsx';
 // Re
 
 const PostModal = ({ isOpen, onClose, job, fetchJobById }) => {
   const { _id: jobId, work, workplaceId, customerId, state, maidId, review, rating } = job;
   const [isOpenReview, setOpenReview] = useState(false);
   const [isOpenRefund, setOpenRefund] = useState(false);
+  const [isRefundSubmitted, setRefundSubmitted] = useState(false);
   // Is user write review.
   var d = new Date();
-  const toast = useToast()
-
-  
+  const toast = useToast();
 
   const toastReview = () => {
     toast({
-      title: "Your review is submitted",
-      description: "Thank you for your review",
-      status: "success",
+      title: 'Your review is submitted',
+      description: 'Thank you for your review',
+      status: 'success',
       duration: 9000,
       isClosable: true,
-    })
-  }
-
+    });
+  };
 
   const handleConfirmReview = () => {
     setOpenReview(false);
@@ -54,6 +52,7 @@ const PostModal = ({ isOpen, onClose, job, fetchJobById }) => {
 
   const handleConfirmRefund = () => {
     setOpenRefund(false);
+    setRefundSubmitted(true);
   };
 
   return (
@@ -145,16 +144,20 @@ const PostModal = ({ isOpen, onClose, job, fetchJobById }) => {
                   color="white">
                   Write your Review
                 </Button>
+              ) : isRefundSubmitted === true ? (
+                <HStack>
+                  <Icon as={FaCheckCircle} w={7} h={7} color={`green.400`} p={0} />
+                  <Text>Request refund sent</Text>
+                </HStack>
               ) : (
-                <Button 
-                bg="white" 
-                color="buttonGreen" 
-                borderColor="green" 
-                border="1px"
-                onClick={() => {
-                  setOpenRefund(true);
-                }}
-                >
+                <Button
+                  bg="white"
+                  color="buttonGreen"
+                  borderColor="green"
+                  border="1px"
+                  onClick={() => {
+                    setOpenRefund(true);
+                  }}>
                   Request for Refund
                 </Button>
               )}
@@ -171,12 +174,12 @@ const PostModal = ({ isOpen, onClose, job, fetchJobById }) => {
         handleConfirmReview={handleConfirmReview}
       />
       <RefundFormModal
-      isOpen={isOpenRefund}
-      onClose={() => {
-        setOpenRefund(false);
-      }}
-      job={job}
-      handleConfirmRefund={handleConfirmRefund}
+        isOpen={isOpenRefund}
+        onClose={() => {
+          setOpenRefund(false);
+        }}
+        job={job}
+        handleConfirmRefund={handleConfirmRefund}
       />
     </>
   );
