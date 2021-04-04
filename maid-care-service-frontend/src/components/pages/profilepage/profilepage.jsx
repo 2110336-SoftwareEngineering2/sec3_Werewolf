@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {toJS} from 'mobx';
 import { observer } from 'mobx-react-lite';
-import { Box, Flex, Stack, VStack, HStack, Text, Image, Center } from '@chakra-ui/react';
+import { Box, Flex, Stack, VStack, HStack, Text, Image, Center, Switch } from '@chakra-ui/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {setAvailability} from '../../../api/maid';
 import { faStar, faStarHalf, faCheckCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
@@ -86,7 +86,7 @@ export const ProfilePage = observer(() => {
   function Skill({ title, can }) {
     return (
       <HStack spacing={2}>
-        {can == 1 ? (
+        {can == true ? (
           <FontAwesomeIcon icon={faCheckCircle} color="#48BB78"/>
         ) : ( <FontAwesomeIcon icon={faTimesCircle} color="#E53E3E"/> ) }        
         <Text fontSize="lg"> {title} </Text>
@@ -98,9 +98,9 @@ export const ProfilePage = observer(() => {
     return (
       <Stack spacing={2.5}>
         <Box fontSize="xl" fontWeight="bold">I can do:</Box>
-        <Skill title="Dish Washing" can={1}/>
-        <Skill title="Clothes Ironing" can={0}/>
-        <Skill title="Room Cleaning" can={1}/>
+        <Skill title="Dish Washing" can={true}/>
+        <Skill title="Clothes Ironing" can={true}/>
+        <Skill title="Room Cleaning" can={false}/>
       </Stack>
     );
   };
@@ -109,6 +109,7 @@ export const ProfilePage = observer(() => {
     <Flex bg="brandGreen" align="center" justify="center" minH="100vh">
       <FlexBox>
         <Stack spacing={5}>
+
           <Image
             width="9rem"
             height="2.5rem"
@@ -116,11 +117,13 @@ export const ProfilePage = observer(() => {
             src={MaidLogo}
             alt="Grab MaidCare Logo"
           />
+
           <Center>
           <Text fontSize="2xl" fontWeight="bold">
             Maid Profile
           </Text>
           </Center>
+
           <Stack spacing={14} direction={['column', 'row']}>
             // Left Stack for profile pic and rating
             <VStack spacing={4} justify="center">
@@ -152,7 +155,9 @@ export const ProfilePage = observer(() => {
                   {maidInfo.note}
                 </Text>
               </Box>
+
               {skillChart()}
+              
             </Stack>
           </Stack>
         </Stack>
