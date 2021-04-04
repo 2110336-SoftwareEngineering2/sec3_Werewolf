@@ -1,8 +1,15 @@
 import Icon from '@chakra-ui/icon';
 import { HStack, Spacer, Text, VStack } from '@chakra-ui/layout';
 import React, { useEffect, useState } from 'react';
-import { FaBroom, FaCalendarCheck, FaCheckCircle, FaClock } from 'react-icons/fa';
-import { CONFIRMED, DONE, MATCHED, POSTED } from '../../../../constants/post-state';
+import {
+  FaBroom,
+  FaCalendarCheck,
+  FaCheckCircle,
+  FaClock,
+  FaRegStar,
+  FaStar,
+} from 'react-icons/fa';
+import { CONFIRMED, DONE, MATCHED, POSTED, REVIEWED } from '../../../../constants/post-state';
 
 const JobStatus = ({ job }) => {
   const { state, expiryTime, finishTime, acceptedTime } = job;
@@ -12,6 +19,8 @@ const JobStatus = ({ job }) => {
   ) : state === CONFIRMED ? (
     <InProgressStatus acceptedTime={acceptedTime} />
   ) : state === DONE ? (
+    <WaitForReviewStatus finishTime={finishTime} />
+  ) : state === REVIEWED ? (
     <DoneStatus finishTime={finishTime} />
   ) : state === POSTED ? (
     <CounterStatus expiryTime={expiryTime} />
@@ -91,7 +100,23 @@ const InProgressStatus = ({ acceptedTime }) => {
   );
 };
 
-const WaitForReviewStatus = ({ acceptedTime }) => {};
+const WaitForReviewStatus = ({ finishTime }) => {
+  return (
+    <>
+      <VStack flex={2} alignItems={'flex-end'} p={2}>
+        <Text fontSize={`lg`}>{new Date().toDateString()}</Text>
+        <Text>{new Date(finishTime).toTimeString().slice(0, 8)}</Text>
+
+        <VStack justifyContent={`flex-end`} alignItems={`flex-end`} pt={8}>
+          <Icon as={FaRegStar} w={10} h={10} color={`orange.400`} p={0} />
+          <Text fontSize={`xl`} color={`orange.400`}>
+            Wait for Review
+          </Text>
+        </VStack>
+      </VStack>
+    </>
+  );
+};
 
 const DoneStatus = ({ finishTime }) => {
   return (

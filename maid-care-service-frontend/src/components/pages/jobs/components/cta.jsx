@@ -3,7 +3,7 @@ import { Text } from '@chakra-ui/layout';
 import { useModalContext } from '@chakra-ui/modal';
 import { Spinner } from '@chakra-ui/spinner';
 import { useContext } from 'react';
-import { CONFIRMED, DONE, MATCHED, POSTED } from '../../../../constants/post-state';
+import { CONFIRMED, DONE, MATCHED, POSTED, REVIEWED } from '../../../../constants/post-state';
 import { useStores } from '../../../../hooks/use-stores';
 import { ConfirmContext, DiscardJobContext } from './context/ctx';
 
@@ -16,7 +16,7 @@ const Actions = ({ job, state }) => {
         <MatchedActions />
       ) : state === CONFIRMED ? (
         <ConfirmActions job={job} />
-      ) : state === DONE ? (
+      ) : state === DONE || state === REVIEWED ? (
         <DoneActions />
       ) : (
         <Text>Error!</Text>
