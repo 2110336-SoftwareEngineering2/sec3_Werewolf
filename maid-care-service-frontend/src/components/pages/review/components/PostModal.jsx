@@ -23,7 +23,8 @@ import Address from './../../jobs/components/Address.jsx';
 import ReviewFormModal from './ReviewFormModal.jsx';
 import RefundFormModal from './RefundFormModal.jsx';
 import { GetRatingStar } from './RatingStar.jsx';
-import { job } from './../../../../api';
+import { fetchWorkspaceById } from '../../../../api';
+import Map from '../../../shared/Map.jsx';
 // Re
 
 const PostModal = ({ isOpen, onClose, job, fetchJobById }) => {
@@ -31,6 +32,8 @@ const PostModal = ({ isOpen, onClose, job, fetchJobById }) => {
   const [isOpenReview, setOpenReview] = useState(false);
   const [isOpenRefund, setOpenRefund] = useState(false);
   const [isRefundSubmitted, setRefundSubmitted] = useState(false);
+  const [address, setAddress] = useState(null);
+  const [loading, setLoading] = useState(false);
   // Is user write review.
   var d = new Date();
   const toast = useToast();
@@ -45,6 +48,23 @@ const PostModal = ({ isOpen, onClose, job, fetchJobById }) => {
     setOpenRefund(false);
     setRefundSubmitted(true);
   };
+
+  useEffect(() => {
+    // Get Job Address
+    (async () => {
+      try {
+        setLoading(true);
+        const response = await fetchWorkspaceById(workplaceId);
+        const wsp = response.data;
+        setAddress(wsp);
+        console.log('address lat ', address);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [workplaceId]);
 
   return (
     <>
@@ -64,9 +84,10 @@ const PostModal = ({ isOpen, onClose, job, fetchJobById }) => {
               rowSpan={1}
               colStart={1}
               colEnd={-1}
-              bg={`green.300`}
-              borderRadius={`xl`}
-              zIndex={`toast`}></GridItem>
+              bg={`gray.300`}
+              zIndex={`toast`}>
+                <Map latitude={address === null ? 13.7563 : address.latitude} longtitude={address === null ? 100.5018 : address.longitude} width={"100%"} height={`100%`}/>
+              </GridItem>
             <GridItem as={HStack} rowStart={2} rowSpan={1} colSpan={2} p={4}>
               <UserStatus uid={maidId} />
             </GridItem>
