@@ -11,7 +11,7 @@ import { job } from './../../../api';
 const Review = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [myJob, setMyJob] = useState();
-  const jobId = '6064b08bdefaec00408fb4a3';
+  const jobId = '6062ed7b5b2d5800403cb372';
 
   const fetchJobById = () => {
     job

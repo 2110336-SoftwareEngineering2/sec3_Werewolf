@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Text,
@@ -23,10 +23,11 @@ import Address from './../../jobs/components/Address.jsx';
 import ReviewFormModal from './ReviewFormModal.jsx';
 import RefundFormModal from './RefundFormModal.jsx';
 import { GetRatingStar } from './RatingStar.jsx';
+import { job } from './../../../../api';
 // Re
 
 const PostModal = ({ isOpen, onClose, job, fetchJobById }) => {
-  const { _id: jobId, work, workplaceId, customerId, state, maidId, review, rating } = job;
+  let { _id: jobId, work, workplaceId, maidId, review, rating } = job;
   const [isOpenReview, setOpenReview] = useState(false);
   const [isOpenRefund, setOpenRefund] = useState(false);
   const [isRefundSubmitted, setRefundSubmitted] = useState(false);
@@ -34,20 +35,10 @@ const PostModal = ({ isOpen, onClose, job, fetchJobById }) => {
   var d = new Date();
   const toast = useToast();
 
-  const toastReview = () => {
-    toast({
-      title: 'Your review is submitted',
-      description: 'Thank you for your review',
-      status: 'success',
-      duration: 9000,
-      isClosable: true,
-    });
-  };
 
   const handleConfirmReview = () => {
     setOpenReview(false);
     fetchJobById();
-    toastReview();
   };
 
   const handleConfirmRefund = () => {
@@ -102,7 +93,7 @@ const PostModal = ({ isOpen, onClose, job, fetchJobById }) => {
               <Heading as={`h6`} fontSize={`lg`} fontWeight={`bold`}>
                 Review
               </Heading>
-              <Text>{review === null ? 'อยากบอกอะไรเมต ไหมจ๊ะ? อิอิ' : review}</Text>
+              <Text>{review === null ? 'อยากบอกอะไรเมต ไหมจ๊ะ? อิอิ . . . . . .' : review}</Text>
             </GridItem>
             <GridItem rowStart={4} rowSpan={2} colStart={3} colEnd={7} p={4}>
               {review === null ? (

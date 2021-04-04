@@ -49,6 +49,7 @@ const ReviewFormModal = ({ isOpen, onClose, job, handleConfirmReview = () => {}}
         console.log('put review/', response);
         setReviewText(response.data);
         toastReviewSuccess();
+        handleConfirmReview();
       })
       .catch(error => {
         console.error(error);
@@ -124,9 +125,9 @@ const ReviewFormModal = ({ isOpen, onClose, job, handleConfirmReview = () => {}}
                 <PutRatingStar rating={rating} setRating={setRating} />
               </VStack>
             </GridItem>
-            <GridItem rowStart={3} rowSpan={3} colStart={3} colEnd={-1} p={4}>
+            <GridItem rowStart={3} rowSpan={3} colStart={3} colEnd={-1} p={4} >
               <Text>Write a review for this job</Text>
-              <Textarea value={reviewText} onChange={handleChange} placeholder="Text here...." size="sm" h={'17vw'} />
+              <Textarea value={reviewText} onChange={handleChange} placeholder="Text here...." size="sm" h={'12vw'} />
             </GridItem>
             <GridItem rowSpan={1} colStart={7} colEnd={-1} p={4}>
               <Text>{d.toDateString()}</Text>
@@ -148,7 +149,6 @@ const ReviewFormModal = ({ isOpen, onClose, job, handleConfirmReview = () => {}}
                 bg="buttonGreen"
                 color="white"
                 onClick={ () => {
-                  handleConfirmReview();
                   handleReviewSubmit();
                 }}>
                 Submit
