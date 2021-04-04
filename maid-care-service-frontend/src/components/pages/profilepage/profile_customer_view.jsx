@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
-import { Box, Flex, Stack, VStack, HStack, Text, Image, Switch } from '@chakra-ui/react';
+import { Box, Flex, Stack, VStack, HStack, Text, Image, Center } from '@chakra-ui/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faStar, faStarHalf } from '@fortawesome/free-solid-svg-icons';
+import { faStar, faStarHalf, faCheckCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 import {setAvailability} from '../../../api/maid';
 
 import FlexBox from '../../shared/FlexBox';
@@ -69,6 +69,29 @@ export const ProfilePage = observer(() => {
     }
   };
 
+  //generate each skill for skill chart
+  function Skill({ title, can }) {
+    return (
+      <HStack spacing={2}>
+        {can == true ? (
+          <FontAwesomeIcon icon={faCheckCircle} color="#48BB78"/>
+        ) : ( <FontAwesomeIcon icon={faTimesCircle} color="#E53E3E"/> ) }        
+        <Text fontSize="lg"> {title} </Text>
+      </HStack>      
+    );
+  }
+
+  const skillChart = () => {
+    return (
+      <Stack spacing={2.5}>
+        <Box fontSize="xl" fontWeight="bold">I can do:</Box>
+        <Skill title="Dish Washing" can={true}/>
+        <Skill title="Clothes Ironing" can={true}/>
+        <Skill title="Room Cleaning" can={false}/>
+      </Stack>
+    );
+  };
+
   // calculate age by year
   const age = (DOB) => {
     return(new Date().getFullYear() - new Date(DOB).getFullYear())
@@ -79,7 +102,7 @@ export const ProfilePage = observer(() => {
   return (
     <Flex bg="brandGreen" align="center" justify="center" minH="100vh">
       <FlexBox>
-        <VStack spacing={4}>
+        <Stack spacing={5}>
 
           <Image
             width="9rem"
@@ -88,9 +111,12 @@ export const ProfilePage = observer(() => {
             src={MaidLogo}
             alt="Grab MaidCare Logo"
           />
-          <Text fontSize="2xl" fontWeight="bold" mb="5">
+
+          <Center>
+          <Text fontSize="2xl" fontWeight="bold">
             Maid Profile
           </Text>
+          </Center>
 
           <Stack spacing={14} direction={['column', 'row']}>
             // Left Stack for profile pic and rating
@@ -116,9 +142,12 @@ export const ProfilePage = observer(() => {
                   {maidInfo.note}
                 </Text>
               </Box>
+
+              {skillChart()}
+
             </Stack>
           </Stack>
-        </VStack>
+        </Stack>
       </FlexBox>
     </Flex>
   );
