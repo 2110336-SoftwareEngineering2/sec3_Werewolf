@@ -94,17 +94,17 @@ const PostModal = ({ isOpen, onClose, job, fetchJobById }) => {
               <UserStatus uid={maidId} />
             </GridItem>
             <GridItem as={List} rowStart={3} rowSpan={3} colStart={0} colSpan={2} p={4}>
-              {work &&
-                work.map(({ quantity }, idx) => (
+                {work &&
+                work.map(({ quantity, typeOfWork, unit }, idx) => (
                   <ListItem as={HStack} key={jobId + idx} mt="1vw">
                     <Icon
-                      as={idx === 0 ? FaRing : idx === 1 ? FaBroom : FaTshirt}
+                      as={typeOfWork === 'Dish Washing' ? FaRing : typeOfWork === 'House Cleaning' ? FaBroom : FaTshirt}
                       w={8}
                       h={8}
                       color={`gray.800`}
                     />
                     <Text>
-                      {quantity} {idx === 0 ? 'จาน' : idx === 1 ? 'ตารางเมตร' : 'ตัว'}
+                      {quantity} {unit}
                     </Text>
                   </ListItem>
                 ))}
@@ -159,14 +159,11 @@ const PostModal = ({ isOpen, onClose, job, fetchJobById }) => {
               {review === null ? (
                 <>
                   <Button
-                    bg="white"
-                    color="buttonGreen"
-                    borderColor="green"
-                    border="1px"
+                    bg="buttonGreen"
                     onClick={() => {
-                      setOpenRefund(true);
+                      setOpenReview(true);
                     }}>
-                    Request for Refund
+                    Write your review
                   </Button>
                 </>
               ) : isRefundSubmitted === true ? (
