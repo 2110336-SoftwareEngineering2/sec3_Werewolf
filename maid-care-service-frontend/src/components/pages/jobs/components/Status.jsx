@@ -117,7 +117,7 @@ const WaitForReviewStatus = ({ finishTime }) => {
         <DateAndTime datetime={finishTime} />
         <VStack justifyContent={`flex-end`} alignItems={`flex-end`} pt={8}>
           <Icon as={FaRegStar} w={10} h={10} color={`orange.400`} p={0} />
-          <Text fontSize={`xl`} color={`orange.400`}>
+          <Text fontSize={`md`} fontWeight={`bold`} color={`orange.400`}>
             Wait for Review
           </Text>
         </VStack>

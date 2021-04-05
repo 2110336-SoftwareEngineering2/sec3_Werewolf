@@ -38,7 +38,6 @@ const PostModal = ({ isOpen, onClose, job, fetchJobById }) => {
   var d = new Date();
   const toast = useToast();
 
-
   const handleConfirmReview = () => {
     setOpenReview(false);
     fetchJobById();
@@ -86,8 +85,11 @@ const PostModal = ({ isOpen, onClose, job, fetchJobById }) => {
               colEnd={-1}
               bg={`gray.300`}
               zIndex={`toast`}>
-                <Map latitude={address === null ? 13.7563 : address.latitude} longtitude={address === null ? 100.5018 : address.longitude}/>
-              </GridItem>
+              <Map
+                latitude={address === null ? 13.7563 : address.latitude}
+                longitude={address === null ? 100.5018 : address.longitude}
+              />
+            </GridItem>
             <GridItem as={HStack} rowStart={2} rowSpan={1} colSpan={2} p={4}>
               <UserStatus uid={maidId} />
             </GridItem>
