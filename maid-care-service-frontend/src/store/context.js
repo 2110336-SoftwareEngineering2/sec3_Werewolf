@@ -2,12 +2,13 @@ import { useLocalObservable } from 'mobx-react-lite';
 import { createContext } from 'react';
 import JobsStore from './Jobs';
 import UserStore from './User';
-import ImageStore from './Image';
+import {MultiImageStore, SingleImageStore} from './Image';
 
 export const intialStores = {
   userStore: new UserStore(),
   jobStore: new JobsStore(),
-  imageStore: new ImageStore(),
+  multiImageStore: new MultiImageStore(),
+  singleImageStore: new SingleImageStore(),
 };
 
 export const StoreContext = createContext(null);
