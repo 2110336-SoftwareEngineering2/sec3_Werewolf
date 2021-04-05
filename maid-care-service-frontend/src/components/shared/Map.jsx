@@ -27,10 +27,6 @@ export const Map = ({ latitude, longtitude }) => {
     mapRef.current = map;
   }, []);
 
-  const panTo = React.useCallback(({ lat, lng }) => {
-    mapRef.current.panTo({ lat, lng });
-    mapRef.current.setZoom(15);
-  });
 
   if (isLoadError) return 'Error loading maps';
   if (!isLoaded) return 'Loading Maps';
