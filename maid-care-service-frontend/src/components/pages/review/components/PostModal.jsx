@@ -86,8 +86,8 @@ const PostModal = ({ isOpen, onClose, job, fetchJobById }) => {
               bg={`gray.300`}
               zIndex={`toast`}>
               <Map
-                latitude={address === null ? 13.7563 : 400}
-                longitude={address === null ? 100.5018 : 400}
+                latitude={address === null ? 13.7563 : address.latitude}
+                longitude={address === null ? 100.5018 : address.longitude}
               />
             </GridItem>
             <GridItem as={HStack} rowStart={2} rowSpan={1} colSpan={2} p={4}>
