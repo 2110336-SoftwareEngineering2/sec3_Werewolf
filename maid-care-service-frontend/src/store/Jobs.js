@@ -89,7 +89,7 @@ class JobsStore {
     this.error = false;
     return JobAPI.put(`/${jobId}/done`)
       .then((response) => {
-        this.currentJob = response.data;
+        this.currentJob = null;
         this.loading = false;
         this.fetchAllJobs();
       })
