@@ -80,7 +80,7 @@ const Navbar = observer(() => {
           links = [...links, { name: 'Post', to: '/post/create' }];
           break;
         case 'maid':
-          links = [...links, { name: 'Works', to: '/' }];
+          links = [...links, { name: 'Works', to: '/jobs' }];
           break;
         case 'admin':
           links = [...links, { name: 'Promotion', to: '/promotion' }];
@@ -91,7 +91,7 @@ const Navbar = observer(() => {
     }
 
     return links.map(route => (
-      <Link key={route.name} as={RouterLink} to={route.to}>
+      <Link key={route.name} as={RouterLink} to={route.to} mr={2}>
         <Text fontSize="lg" fontWeight="bold">
           {route.name}
         </Text>

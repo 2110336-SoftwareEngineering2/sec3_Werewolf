@@ -43,7 +43,7 @@ const LogInForm = observer(() => {
     }
   };
 
-  const errorMessage = errors => {
+  const errorMessage = (errors) => {
     const lastError = errors[errors.length - 1];
     switch (lastError.statusCode) {
       case 401:
@@ -62,8 +62,8 @@ const LogInForm = observer(() => {
       })}
       onSubmit={handleSubmit}>
       {({ isSubmitting }) => (
-        <Form>
-          <VStack spacing={4} width={{ sm: '72', md: '96' }}>
+        <Form style={{ width: '100%' }}>
+          <VStack spacing={4}>
             {/* Email Field */}
             <TextInputField
               label="Email"

@@ -1,25 +1,27 @@
 import axios from 'axios';
 
-const job = axios.create({
+// Job API
+export const job = axios.create({
   baseURL: '/api/job',
   headers: {
     'Content-Type': 'application/json',
+    Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
+    secret: process.env.REACT_APP_SECRET || 'secret',
   },
 });
 
-job.interceptors.request.use(
-  config => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers['Authorization'] = `Bearer ${token}`;
-      config.headers['secret'] = process.env.REACT_APP_SECRET;
-    }
-    console.log('interceptor conf', config);
-    return config;
-  },
-  error => {
-    console.log('intercaptor err', error);
-    throw error;
-  }
-);
-export { job };
+export const fetchJobById = async (id) => {
+  return job.get(`/${id}`);
+};
+
+export const fetchJobsByMaidId = async (mid) => {
+  return job.get(`/maid/${mid}`);
+};
+
+export const createJob = async ({ workpalceId, work, promtionCode = null }) => {
+  return job.post('/', {
+    workpalceId,
+    work,
+    promtionCode,
+  });
+};
