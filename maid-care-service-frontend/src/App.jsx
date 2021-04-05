@@ -15,7 +15,8 @@ import Navbar from './components/layouts/Navbar.jsx';
 import JobsPage from './components/pages/jobs/jobs.jsx';
 import { Postjob } from './components/pages/postjob/postjob.jsx';
 import Verification from './components/pages/signup/verfification.jsx';
-import{ UploadImage} from './components/shared/image_test/upload_image.jsx';
+import{ UploadImage} from './components/shared/imageUploader/upload_image_example.jsx';
+import {SingleUpload} from './components/shared/imageUploader/single_image_example';
 
 export const App = () => {
   return (
@@ -39,6 +40,7 @@ export const App = () => {
         <ProtectedRoute exact path="/jobs" component={JobsPage} />
 
         <Route path="/image" component={UploadImage} />
+        <Route path="/single_img" component={SingleUpload} />
       </Switch>
     </ChakraProvider>
   );
