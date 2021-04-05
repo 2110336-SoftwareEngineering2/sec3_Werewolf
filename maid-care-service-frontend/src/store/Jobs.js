@@ -45,7 +45,9 @@ class JobsStore {
   }
 
   getCurrentJobFromJobList({ jobs }) {
-    const filteredJobs = jobs.filter((job) => ![POSTED, REVIEWED, CANCELED].includes(job.state));
+    const filteredJobs = jobs.filter(
+      (job) => ![POSTED, DONE, REVIEWED, CANCELED].includes(job.state)
+    );
     if (filteredJobs.length <= 0) return null;
     return filteredJobs[0];
   }
