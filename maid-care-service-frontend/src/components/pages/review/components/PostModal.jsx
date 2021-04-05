@@ -38,7 +38,6 @@ const PostModal = ({ isOpen, onClose, job, fetchJobById }) => {
   var d = new Date();
   const toast = useToast();
 
-
   const handleConfirmReview = () => {
     setOpenReview(false);
     fetchJobById();
@@ -57,7 +56,7 @@ const PostModal = ({ isOpen, onClose, job, fetchJobById }) => {
         const response = await fetchWorkspaceById(workplaceId);
         const wsp = response.data;
         setAddress(wsp);
-        console.log('address lat ', address);
+        console.log('fetchWorkspaceById : ', address);
       } catch (error) {
         console.error(error);
       } finally {
@@ -86,8 +85,11 @@ const PostModal = ({ isOpen, onClose, job, fetchJobById }) => {
               colEnd={-1}
               bg={`gray.300`}
               zIndex={`toast`}>
-                <Map latitude={address === null ? 13.7563 : address.latitude} longtitude={address === null ? 100.5018 : address.longitude}/>
-              </GridItem>
+              <Map
+                latitude={address === null ? 13.7563 : 400}
+                longitude={address === null ? 100.5018 : 400}
+              />
+            </GridItem>
             <GridItem as={HStack} rowStart={2} rowSpan={1} colSpan={2} p={4}>
               <UserStatus uid={maidId} />
             </GridItem>
@@ -107,16 +109,23 @@ const PostModal = ({ isOpen, onClose, job, fetchJobById }) => {
                   </ListItem>
                 ))}
             </GridItem>
-            <GridItem rowSpan={1} colStart={3} colEnd={7} p={4} alignItems={`baseline`}>
+            <GridItem rowSpan={1} colStart={3} colEnd={7} p={4} alignItems={`baseline`} overflow="hidden" textOverflow="ellipsis">
               <Address workplaceId={workplaceId} />
             </GridItem>
-            <GridItem rowStart={3} rowSpan={1} colStart={3} colEnd={7} p={4}>
+            <GridItem rowStart={3} rowSpan={2} colStart={3} colEnd={-1} p={4}>
               <Heading as={`h6`} fontSize={`lg`} fontWeight={`bold`}>
                 {review === null ? 'Note' : 'Your Review'}
               </Heading>
-              <Text>{review === null ? 'อยากบอกอะไรเมต ไหมจ๊ะ? อิอิ . . . . . .' : review}</Text>
+              <Box
+                width="100%"
+                height="80%"
+                padding="1vw"
+                overflow="hidden"
+                textOverflow="ellipsis">
+                <Text>{review === null ? 'อยากบอกอะไรเมต ไหมจ๊ะ? อิอิ . . . . . .' : review}</Text>
+              </Box>
             </GridItem>
-            <GridItem rowStart={4} rowSpan={2} colStart={3} colEnd={7} p={4}>
+            <GridItem rowStart={5} rowSpan={1} colStart={3} colEnd={-1} p={4}>
               {review === null ? (
                 <HStack>
                   <Icon as={FaExclamationCircle} w={7} h={7} color={`red.400`} p={0} />
@@ -134,7 +143,7 @@ const PostModal = ({ isOpen, onClose, job, fetchJobById }) => {
                 </>
               )}
             </GridItem>
-            <GridItem rowSpan={4} colStart={7} colEnd={-1} p={4}>
+            <GridItem rowSpan={1} colStart={7} colEnd={-1} p={4}>
               <Text>{d.toDateString()}</Text>
               <Text>{d.toTimeString().slice(0, 8)}</Text>
             </GridItem>
@@ -148,14 +157,18 @@ const PostModal = ({ isOpen, onClose, job, fetchJobById }) => {
               colEnd={-1}
               p={4}>
               {review === null ? (
-                <Button
-                  onClick={() => {
-                    setOpenReview(true);
-                  }}
-                  bg="buttonGreen"
-                  color="white">
-                  Write your Review
-                </Button>
+                <>
+                  <Button
+                    bg="white"
+                    color="buttonGreen"
+                    borderColor="green"
+                    border="1px"
+                    onClick={() => {
+                      setOpenRefund(true);
+                    }}>
+                    Request for Refund
+                  </Button>
+                </>
               ) : isRefundSubmitted === true ? (
                 <HStack>
                   <Icon as={FaCheckCircle} w={7} h={7} color={`green.400`} p={0} />
