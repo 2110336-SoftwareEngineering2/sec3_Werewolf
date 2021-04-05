@@ -24,7 +24,7 @@ import UserStatus from './../../jobs/components/UserStatus.jsx';
 import { review } from './../../../../api';
 
 //Review form contain RatingStar component and Textarea.
-const ReviewFormModal = ({ isOpen, onClose, job, handleConfirmReview = () => {} }) => {
+const ReviewFormModal = ({ isOpen, onClose, job, setOpenRefund, handleConfirmReview = () => {} }) => {
   const { _id: jobId, work, maidId } = job;
   var d = new Date();
   const [rating, setRating] = useState(0); // for pass as a argument to RatingStar component and show rating number in this page.
@@ -149,6 +149,16 @@ const ReviewFormModal = ({ isOpen, onClose, job, handleConfirmReview = () => {} 
               colStart={1}
               colEnd={-1}
               p={4}>
+                <Button
+                  bg="white"
+                  color="buttonGreen"
+                  borderColor="green"
+                  border="1px"
+                  onClick={() => {
+                    setOpenRefund(true);
+                  }}>
+                  Request for Refund
+                </Button>
               <Button
                 bg="buttonGreen"
                 color="white"

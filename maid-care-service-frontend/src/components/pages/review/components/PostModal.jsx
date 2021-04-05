@@ -160,6 +160,7 @@ const PostModal = ({ isOpen, onClose, job, fetchJobById }) => {
                 <>
                   <Button
                     bg="buttonGreen"
+                    color="white"
                     onClick={() => {
                       setOpenReview(true);
                     }}>
@@ -194,6 +195,7 @@ const PostModal = ({ isOpen, onClose, job, fetchJobById }) => {
         }}
         job={job}
         handleConfirmReview={handleConfirmReview}
+        setOpenRefund={setOpenRefund}
       />
       <RefundFormModal
         isOpen={isOpenRefund}
