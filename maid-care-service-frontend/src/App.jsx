@@ -27,14 +27,14 @@ export const App = () => {
         </Route>
         <Route exact path="/home" component={Home} />
         <Route exact path="/login" component={LogIn} />
-        <Route path="/promotion" component={Promotion} />
         <Route exact path="/profile/edit" component={EditProfile} />
-        <Route exact path="/workspace" component={Workspace} />
-        <ProtectedRoute exact path="/home" component={Home} />
         <Route exact path="/register" component={SignUp} />
-        <ProtectedRoute path="/post" component={Post} />
-        <Route exact path="/review" component={Review} />
         <Route exact path="/auth/verify/:token" component={Verification} />
+        <ProtectedRoute exact path="/review" component={Review} />
+        <ProtectedRoute exact path="/workspace" component={Workspace} />
+        <ProtectedRoute permission={['admin']} path="/promotion" component={Promotion} />
+        <ProtectedRoute exact path="/home" component={Home} />
+        <ProtectedRoute path="/post" component={Post} />
         <ProtectedRoute path="/promotion" component={Promotion} />
         <ProtectedRoute exact path="/profile/edit" component={EditProfile} />
         <ProtectedRoute exact path="/workspace" component={Workspace} />
