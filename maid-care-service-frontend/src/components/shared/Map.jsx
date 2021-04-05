@@ -1,11 +1,10 @@
+// Note for Map component.
+// - you need to pass latitude and longtitude as a parameter.
+// - size of map is width = 100%, height = 100%, if you want to edit size => you can cover them with a box tag or whatever tag you want and then adjust size of that tag.
+
 import React from 'react';
 import { GoogleMap, useLoadScript, Marker } from '@react-google-maps/api';
 const libraries = ['places'];
-
-// Note for Map component.
-// - you need to pass latitude and longtitude as a parameter.
-// - size of map is width = 100%, height = 100%, if you want to edit size => you can wrap them with a box tag or whatever and then adjust size of that box tag.
-
 
 export const Map = ({ latitude, longtitude }) => {
   const { isLoaded, isLoadError } = useLoadScript({

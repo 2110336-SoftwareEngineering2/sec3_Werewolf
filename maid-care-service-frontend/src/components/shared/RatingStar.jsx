@@ -1,14 +1,17 @@
+// Note for RatingStar component
+//
+// - PutRatingStar using for post/put a rating when user review their jobs. ==> it can be interact with ( click on the icon to give rating )
+//      use case example : use PutRatingStar in review form in order to let user give rating for a maid who responsible for their jobs
+//
+// - GetRatingStar using for get rating information. ==> it can not be interact with.
+//      use case example : use GetRatingStar in maidInfo component in order to get maid rating.
+//
+// - the 2 above function reture five star icon and `{rating} / 5` starts Text. 
+//      If you want them to align horizontally, cover PutRatingStar/GetRatingStar component with HStack or whatever tag you want.
+//      If you want them to align vertically, cover GutRatingStar/GetRatingStar component with VStack or whatever tag you want.
+
 import React, { useState, useMemo } from 'react';
 import { HStack, Text } from '@chakra-ui/react';
-
-// Note for RatingStar component
-// - PutRatingStar using for post/put a rating when user review their jobs.
-//      use case example : use PutRatingStar in  review form in order to let user give rating for a maid who responsible for their jobs
-// - GetRatingStar using for get rating information.
-//      use case example : use GetRatingStar in maidInfo component in order to get maid rating.
-// - the 2 above function reture five star icon and `{rating} / 5` starts Text. 
-//      If you want them to align horizontally, cover PutRatingStar/GetRatingStar component  with HStack or whatever than you want.
-//      If you want them to align vertically, cover GutRatingStar/GetRatingStar component with VStack or whatever than you want.
 
 // PutRatingStar receive rating and setRating which is a useState component
 export const PutRatingStar = ({ rating, setRating }) => {
