@@ -1,11 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { toJS } from 'mobx';
 import { observer } from 'mobx-react-lite';
-<<<<<<< Updated upstream
-import { Box, Flex, Stack, VStack, HStack, Text, Image, Center, Switch } from '@chakra-ui/react';
-||||||| constructed merge base
-import { Box, Flex, Stack, VStack, HStack, Text, Image, Switch } from '@chakra-ui/react';
-=======
 import {
   Box,
   Flex,
@@ -17,19 +12,11 @@ import {
   Switch,
   Button,
   Link,
+  Center
 } from '@chakra-ui/react';
->>>>>>> Stashed changes
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-<<<<<<< Updated upstream
 import {setAvailability} from '../../../api/maid';
-import { faStar, faStarHalf, faCheckCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
-||||||| constructed merge base
-import { faStar, faStarHalf } from '@fortawesome/free-solid-svg-icons';
-import {setAvailability} from '../../../api/maid';
-=======
-import { faPencilAlt, faStar, faStarHalf } from '@fortawesome/free-solid-svg-icons';
-import { setAvailability } from '../../../api/maid';
->>>>>>> Stashed changes
+import { faStar, faStarHalf, faCheckCircle, faTimesCircle , faPencilAlt} from '@fortawesome/free-solid-svg-icons';
 
 import FlexBox from '../../shared/FlexBox';
 import MaidLogo from '../../../MaidLogo.svg';
@@ -129,15 +116,7 @@ export const ProfilePage = observer(() => {
   return (
     <Flex bg="brandGreen" align="center" justify="center" minH="100vh" maxW="100vw">
       <FlexBox>
-<<<<<<< Updated upstream
-        <Stack spacing={5}>
-
-||||||| constructed merge base
         <VStack spacing={4}>
-
-=======
-        <VStack spacing={4}>
->>>>>>> Stashed changes
           <Image
             width="9rem"
             height="2.5rem"
@@ -145,16 +124,9 @@ export const ProfilePage = observer(() => {
             src={MaidLogo}
             alt="Grab MaidCare Logo"
           />
-<<<<<<< Updated upstream
 
           <Center>
-          <Text fontSize="2xl" fontWeight="bold">
-||||||| constructed merge base
           <Text fontSize="2xl" fontWeight="bold" mb="5">
-=======
-
-          <Text fontSize="2xl" fontWeight="bold" mb="5">
->>>>>>> Stashed changes
             Maid Profile
           </Text>
           </Center>
@@ -197,7 +169,7 @@ export const ProfilePage = observer(() => {
               
             </Stack>
           </Stack>
-        </Stack>
+        </VStack>
       </FlexBox>
     </Flex>
   );
