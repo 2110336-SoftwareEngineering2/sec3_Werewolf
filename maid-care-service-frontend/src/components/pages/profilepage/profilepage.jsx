@@ -12,7 +12,8 @@ import {
   Switch,
   Button,
   Link,
-  Center
+  Center,
+  Spacer
 } from '@chakra-ui/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {setAvailability} from '../../../api/maid';
@@ -116,7 +117,9 @@ export const ProfilePage = observer(() => {
   return (
     <Flex bg="brandGreen" align="center" justify="center" minH="100vh" maxW="100vw">
       <FlexBox>
-        <VStack spacing={4}>
+        <Stack spacing={4}>
+
+          <Flex>
           <Image
             width="9rem"
             height="2.5rem"
@@ -124,20 +127,19 @@ export const ProfilePage = observer(() => {
             src={MaidLogo}
             alt="Grab MaidCare Logo"
           />
+          <Spacer />
+          <Button bg="buttonGreen" color="white">
+            <Link href="/profile/edit">
+              <FontAwesomeIcon icon={faPencilAlt} /> Edit Profile
+            </Link>
+          </Button>
+          </Flex>
 
           <Center>
           <Text fontSize="2xl" fontWeight="bold" mb="5">
             Maid Profile
           </Text>
           </Center>
-
-          <Flex w="100%" justify={{ base: 'center', md: 'flex-end' }}>
-            <Button bg="buttonGreen" color="white">
-              <Link href="/profile/edit">
-                <FontAwesomeIcon icon={faPencilAlt} /> Edit Profile
-              </Link>
-            </Button>
-          </Flex>
 
           <Stack spacing={14} direction={['column', 'row']}>
             // Left Stack for profile pic and rating
@@ -169,7 +171,7 @@ export const ProfilePage = observer(() => {
               
             </Stack>
           </Stack>
-        </VStack>
+        </Stack>
       </FlexBox>
     </Flex>
   );
