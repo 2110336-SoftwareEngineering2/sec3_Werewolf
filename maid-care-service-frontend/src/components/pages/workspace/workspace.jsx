@@ -43,7 +43,7 @@ import { string } from 'yup/lib/locale';
 const libraries = ['places'];
 
 // defauleCenter is default position when page is rerendering.
-// default position is latitude and longtitude of Bangkok.
+// default position is latitude and longitude of Bangkok.
 const defauleCenter = {
   lat: 13.7563,
   lng: 100.5018,
@@ -176,7 +176,7 @@ const InfoSidebar = observer(({ panTo, markers, setMarkers }) => {
           }}
           validationSchema={yup}
           onSubmit={handleSubmit}>
-          <Form style={{width: "100%"}}>
+          <Form style={{ width: '100%' }}>
             <Box pos="relative" width="100%" justifyContent="center">
               <FormControl id="country" width={{ sm: '270px', md: '368px' }}>
                 <TextInputField label="House NO." placeholder="Text Here" name="houseNo" />
@@ -392,7 +392,7 @@ const SearchLocation = ({ panTo, setMarkers }) => {
   );
 };
 
-// This is a function which locate user location by get latitude and longtitude from user GPS.
+// This is a function which locate user location by get latitude and longitude from user GPS.
 // To make this function works, user must give permission in their browser.
 
 // This function get location by use navigator.geolocation.getCurrentPosition(...)

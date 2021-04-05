@@ -36,8 +36,7 @@ export const Map = ({ latitude, longitude }) => {
       zoom={15}
       center={defauleCenter}
       onLoad={onMapLoad}
-
-      >
+      options={{ gestureHandling: 'none', disableDefaultUI: true }}>
       <Marker position={{ lat: latitude, lng: longitude }} />
     </GoogleMap>
   );

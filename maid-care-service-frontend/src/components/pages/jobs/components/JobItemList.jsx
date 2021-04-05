@@ -1,4 +1,5 @@
 import { Box, Container, Flex, HStack, Stack, Text, VStack } from '@chakra-ui/layout';
+import Map from '../../../shared/Map';
 
 import Status from './Status';
 import UserStatus from './UserStatus';
@@ -7,7 +8,11 @@ const JobItem = ({ job }) => {
   const { customerId } = job;
 
   const renderMap = () => {
-    return <Box flex={3} minW={`10rem`} bgColor="green.400" alignSelf={`stretch`}></Box>;
+    return (
+      <Box flex={3} minW={`10rem`} bgColor="green.400" alignSelf={`stretch`}>
+        <Map latitude={0} longitude={10} />
+      </Box>
+    );
   };
 
   return (
