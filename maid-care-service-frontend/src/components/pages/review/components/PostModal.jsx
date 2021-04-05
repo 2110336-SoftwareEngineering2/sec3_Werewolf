@@ -120,8 +120,8 @@ const PostModal = ({ isOpen, onClose, job, fetchJobById }) => {
                 width="100%"
                 height="80%"
                 padding="1vw"
-                overflow="hidden"
-                textOverflow="ellipsis">
+                overflow="scroll"
+                >
                 <Text>{review === null ? 'อยากบอกอะไรเมต ไหมจ๊ะ? อิอิ . . . . . .' : review}</Text>
               </Box>
             </GridItem>
