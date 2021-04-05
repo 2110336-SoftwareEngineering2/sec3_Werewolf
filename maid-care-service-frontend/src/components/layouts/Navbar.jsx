@@ -88,7 +88,7 @@ const Navbar = observer(() => {
     if (isAuthenticated && user) {
       switch (user.role) {
         case 'customer':
-          links = [...links, { name: 'Post', to: '/post/create' }];
+          links = [...links, { name: 'Post', to: '/post' }];
           break;
         case 'maid':
           links = [...links, { name: 'Works', to: '/jobs' }];
@@ -101,7 +101,7 @@ const Navbar = observer(() => {
       }
     }
 
-    return links.map(route => (
+    return links.map((route) => (
       <Link key={route.name} as={RouterLink} to={route.to} mr={2}>
         <Text fontSize="lg" fontWeight="bold">
           {route.name}

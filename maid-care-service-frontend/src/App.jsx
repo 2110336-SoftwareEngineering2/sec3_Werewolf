@@ -32,13 +32,12 @@ export const App = () => {
         <Route exact path="/workspace" component={Workspace} />
         <ProtectedRoute exact path="/home" component={Home} />
         <Route exact path="/register" component={SignUp} />
-        <Route exact path="/post" component={Post} />
-        \<Route exact path="/review" component={Review} />
+        <ProtectedRoute path="/post" component={Post} />
+        <Route exact path="/review" component={Review} />
         <Route exact path="/auth/verify/:token" component={Verification} />
         <ProtectedRoute path="/promotion" component={Promotion} />
         <ProtectedRoute exact path="/profile/edit" component={EditProfile} />
         <ProtectedRoute exact path="/workspace" component={Workspace} />
-		    <Route path="/postjob" component={Postjob} />
         <ProtectedRoute exact path="/jobs" component={JobsPage} />
       </Switch>
     </ChakraProvider>
