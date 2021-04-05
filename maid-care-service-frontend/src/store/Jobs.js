@@ -102,7 +102,20 @@ class JobsStore {
   }
 
   async discard({ jobId }) {
-    // TODO: Maid Discard Current Job
+    this.loading = true;
+    this.error = false;
+    return JobAPI.put(`/${jobId}/maid-cancel-job`)
+      .then((response) => {
+        this.currentJob = null;
+        this.loading = false;
+        this.fetchAllJobs();
+      })
+      .catch((error) => {
+        console.error(error);
+        this.error = error;
+        this.loading = false;
+        throw error;
+      });
   }
 }
 

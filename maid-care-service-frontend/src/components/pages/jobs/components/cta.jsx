@@ -1,25 +1,34 @@
 import { Button } from '@chakra-ui/button';
-import { useDisclosure } from '@chakra-ui/hooks';
 import { Text } from '@chakra-ui/layout';
 import { useModalContext } from '@chakra-ui/modal';
-import { Portal } from '@chakra-ui/portal';
 import { Spinner } from '@chakra-ui/spinner';
-import { toast } from '@chakra-ui/toast';
-import { CONFIRMED, DONE, MATCHED, POSTED } from '../../../../constants/post-state';
+import { useContext } from 'react';
+import {
+  CANCELED,
+  CONFIRMED,
+  DONE,
+  MATCHED,
+  POSTED,
+  REVIEWED,
+} from '../../../../constants/post-state';
 import { useStores } from '../../../../hooks/use-stores';
-import { AlertModal, ConfirmModal, SuccessModal } from './modals';
+import { ConfirmContext, DiscardJobContext } from './context/ctx';
 
 const Actions = ({ job, state }) => {
-  return state === POSTED ? (
-    <PostedActions job={job} />
-  ) : state === MATCHED ? (
-    <MatchedActions />
-  ) : state === CONFIRMED ? (
-    <ConfirmActions job={job} />
-  ) : state === DONE ? (
-    <DoneActions />
-  ) : (
-    <Text>Error!</Text>
+  return (
+    <>
+      {state === POSTED ? (
+        <PostedActions job={job} />
+      ) : state === MATCHED ? (
+        <MatchedActions />
+      ) : state === CONFIRMED ? (
+        <ConfirmActions job={job} />
+      ) : state === DONE || REVIEWED || CANCELED ? (
+        <DoneActions />
+      ) : (
+        <Text>Error!</Text>
+      )}
+    </>
   );
 };
 
@@ -30,7 +39,6 @@ const PostedActions = ({ job }) => {
   const { onClose } = useModalContext();
   const { jobStore } = useStores();
   const { _id: jobId } = job;
-
   const currentJob = jobStore.currentJob;
   const loading = jobStore.loading;
 
@@ -70,34 +78,39 @@ const MatchedActions = () => {
 };
 
 const ConfirmActions = ({ job }) => {
-  const alertDisclosure = useDisclosure();
-  const confirmDisclosure = useDisclosure();
-  const successDisclosure = useDisclosure();
+  const { setIsConfirmModalOpen } = useContext(ConfirmContext);
+  const { setIsDiscardModalOpen } = useContext(DiscardJobContext);
 
   return (
     <>
-      <Button colorScheme={`red`} onClick={alertDisclosure.onOpen}>
+      <Button
+        colorScheme={`red`}
+        onClick={() => {
+          setIsDiscardModalOpen(true);
+        }}>
         Discard
       </Button>
-      <Button colorScheme={`orange`} onClick={confirmDisclosure.onOpen}>
-        Make a job done
+      <Button
+        colorScheme={`orange`}
+        onClick={() => {
+          setIsConfirmModalOpen(true);
+        }}>
+        Finish
       </Button>
-
-      <AlertModal {...alertDisclosure} />
-
-      <Portal>
-        <ConfirmModal
-          job={job}
-          {...confirmDisclosure}
-          onSuccess={() => toast({ description: 'some text' })}
-        />
-      </Portal>
     </>
   );
 };
 
 const DoneActions = () => {
-  return <></>;
+  const { onClose } = useModalContext();
+
+  return (
+    <>
+      <Button variant={`outline`} onClick={onClose}>
+        Close
+      </Button>
+    </>
+  );
 };
 
 export default Actions;

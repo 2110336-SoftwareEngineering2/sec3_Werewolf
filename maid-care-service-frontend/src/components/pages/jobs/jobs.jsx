@@ -8,6 +8,7 @@ import { observer } from 'mobx-react-lite';
 import React, { createContext, useEffect, useMemo, useState } from 'react';
 import { CONFIRMED, DONE, MATCHED, POSTED } from '../../../constants/post-state';
 import { useStores } from '../../../hooks/use-stores';
+import { MaidDiscardJobModal } from '../../shared/modals/modals';
 
 import JobItemList from './components/JobItemList';
 import JobItemModal from './components/JobItemModal';
@@ -35,6 +36,7 @@ const JobsPage = observer(() => {
     }
   }, [currentJob]);
 
+  // Fetch every 5 seconds
   useEffect(() => {
     const fetchJobsInterval = setInterval(async () => {
       await jobStore.fetchAllJobs();
@@ -56,25 +58,16 @@ const JobsPage = observer(() => {
     onClose();
   };
 
+  // Fetch user data
   useEffect(() => {
     if (curUser) jobStore.fetchAllJobs(curUser._id);
   }, [curUser, jobStore]);
 
-  const renderModal = () => {
+  const renderSelectedJobModal = () => {
     return (
-      <Modal
-        isCentered
-        closeOnOverlayClick={false}
-        isOpen={isOpen}
-        onClose={() => handleClose()}
-        size={`3xl`}>
-        <ModalOverlay />
-        <ModalContent overflow={'hidden'} borderRadius={`xl`}>
-          <ModalCloseButton zIndex={`tooltip`} />
-          {/* Job Modal */}
-          <JobItemModal job={selected} />
-        </ModalContent>
-      </Modal>
+      <>
+        <JobItemModal job={selected} isOpen={isOpen} onClose={handleClose} />
+      </>
     );
   };
 
@@ -109,7 +102,7 @@ const JobsPage = observer(() => {
           )}
         </List>
       </Container>
-      {selected && renderModal()}
+      {selected && renderSelectedJobModal()}
     </Flex>
   );
 });
