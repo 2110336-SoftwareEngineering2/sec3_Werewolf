@@ -32,7 +32,7 @@ import { GetRatingStar } from '../../../shared/RatingStar';
 import { REVIEWED } from '../../../../constants/post-state';
 
 const JobItemModal = ({ job, isOpen, onClose, actions: Actions }) => {
-  const { _id: jobId, work, workplaceId, customerId, state, rating, review } = job;
+  const { _id: jobId, work, workplaceId, customerId, maidId, state, rating, review } = job;
   const { jobStore, userStore } = useStores();
   const toast = useToast();
 
@@ -40,6 +40,7 @@ const JobItemModal = ({ job, isOpen, onClose, actions: Actions }) => {
   const [workspace, setWorkspace] = useState(null);
 
   const curUser = userStore.userData;
+  const userRole = curUser.role;
 
   useEffect(() => {
     (async () => {
@@ -126,7 +127,7 @@ const JobItemModal = ({ job, isOpen, onClose, actions: Actions }) => {
         isOpen={isOpen}
         onClose={onClose}
         size={`3xl`}
-        scrollBehavior={`outside`}>
+        scrollBehavior={`inside`}>
         <ModalOverlay />
         <ModalContent borderRadius={`xl`}>
           <ModalCloseButton zIndex={`tooltip`} />
@@ -153,7 +154,7 @@ const JobItemModal = ({ job, isOpen, onClose, actions: Actions }) => {
               )}
             </GridItem>
             <GridItem as={HStack} rowStart={2} rowSpan={1} colSpan={2} p={4}>
-              <UserStatus uid={customerId} />
+              <UserStatus uid={userRole === 'maid' ? customerId : maidId} />
             </GridItem>
             <GridItem as={List} rowStart={3} rowSpan={2} colStart={0} colSpan={2} p={4}>
               {work &&
