@@ -117,6 +117,10 @@ class JobsStore {
         throw error;
       });
   }
+
+  async discard({ jobId }) {
+    // TODO: Maid Discard Current Job
+  }
 }
 
 export default JobsStore;

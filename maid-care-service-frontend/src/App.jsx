@@ -13,6 +13,8 @@ import Promotion from './components/pages/promotion/promotion.jsx';
 import Navbar from './components/layouts/Navbar.jsx';
 import JobsPage from './components/pages/jobs/jobs.jsx';
 import { Postjob } from './components/pages/postjob/postjob.jsx';
+import Post from './components/pages/post/post.jsx';
+import Review from './components/pages/review/review.jsx';
 import Verification from './components/pages/signup/verfification.jsx';
 
 export const App = () => {
@@ -25,12 +27,17 @@ export const App = () => {
         </Route>
         <Route exact path="/home" component={Home} />
         <Route exact path="/login" component={LogIn} />
+        <Route exact path="/profile/edit" component={EditProfile} />
         <Route exact path="/register" component={SignUp} />
         <Route exact path="/auth/verify/:token" component={Verification} />
+        <ProtectedRoute exact path="/review" component={Review} />
+        <ProtectedRoute exact path="/workspace" component={Workspace} />
+        <ProtectedRoute permission={['admin']} path="/promotion" component={Promotion} />
+        <ProtectedRoute exact path="/home" component={Home} />
+        <ProtectedRoute path="/post" component={Post} />
         <ProtectedRoute path="/promotion" component={Promotion} />
         <ProtectedRoute exact path="/profile/edit" component={EditProfile} />
         <ProtectedRoute exact path="/workspace" component={Workspace} />
-		    <Route path="/postjob" component={Postjob} />
         <ProtectedRoute exact path="/jobs" component={JobsPage} />
       </Switch>
     </ChakraProvider>
