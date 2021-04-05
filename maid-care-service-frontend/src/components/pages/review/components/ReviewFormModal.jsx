@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { PutRatingStar } from './RatingStar.jsx';
+import { PutRatingStar } from '../../../shared/RatingStar';
 import { FaTshirt, FaRing, FaBroom } from 'react-icons/fa';
 import { useToast } from "@chakra-ui/react"
 import {
@@ -142,9 +142,6 @@ const ReviewFormModal = ({ isOpen, onClose, job, handleConfirmReview = () => {}}
               colStart={1}
               colEnd={-1}
               p={4}>
-              <Button bg="white" color="buttonGreen" borderColor="green" border="1px">
-                Request for Refund
-              </Button>
               <Button
                 bg="buttonGreen"
                 color="white"

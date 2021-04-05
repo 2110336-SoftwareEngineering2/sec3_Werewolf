@@ -22,7 +22,7 @@ import { FaTshirt, FaRing, FaBroom, FaCheckCircle, FaExclamationCircle } from 'r
 import Address from './../../jobs/components/Address.jsx';
 import ReviewFormModal from './ReviewFormModal.jsx';
 import RefundFormModal from './RefundFormModal.jsx';
-import { GetRatingStar } from './RatingStar.jsx';
+import { GetRatingStar } from '../../../shared/RatingStar.jsx';
 import { fetchWorkspaceById } from '../../../../api';
 import Map from '../../../shared/Map.jsx';
 // Re
@@ -86,7 +86,7 @@ const PostModal = ({ isOpen, onClose, job, fetchJobById }) => {
               colEnd={-1}
               bg={`gray.300`}
               zIndex={`toast`}>
-                <Map latitude={address === null ? 13.7563 : address.latitude} longtitude={address === null ? 100.5018 : address.longitude} width={"100%"} height={`100%`}/>
+                <Map latitude={address === null ? 13.7563 : address.latitude} longtitude={address === null ? 100.5018 : address.longitude}/>
               </GridItem>
             <GridItem as={HStack} rowStart={2} rowSpan={1} colSpan={2} p={4}>
               <UserStatus uid={maidId} />
@@ -112,7 +112,7 @@ const PostModal = ({ isOpen, onClose, job, fetchJobById }) => {
             </GridItem>
             <GridItem rowStart={3} rowSpan={1} colStart={3} colEnd={7} p={4}>
               <Heading as={`h6`} fontSize={`lg`} fontWeight={`bold`}>
-                Review
+                {review === null ? 'Note' : 'Your Review'}
               </Heading>
               <Text>{review === null ? 'อยากบอกอะไรเมต ไหมจ๊ะ? อิอิ . . . . . .' : review}</Text>
             </GridItem>

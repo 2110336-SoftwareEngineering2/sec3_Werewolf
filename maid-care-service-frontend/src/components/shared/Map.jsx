@@ -27,7 +27,6 @@ export const Map = ({ latitude, longtitude }) => {
     mapRef.current = map;
   }, []);
 
-
   if (isLoadError) return 'Error loading maps';
   if (!isLoaded) return 'Loading Maps';
 
