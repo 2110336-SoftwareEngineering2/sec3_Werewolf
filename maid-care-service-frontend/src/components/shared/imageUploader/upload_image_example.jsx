@@ -4,12 +4,14 @@ import {toJS} from 'mobx';
 
 import { VStack, HStack, Input,Image, Spinner, IconButton,Box,Stack } from '@chakra-ui/react';
 
-import {useStores} from '../../../hooks/use-stores'
+import {MultiImageStore} from '../../../store/Image'
 import { CloseIcon } from '@chakra-ui/icons';
 
-export const UploadImage = observer(() => {
 
-  const {multiImageStore} = useStores();
+const multiImageStore = new MultiImageStore();
+
+
+export const UploadImage = observer(() => {
   
   const handleUpload = async (e) => {
     const file = e.target.files[0];
@@ -20,7 +22,6 @@ export const UploadImage = observer(() => {
     else{
       try{
         multiImageStore.upload(file,file.name)
-        console.log(toJS(multiImageStore.path_list))
       }
       catch(error){
         console.log(error)
@@ -28,11 +29,15 @@ export const UploadImage = observer(() => {
     }
   };
 
+  
+
   const handleDelete = (e) => {
     const img_name = e.currentTarget.getAttribute('name')
     multiImageStore.delete(img_name)
     
   }
+
+  //console.log(toJS(multiImageStore.path_list))
 
   return (
     <Box className="App">

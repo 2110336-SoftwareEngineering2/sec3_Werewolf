@@ -3,11 +3,11 @@ import { observer } from 'mobx-react-lite';
 
 import { VStack, HStack, Input, Image, Spinner, IconButton, Box, Stack } from '@chakra-ui/react';
 
-import { useStores } from '../../../hooks/use-stores';
+import {SingleImageStore} from '../../../store/Image'
 
 
 export const SingleUpload = observer(() => {
-  const { singleImageStore } = useStores();
+  const singleImageStore  = new SingleImageStore();
 
   const handleUpload = async (e) => {
     const file = e.target.files[0];
