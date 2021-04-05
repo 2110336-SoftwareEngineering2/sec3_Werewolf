@@ -1,14 +1,20 @@
 import { Box, Center, Container, HStack, Text, VStack } from '@chakra-ui/layout';
 import { Spinner } from '@chakra-ui/spinner';
 import { memo, useEffect, useState } from 'react';
-import { fetchWorkspaceById } from '../../../../api';
-import Map from '../../../shared/Map';
+import { fetchWorkspaceById } from '../../../api';
+import Map from '../Map';
 
-import Status from './Status';
-import UserStatus from './UserStatus';
+import Status from '../../pages/jobs/components/Status';
+import UserStatus from '../../pages/jobs/components/UserStatus';
+import { useStores } from '../../../hooks/use-stores';
+import { observer } from 'mobx-react-lite';
 
-const JobItem = ({ job }) => {
-  const { customerId, workplaceId } = job;
+const JobItem = observer(({ job }) => {
+  const { customerId, maidId, workplaceId } = job;
+  const { userStore } = useStores();
+
+  const curUser = userStore.userData;
+  const userRole = curUser.role;
 
   const [loading, setLoading] = useState(false);
   const [workspace, setWorkspace] = useState(null);
@@ -57,7 +63,7 @@ const JobItem = ({ job }) => {
           <VStack flex={6} alignItems="felx-start" spacing={4}>
             <VStack justifyContent="flex-start" alignItems="flex-start">
               <HStack>
-                <UserStatus uid={customerId} />
+                <UserStatus uid={userRole === 'maid' ? customerId : maidId} />
               </HStack>
             </VStack>
             <Box>
@@ -75,6 +81,6 @@ const JobItem = ({ job }) => {
       </HStack>
     </Container>
   );
-};
+});
 
 export default memo(JobItem);

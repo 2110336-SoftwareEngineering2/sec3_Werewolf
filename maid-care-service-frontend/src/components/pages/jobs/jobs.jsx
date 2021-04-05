@@ -17,8 +17,9 @@ import {
 import { useStores } from '../../../hooks/use-stores';
 import { MaidDiscardJobModal } from '../../shared/modals/modals';
 
-import JobItemList from './components/JobItemList';
+import JobItemList from '../../shared/jobs/JobItemList';
 import JobItemModal from './components/JobItemModal';
+import Actions from './components/cta';
 
 const JobsPage = observer(() => {
   const { userStore, jobStore } = useStores();
@@ -82,7 +83,7 @@ const JobsPage = observer(() => {
   const renderSelectedJobModal = () => {
     return (
       <>
-        <JobItemModal job={selected} isOpen={isOpen} onClose={handleClose} />
+        <JobItemModal job={selected} isOpen={isOpen} onClose={handleClose} actions={Actions} />
       </>
     );
   };

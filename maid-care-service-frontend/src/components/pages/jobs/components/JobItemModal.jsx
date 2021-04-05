@@ -23,7 +23,6 @@ import Map from '../../../shared/Map';
 import { ConfirmModal, DiscardJobModal } from '../../../shared/modals/modals';
 import Address from './Address';
 import { ConfirmContext, DiscardJobContext } from './context/ctx';
-import Actions from './cta';
 import Status from './Status';
 import UserStatus from './UserStatus';
 import { fetchWorkspaceById } from '../../../../api';
@@ -32,13 +31,15 @@ import { DISH_WASHING, HOUSE_CLEANING } from '../../../../constants/type-of-work
 import { GetRatingStar } from '../../../shared/RatingStar';
 import { REVIEWED } from '../../../../constants/post-state';
 
-const JobItemModal = ({ job, isOpen, onClose }) => {
+const JobItemModal = ({ job, isOpen, onClose, actions: Actions }) => {
   const { _id: jobId, work, workplaceId, customerId, state, rating, review } = job;
-  const { jobStore } = useStores();
+  const { jobStore, userStore } = useStores();
   const toast = useToast();
 
   const [loading, setLoading] = useState(false);
   const [workspace, setWorkspace] = useState(null);
+
+  const curUser = userStore.userData;
 
   useEffect(() => {
     (async () => {
@@ -220,37 +221,6 @@ const JobItemModal = ({ job, isOpen, onClose }) => {
                     Lorem ipsum dolor sit amet, consectetur adipisicing elit. Esse eveniet placeat
                     voluptate quasi sed culpa asperiores rem quia distinctio minima amet, expedita
                     itaque maxime. Ducimus hic quidem veritatis delectus suscipit nesciunt aliquam
-                    necessitatibus a cupiditate, excepturi expedita natus consectetur! Ad sed. Lorem
-                    ipsum dolor sit amet consectetur adipisicing elit. Recusandae hic sed est porro
-                    accusamus! Ducimus nihil, excepturi laudantium porro ut sed quam sequi illum
-                    unde atque dolores, veritatis tenetur modi veniam tempore quibusdam culpa
-                    sapiente corrupti amet quisquam consectetur praesentium asperiores. Aperiam
-                    cumque sunt assumenda! Eum laudantium amet, et magni dolorum nam non quis
-                    expedita? Debitis necessitatibus neque, blanditiis, quia optio harum id dolores
-                    sapiente culpa dolor facere. Incidunt laboriosam officia praesentium autem
-                    officiis perferendis et cupiditate nesciunt ut accusamus? Expedita, corrupti
-                    unde aliquam illum excepturi eius ipsa. Soluta, eos! Vel natus incidunt expedita
-                    vero facilis nihil architecto corrupti aut perferendis fuga quasi neque deleniti
-                    explicabo inventore laborum ducimus nam assumenda facere, odit consectetur
-                    repellat nulla. Nobis, quo excepturi labore doloribus ab inventore numquam
-                    possimus veniam commodi quam corporis nesciunt, saepe architecto iste cum autem
-                    sint quis, tempora qui rerum omnis quibusdam cupiditate! Fugiat natus saepe quos
-                    consectetur sint! Officia reiciendis asperiores earum, corrupti quae atque
-                    voluptatem mollitia velit eligendi totam iusto esse alias voluptatibus soluta
-                    repudiandae deserunt doloribus autem nostrum ipsa perferendis aperiam quos iure
-                    itaque? Molestiae eveniet neque natus soluta illo, dolores magnam libero aliquam
-                    quis nihil sit minima veniam error saepe laudantium reiciendis perspiciatis
-                    voluptate ullam amet. Quo molestias magni exercitationem dignissimos facilis!
-                    Soluta repudiandae, consectetur aut porro deserunt sit harum qui ullam est
-                    aliquam unde ipsa? Consequatur aliquid doloremque architecto maiores ullam
-                    tenetur omnis dolores. Quas iste rerum, commodi, eum nesciunt autem praesentium
-                    eligendi illo doloribus eaque qui blanditiis corporis? Nostrum laudantium
-                    eligendi quia libero culpa, consectetur aspernatur debitis accusantium itaque?
-                    In vero labore reprehenderit ipsum quas, officia rerum delectus fugiat
-                    temporibus dicta tenetur nisi dolorem deleniti impedit odit ipsam? Vel aperiam
-                    doloremque aliquid at laborum! Autem mollitia recusandae amet architecto
-                    voluptas esse nihil corporis excepturi, hic officiis dolor vero quibusdam, vel
-                    quasi omnis eos distinctio.
                   </Text>
                 </GridItem>
               </>
@@ -274,7 +244,7 @@ const JobItemModal = ({ job, isOpen, onClose }) => {
                     isDiscardJobModalOpen,
                     setIsDiscardModalOpen,
                   }}>
-                  <Actions job={job} state={state} />
+                  {curUser && <Actions job={job} />}
                 </DiscardJobContext.Provider>
               </ConfirmContext.Provider>
             </GridItem>
