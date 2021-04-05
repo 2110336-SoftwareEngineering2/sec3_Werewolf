@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { PutRatingStar } from '../../../shared/RatingStar';
 import { FaTshirt, FaRing, FaBroom } from 'react-icons/fa';
-import { useToast } from "@chakra-ui/react"
+import { useToast } from '@chakra-ui/react';
 import {
   Box,
   Text,
@@ -18,64 +18,63 @@ import {
   List,
   ButtonGroup,
   ListItem,
-  Icon
+  Icon,
 } from '@chakra-ui/react';
 import UserStatus from './../../jobs/components/UserStatus.jsx';
 import { review } from './../../../../api';
 
 //Review form contain RatingStar component and Textarea.
-const ReviewFormModal = ({ isOpen, onClose, job, handleConfirmReview = () => {}}) => {
+const ReviewFormModal = ({ isOpen, onClose, job, handleConfirmReview = () => {} }) => {
   const { _id: jobId, work, maidId } = job;
   var d = new Date();
   const [rating, setRating] = useState(0); // for pass as a argument to RatingStar component and show rating number in this page.
   const [reviewText, setReviewText] = useState('');
   const [images] = useState([]); // TODO: change to Mobx State
   const uploadBtnRef = useRef();
-  const toast = useToast()
+  const toast = useToast();
 
-  const handleChange = event =>  {
+  const handleChange = (event) => {
     setReviewText(event.target.value);
-  }
+  };
 
   const handleReviewSubmit = () => {
     review
       .put('/', {
         rating: rating,
-        reviewDescription : reviewText,
+        reviewDescription: reviewText,
         jobId: jobId,
         maidId: maidId,
       })
-      .then(response => {
+      .then((response) => {
         console.log('put review/', response);
         setReviewText(response.data);
         toastReviewSuccess();
         handleConfirmReview();
       })
-      .catch(error => {
+      .catch((error) => {
         console.error(error);
         toastReviewFail();
       });
-  }
+  };
 
   const toastReviewSuccess = () => {
     toast({
-      title: "Review form is submitted",
-      description: "Thank you for your review.",
-      status: "success",
+      title: 'Review form is submitted',
+      description: 'Thank you for your review.',
+      status: 'success',
       duration: 9000,
       isClosable: true,
-    })
-  }
+    });
+  };
 
   const toastReviewFail = () => {
     toast({
-        title: `System fail`,
-        description: "Please try again",
-        status: 'error',
-        isClosable: true,
-      })
-  }
-
+      title: `System fail`,
+      description: 'Please try again',
+      status: 'error',
+      isClosable: true,
+    });
+  };
 
   return (
     <>
@@ -101,10 +100,10 @@ const ReviewFormModal = ({ isOpen, onClose, job, handleConfirmReview = () => {}}
               zIndex={`toast`}></GridItem>
 
             <GridItem as={HStack} rowStart={2} rowSpan={1} colSpan={2} p={4}>
-            <UserStatus uid={maidId} />
+              <UserStatus uid={maidId} />
             </GridItem>
             <GridItem as={List} rowStart={3} rowSpan={3} colStart={0} colSpan={2} p={4}>
-            {work &&
+              {work &&
                 work.map(({ quantity }, idx) => (
                   <ListItem as={HStack} key={jobId + idx} mt="1vw">
                     <Icon
@@ -121,13 +120,21 @@ const ReviewFormModal = ({ isOpen, onClose, job, handleConfirmReview = () => {}}
             </GridItem>
             <GridItem rowSpan={1} colStart={3} colEnd={7} p={4} alignItems={`baseline`}>
               <VStack alignItems="flex-start" w={`30vw`}>
-                <Text>Rate this job</Text>
-                <PutRatingStar rating={rating} setRating={setRating} />
+                  <Text>Rate this job</Text>
+                  <HStack >
+                  <PutRatingStar rating={rating} setRating={setRating} />
+                </HStack>
               </VStack>
             </GridItem>
-            <GridItem rowStart={3} rowSpan={3} colStart={3} colEnd={-1} p={4} >
+            <GridItem rowStart={3} rowSpan={3} colStart={3} colEnd={-1} p={4}>
               <Text>Write a review for this job</Text>
-              <Textarea value={reviewText} onChange={handleChange} placeholder="Text here...." size="sm" h={'12vw'} />
+              <Textarea
+                value={reviewText}
+                onChange={handleChange}
+                placeholder="Text here...."
+                size="sm"
+                h={'12vw'}
+              />
             </GridItem>
             <GridItem rowSpan={1} colStart={7} colEnd={-1} p={4}>
               <Text>{d.toDateString()}</Text>
@@ -145,7 +152,7 @@ const ReviewFormModal = ({ isOpen, onClose, job, handleConfirmReview = () => {}}
               <Button
                 bg="buttonGreen"
                 color="white"
-                onClick={ () => {
+                onClick={() => {
                   handleReviewSubmit();
                 }}>
                 Submit

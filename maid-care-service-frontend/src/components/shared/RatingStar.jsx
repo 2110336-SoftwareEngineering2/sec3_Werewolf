@@ -2,12 +2,15 @@ import React, { useState, useMemo } from 'react';
 import { HStack, Text } from '@chakra-ui/react';
 
 // Note for RatingStar component
-// - PutRatingStar using for post/put a rating when user review their jobs. 
+// - PutRatingStar using for post/put a rating when user review their jobs.
 //      use case example : use PutRatingStar in  review form in order to let user give rating for a maid who responsible for their jobs
 // - GetRatingStar using for get rating information.
 //      use case example : use GetRatingStar in maidInfo component in order to get maid rating.
+// - the 2 above function reture five star icon and `{rating} / 5` starts Text. 
+//      If you want them to align horizontally, cover PutRatingStar/GetRatingStar component  with HStack or whatever than you want.
+//      If you want them to align vertically, cover GutRatingStar/GetRatingStar component with VStack or whatever than you want.
 
-
+// PutRatingStar receive rating and setRating which is a useState component
 export const PutRatingStar = ({ rating, setRating }) => {
   const [hoverRating, setHoverRating] = useState(0);
   const onMouseEnter = (index) => {
@@ -20,40 +23,45 @@ export const PutRatingStar = ({ rating, setRating }) => {
     setRating(index);
   };
   return (
-    <HStack width={230} alignItems="center">
-      {[1, 2, 3, 4, 5].map((index) => {
-        return (
-          <PutRatingIcon
-            key={index}
-            index={index}
-            rating={rating}
-            hoverRating={hoverRating}
-            onMouseEnter={onMouseEnter}
-            onMouseLeave={onMouseLeave}
-            onSaveRating={onSaveRating}
-          />
-        );
-      })}
+    <>
+      <HStack alignItems="center">
+        {[1, 2, 3, 4, 5].map((index) => {
+          return (
+            <PutRatingIcon
+              key={index}
+              index={index}
+              rating={rating}
+              hoverRating={hoverRating}
+              onMouseEnter={onMouseEnter}
+              onMouseLeave={onMouseLeave}
+              onSaveRating={onSaveRating}
+            />
+          );
+        })}
+      </HStack>
       <Text>{rating} / 5 stars</Text>
-    </HStack>
+    </>
   );
 };
 
+// GetRatingStar receive rating which a number star as a parameter.
 export const GetRatingStar = ({ rating }) => {
   const [hoverRating, setHoverRating] = useState(rating);
   return (
-    <HStack width={230} alignItems="center">
-      {[1, 2, 3, 4, 5].map((index) => {
-        return (
-          <GetRatingIcon key={index} index={index} rating={rating} hoverRating={hoverRating} />
-        );
-      })}
+    <>
+      <HStack alignItems="center">
+        {[1, 2, 3, 4, 5].map((index) => {
+          return (
+            <GetRatingIcon key={index} index={index} rating={rating} hoverRating={hoverRating} />
+          );
+        })}
+      </HStack>
       <Text>{rating} / 5 stars</Text>
-    </HStack>
+    </>
   );
 };
 
-// PutRatingIcon is a function that return each star icon that can be interact ( click on the icon to give rating ) 
+// PutRatingIcon is a function that return each star icon that can be interact ( click on the icon to give rating )
 const PutRatingIcon = (props) => {
   const { index, rating, hoverRating, onMouseEnter, onMouseLeave, onSaveRating } = props;
   const fill = useMemo(() => {
@@ -75,8 +83,7 @@ const PutRatingIcon = (props) => {
   );
 };
 
-
-// GetRatingIcon is a function that return each star icon that can not be interact ( can not click on the icon to give rating ) 
+// GetRatingIcon is a function that return each star icon that can not be interact ( can not click on the icon to give rating )
 const GetRatingIcon = (props) => {
   const { index, rating, hoverRating } = props;
   const fill = useMemo(() => {
