@@ -105,8 +105,11 @@ const PostjobForm = observer(props => {
         isRooms: false,
         isClothes: false,
         amountOfDishes: '',
+        descriptionOfDishes:'',
         areaOfRooms: '',
+        descriptionOfRooms:'',
         amountOfClothes: '',
+        descriptionOfClothes:'',
         promotionCode: '',
         workplaceId: '',
       }}
