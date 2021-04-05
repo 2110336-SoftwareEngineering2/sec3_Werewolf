@@ -1,5 +1,5 @@
-import React from 'react';
-import { useField,Field } from 'formik';
+import React, { useRef } from 'react';
+import { useField,Field, } from 'formik';
 import {
   FormControl,
   FormErrorMessage,
@@ -90,4 +90,23 @@ const CheckField = ({label,...props}) => {
   )
 }
 
-export { TextInputField, TextareaFeild, DateField, DatetimeField,CheckField  };
+const PhotosField = ({ label, children, helperText, ...props }) => {
+  const [field, meta] = useField(props);
+  const inputRef = useRef();
+
+  return (
+    <FormControl isInvalid={meta.touched && meta.error}>
+      {label && (
+        <FormLabel>
+          <Text fontWeight="bold">{label}</Text>
+        </FormLabel>
+      )}
+      <Input id={field.name} {...field} {...props} ref={inputRef} display="none" type="file" />
+      {children({ inputRef })}
+      {meta.touched && meta.error && <FormErrorMessage>{meta.error}</FormErrorMessage>}
+      {helperText && <FormHelperText>{helperText}</FormHelperText>}
+    </FormControl>
+  );
+};
+
+export { TextInputField, TextareaFeild, DateField, DatetimeField,CheckField, PhotosField   };

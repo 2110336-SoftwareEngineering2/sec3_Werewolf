@@ -2,7 +2,7 @@ import { Box, Center, Flex } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
 import React, { useEffect } from 'react';
 import logo from '../../../assets/svgs/logo.svg';
-import { usePushNotification } from '../../../hooks/use-push-notification';
+import usePushNotification from '../../../hooks/use-push-notification';
 
 const Home = observer(() => {
   const {

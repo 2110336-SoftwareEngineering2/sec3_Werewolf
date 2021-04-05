@@ -1,6 +1,4 @@
 import React from 'react';
-import { job } from '../../../api';
-import { useFormikContext } from 'formik';
 import {
   Button,
   HStack,
@@ -11,70 +9,13 @@ import {
   AlertDialogContent,
   AlertDialogOverlay,
 } from '@chakra-ui/react';
-import { wait, waitFor } from '@testing-library/dom';
 
 // this file, ButtonField.jsx, is responsible for 3 main job.
 // 1. contain all button ( Previous button, Next button, Submit button )
 // 2. handle steps increment & decrement when button is clicked.
 // 3. Show confirm window when submit button on page3 is clicked.
 
-const ButtonField = ({ steps, setSteps, isPromoAvailable }) => {
-  const { values } = useFormikContext();
-
-  const handleDecrement = () => {
-    if (steps > 1) {
-      setSteps(previousStep => previousStep - 1);
-    }
-  };
-
-  const handleIncrement = () => {
-    if (steps <= 5) {
-      setSteps(previousStep => previousStep + 1);
-    }
-  };
-
-  const postJobAPI = () => {
-    const n_dishes = () => (values.isDishes === false ? 0 : values.amountOfDishes);
-    const n_rooms = () => (values.isRooms === false ? 0 : values.areaOfRooms);
-    const n_clothes = () => (values.isClothes === false ? 0 : values.amountOfClothes);
-
-    job
-      .post('/', {
-        workplaceId: values.workspaceId,
-        work: [
-          {
-            typeOfWork: 'Dish Washing',
-            description: 'None',
-            quantity: parseInt(n_dishes()),
-          },
-          {
-            typeOfWork: 'House Cleaning',
-            description: 'None',
-            quantity: parseInt(n_rooms()),
-          },
-          {
-            typeOfWork: 'Laundry',
-            description: 'None',
-            quantity: parseInt(n_clothes()),
-          },
-        ],
-        promotionCode: isPromoAvailable === 'true' ? values.promotionCode : '',
-      })
-      .then(response => {
-        console.log(response.data._id);
-        job
-          .put(`/${response.data._id}/find-maid`)
-          .then(res => {
-            console.log(res);
-          })
-          .catch(error => {
-            console.error(error);
-          });
-      })
-      .catch(error => {
-        console.error(error);
-      });
-  };
+const ButtonField = ({ steps, handleDecrement, handleIncrement }) => {
 
   // This 3 variables is used for submit button.
   const [isOpen, setIsOpen] = React.useState(false);
@@ -84,7 +25,7 @@ const ButtonField = ({ steps, setSteps, isPromoAvailable }) => {
   return (
     <>
       <HStack justify="flex-end" width="100%" bottom="1px">
-        {steps > 1 && steps < 5 ? (
+        {steps > 1 && steps < 4 ? (
           <Button
             width="100px"
             className="button button-register"
@@ -127,7 +68,6 @@ const ButtonField = ({ steps, setSteps, isPromoAvailable }) => {
                 onClick={() => {
                   onClose();
                   handleIncrement();
-                  postJobAPI();
                 }}
                 ml={3}>
                 Confirm

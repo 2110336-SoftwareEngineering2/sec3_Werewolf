@@ -55,7 +55,7 @@ const InfoSidebar = observer(({ panTo, markers, setMarkers }) => {
 
   return (
     <FlexBox>
-      <VStack spacing="20x" h="850px" w="350px">
+      <VStack spacing="20x" h="850px" w="100%">
         <Box fontSize="3xl" mb="15px" fontWeight="extrabold">
           New workspace
         </Box>
@@ -72,7 +72,7 @@ const InfoSidebar = observer(({ panTo, markers, setMarkers }) => {
           validationSchema={yup}
           onSubmit={handleSubmit}>
           <Form>
-            <Box pos="absolute" top="250px" left="25px" width="400px" justifyContent="center">
+            <Box pos="relative"  width="100%" alignItems="center">
               <FormControl id="country" width={{ sm: '270px', md: '368px' }}>
                 <TextInputField label="House NO." placeholder="Text Here" name="houseNo" />
                 <TextInputField label="Address 1" name="address1" placeholder="Text Here" />

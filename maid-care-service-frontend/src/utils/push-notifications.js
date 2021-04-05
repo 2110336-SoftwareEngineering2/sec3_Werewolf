@@ -1,21 +1,6 @@
 /* eslint-disable no-restricted-globals */
-// Web-Push
-// Public base64 to Uint
-function urlBase64ToUint8Array(base64String) {
-  var padding = '='.repeat((4 - (base64String.length % 4)) % 4);
-  var base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+const pushServerPublicKey = '';
 
-  var rawData = window.atob(base64);
-  var outputArray = new Uint8Array(rawData.length);
-
-  for (var i = 0; i < rawData.length; ++i) {
-    outputArray[i] = rawData.charCodeAt(i);
-  }
-  return outputArray;
-}
-
-const pushServerPublicKey = process.env.REACT_APP_PUBLIC_VAPID_KEY;
-const covertedPushServerKey = urlBase64ToUint8Array(pushServerPublicKey);
 // check if push notification supported
 const isPushNotificationSupported = () => 'serviceWorker' in navigator && 'PushManager' in window;
 
@@ -31,13 +16,15 @@ const createNotificationSubscription = async () => {
   // subscribe and return the subscription
   return await serviceWorker.pushManager.subscribe({
     userVisibleOnly: true, // indicate that push subsciption will only be used for msg whose effect is made visible for user
-    applicationServerKey: covertedPushServerKey, // VAPID
+    applicationServerKey: pushServerPublicKey, // VAPID
   });
 };
 
 // post subscription  to the push server.
 const postSubscription = async (subscription) => {
-  const response = await fetch(`/api/notification/subscribe`, {
+  // TODO: change to app backend server
+  // demo push server for testing
+  const response = await fetch(`https://push-notification-demo-server.herokuapp.com/subscription`, {
     credentials: 'omit',
     headers: {
       'content-type': 'application/json;charset=UTF-8',
@@ -51,7 +38,7 @@ const postSubscription = async (subscription) => {
 };
 
 // return subscription of the user if present
-const getUserSubscription = async () => {
+const getUserSubscription = () => {
   return navigator.serviceWorker.ready
     .then((serviceWorker) => {
       serviceWorker.pushManager.getSubscription();

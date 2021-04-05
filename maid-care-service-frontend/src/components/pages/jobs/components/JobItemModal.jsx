@@ -8,18 +8,22 @@ import { useToast } from '@chakra-ui/toast';
 import { useEffect, useState } from 'react';
 import { FaTshirt } from 'react-icons/fa';
 import { useStores } from '../../../../hooks/use-stores';
+import Map from '../../../shared/Map';
 import { ConfirmModal, DiscardJobModal } from '../../../shared/modals/modals';
 import Address from './Address';
 import { ConfirmContext, DiscardJobContext } from './context/ctx';
 import Actions from './cta';
 import Status from './Status';
 import UserStatus from './UserStatus';
+import { fetchWorkspaceById } from '../../../../api';
 
 const JobItemModal = ({ job, isOpen, onClose }) => {
   const { _id: jobId, work, workplaceId, customerId, state } = job;
   const { jobStore } = useStores();
   const toast = useToast();
 
+  const [loading, setLoading] = useState(false);
+  const [workspace, setWorkspace] = useState(null);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [isDiscardJobModalOpen, setIsDiscardModalOpen] = useState(false);
 
@@ -72,6 +76,21 @@ const JobItemModal = ({ job, isOpen, onClose }) => {
       });
   };
 
+  useEffect(() => {
+    (async () => {
+      setLoading(true);
+      try {
+        const { data } = await fetchWorkspaceById(workplaceId);
+        setWorkspace(data);
+        setLoading(false);
+      } catch (error) {
+        console.error(error);
+        setWorkspace(null);
+        setLoading(false);
+      }
+    })();
+  }, [workplaceId]);
+
   useEffect(
     () => () => {
       setIsDiscardModalOpen(false);
@@ -99,7 +118,9 @@ const JobItemModal = ({ job, isOpen, onClose }) => {
               colEnd={-1}
               bg={`green.300`}
               borderRadius={`xl`}
-              zIndex={`toast`}></GridItem>
+              zIndex={`toast`}>
+              {workspace && <Map latitude={workspace.latitude} longitude={workspace.longitude} />}
+            </GridItem>
             <GridItem as={HStack} rowStart={2} rowSpan={1} colSpan={2} p={4}>
               <UserStatus uid={customerId} />
             </GridItem>

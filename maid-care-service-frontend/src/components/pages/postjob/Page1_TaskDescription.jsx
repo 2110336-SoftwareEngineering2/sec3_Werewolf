@@ -9,11 +9,10 @@ import { TextInputField } from '../../shared/FormikField';
 
 const Page1_TaskDescription = observer(() => {
   const { values } = useFormikContext();
-  const [error, setError] = useState(false);
   const [myWorkspaces, setMyWorkspaces] = useState([]);
 
   // this function will get workspace from backend server and then
-  // set the value in myWorkspaces by perfrom setMyWorkspaces(response.data)
+  // set the value in myWorkspaces by perfroming setMyWorkspaces(response.data)
   const getWorkspaceAPI = () => {
     workspace
       .get('/', {
@@ -21,16 +20,15 @@ const Page1_TaskDescription = observer(() => {
       })
       .then(response => {
         setMyWorkspaces(response.data);
-        console.log(response.data);
+        console.log('get workspace/ : ', response.data);
       })
       .catch(error => {
         console.error(error);
-        setError(error);
       });
   };
 
-  // this useEffec function will work only when page is reloaded.
-  // that mean it will get workspace every time when when page is reloaded.
+  // this useEffect function will work only when page is reloaded.
+  // that mean it will get workspace every time when page is reloaded.
   useEffect(() => {
     getWorkspaceAPI();
   }, []);
@@ -38,14 +36,18 @@ const Page1_TaskDescription = observer(() => {
   return (
     <>
       <FormControl mb="20px" id="house-no" width={{ sm: '270px', md: '368px' }}>
-        <FormLabel mb="0">Location</FormLabel>
-        <Field as={Select} id="selectButton" name="workspaceId" mb="5px">
-          <option value="" >Select your workplace location</option>
+        <FormLabel mb="0" fontWeight="bold" fontSize="lg">Location</FormLabel>
+        <Field as={Select} id="selectButton" name="workplaceId" mb="5px">
+          <option value="">Select your workplace location</option>
           {myWorkspaces.map(myWorkspace => {
-            return <option value={myWorkspace._id} >{myWorkspace.description}</option>;
+            return (
+              <option key={myWorkspace._id} value={myWorkspace._id}>
+                {myWorkspace.description}
+              </option>
+            );
           })}
         </Field>
-        <Link as={RouterLink} to="/workspace" mt="10px">
+        <Link color="green.400" as={RouterLink} to="/workspace" mt="20px">
           Add new workspace
         </Link>
       </FormControl>

@@ -34,9 +34,9 @@ const SearchLocation = ({ panTo, setMarkers }) => {
     <Box zIndex={1}>
       <PlacesAutocomplete value={address} onChange={setAddress} onSelect={handleSelect}>
         {({ getInputProps, suggestions, getSuggestionItemProps, loading }) => (
-          <Box>
+          <Box pos="relative">
             <Input w="300px" {...getInputProps({ placeholder: 'Search your location....' })} />
-            <Box w="300px">
+            <Box pos="absolute" w="300px">
               {loading ? <div>...loading</div> : null}
               {suggestions.map(suggestion => {
                 const style = {
