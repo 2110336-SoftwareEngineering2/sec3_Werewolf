@@ -1,16 +1,43 @@
-import { Box, Container, Flex, HStack, Stack, Text, VStack } from '@chakra-ui/layout';
+import { Box, Center, Container, HStack, Text, VStack } from '@chakra-ui/layout';
+import { Spinner } from '@chakra-ui/spinner';
+import { memo, useEffect, useState } from 'react';
+import { fetchWorkspaceById } from '../../../../api';
 import Map from '../../../shared/Map';
 
 import Status from './Status';
 import UserStatus from './UserStatus';
 
 const JobItem = ({ job }) => {
-  const { customerId } = job;
+  const { customerId, workplaceId } = job;
+
+  const [loading, setLoading] = useState(false);
+  const [workspace, setWorkspace] = useState(null);
+
+  useEffect(() => {
+    (async () => {
+      setLoading(true);
+      try {
+        const { data } = await fetchWorkspaceById(workplaceId);
+        setWorkspace(data);
+        setLoading(false);
+      } catch (error) {
+        console.error(error);
+        setWorkspace(null);
+        setLoading(false);
+      }
+    })();
+  }, [workplaceId]);
 
   const renderMap = () => {
+    if (loading)
+      return (
+        <Center flex={2}>
+          <Spinner thickness="4px" />
+        </Center>
+      );
     return (
       <Box flex={3} minW={`10rem`} bgColor="green.400" alignSelf={`stretch`}>
-        <Map latitude={0} longitude={10} />
+        {workspace && <Map latitude={workspace.latitude} longitude={workspace.longitude} />}
       </Box>
     );
   };
@@ -50,4 +77,4 @@ const JobItem = ({ job }) => {
   );
 };
 
-export default JobItem;
+export default memo(JobItem);

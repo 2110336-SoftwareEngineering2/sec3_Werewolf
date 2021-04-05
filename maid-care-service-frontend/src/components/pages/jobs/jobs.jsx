@@ -64,7 +64,7 @@ const JobsPage = observer(() => {
   };
 
   const compareJobs = (x, y) => {
-    return new Date(x.expiryTime) < new Date(y.expiryTime);
+    return new Date(x.expiryTime) > new Date(y.expiryTime);
   };
 
   // Fetch user data

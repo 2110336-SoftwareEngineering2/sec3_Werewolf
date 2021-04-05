@@ -89,7 +89,7 @@ class JobsStore {
     this.error = false;
     return JobAPI.put(`/${jobId}/done`)
       .then((response) => {
-        this.currentJob = response.data;
+        this.currentJob = null;
         this.loading = false;
         this.fetchAllJobs();
       })
@@ -116,10 +116,6 @@ class JobsStore {
         this.loading = false;
         throw error;
       });
-  }
-
-  async discard({ jobId }) {
-    // TODO: Maid Discard Current Job
   }
 }
 
