@@ -6,7 +6,14 @@ import { Spinner } from '@chakra-ui/spinner';
 import { toJS } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import React, { createContext, memo, useEffect, useMemo, useState } from 'react';
-import { CONFIRMED, DONE, MATCHED, POSTED } from '../../../constants/post-state';
+import {
+  CANCELED,
+  CONFIRMED,
+  DONE,
+  MATCHED,
+  POSTED,
+  REVIEWED,
+} from '../../../constants/post-state';
 import { useStores } from '../../../hooks/use-stores';
 import { MaidDiscardJobModal } from '../../shared/modals/modals';
 
@@ -95,6 +102,7 @@ const JobsPage = observer(() => {
             variant={`link`}
             textDecoration={`underline`}
             fontSize={`lg`}
+            color={mode === 'allJobs' && 'green.400'}
             onClick={() => setMode('allJobs')}>
             All Jobs
           </Button>
@@ -103,8 +111,17 @@ const JobsPage = observer(() => {
             variant={`link`}
             textDecoration={`underline`}
             fontSize={`lg`}
+            color={mode === 'curJob' && 'green.400'}
             onClick={() => setMode('curJob')}>
             Current Job
+          </Button>
+          <Button
+            variant={`link`}
+            textDecoration={`underline`}
+            fontSize={`lg`}
+            color={mode === 'history' && 'green.400'}
+            onClick={() => setMode('history')}>
+            History
           </Button>
         </HStack>
         <HStack justifyContent="flex-end">
@@ -119,7 +136,13 @@ const JobsPage = observer(() => {
             </Center>
           ) : jobs.length ? (
             jobs
-              .filter((job) => (mode === 'curJob' ? filterExceptCurrentJob(job) : true))
+              .filter((job) =>
+                mode === 'curJob'
+                  ? filterExceptCurrentJob(job)
+                  : mode === 'history'
+                  ? [DONE, CANCELED, REVIEWED].includes(job.state)
+                  : true
+              )
               .sort((cur, next) =>
                 currentJob && cur._id === currentJob._id ? -1 : compareJobs(cur, next)
               )
