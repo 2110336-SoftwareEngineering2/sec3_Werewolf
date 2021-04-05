@@ -1,28 +1,75 @@
 import { Button } from '@chakra-ui/button';
-import { CloseButton } from '@chakra-ui/close-button';
-import { Box, Center, Container, Flex, Heading, HStack, List, ListItem } from '@chakra-ui/layout';
+import { useDisclosure } from '@chakra-ui/hooks';
+import { Center, Container, Flex, Heading, HStack, List, ListItem } from '@chakra-ui/layout';
+import { Modal, ModalCloseButton, ModalContent, ModalOverlay } from '@chakra-ui/modal';
 import { Spinner } from '@chakra-ui/spinner';
 import { toJS } from 'mobx';
 import { observer } from 'mobx-react-lite';
-import React, { useEffect, useState } from 'react';
+import React, { createContext, useEffect, useMemo, useState } from 'react';
+import { CONFIRMED, DONE, MATCHED, POSTED } from '../../../constants/post-state';
 import { useStores } from '../../../hooks/use-stores';
+import { MaidDiscardJobModal } from '../../shared/modals/modals';
 
-import JobItem from './components/JobItem';
+import JobItemList from './components/JobItemList';
+import JobItemModal from './components/JobItemModal';
 
 const JobsPage = observer(() => {
-  const [currentJob, setCurrentJob] = useState(null);
-
   const { userStore, jobStore } = useStores();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [selected, setSelected] = useState();
+
+  // Mobx Job Store
+  const jobs = jobStore.jobs;
+  const currentJob = jobStore.currentJob;
+  const loading = jobStore.loading;
+  const error = jobStore.error;
+
+  // Mobx User Store
+  const curUser = userStore.userData;
+
+  // Render Modal if already have a current job
+  useEffect(() => {
+    if (currentJob === null) {
+      setSelected(null);
+    } else {
+      setSelected(currentJob);
+    }
+  }, [currentJob]);
+
+  // Fetch every 5 seconds
+  useEffect(() => {
+    const fetchJobsInterval = setInterval(async () => {
+      await jobStore.fetchAllJobs();
+    }, 10000);
+    return () => clearInterval(fetchJobsInterval);
+  }, [jobStore]);
 
   const handleRefresh = () => {
-    console.log(toJS(jobStore.jobs));
-    jobStore.fetchAllJobs(userStore.userData._id);
+    jobStore.fetchAllJobs();
   };
 
+  const handleSelect = (job) => {
+    setSelected(job);
+    onOpen();
+  };
+
+  const handleClose = () => {
+    setSelected(null);
+    onClose();
+  };
+
+  // Fetch user data
   useEffect(() => {
-    if (userStore.userData) jobStore.fetchAllJobs(userStore.userData._id);
-    console.log(toJS(jobStore.jobs));
-  }, [userStore.userData, jobStore]);
+    if (curUser) jobStore.fetchAllJobs(curUser._id);
+  }, [curUser, jobStore]);
+
+  const renderSelectedJobModal = () => {
+    return (
+      <>
+        <JobItemModal job={selected} isOpen={isOpen} onClose={handleClose} />
+      </>
+    );
+  };
 
   return (
     <Flex
@@ -40,33 +87,22 @@ const JobsPage = observer(() => {
           </Button>
         </HStack>
         <List spacing={6} mt={4} p={3} justifyContent="center">
-          {jobStore.loading ? (
+          {loading ? (
             <Center>
               <Spinner size={`xl`} thickness={6} />
             </Center>
           ) : (
-            jobStore.jobs.map((job) => {
-              const isExpanded = currentJob && currentJob._id === job._id;
+            jobs.map((job) => {
               return (
-                <ListItem position="relative" key={job._id} my={2} minW={`90%`}>
-                  {isExpanded && (
-                    <CloseButton
-                      position="absolute"
-                      top={2}
-                      right={2}
-                      onClick={() => setCurrentJob(null)}
-                      zIndex="tooltip"
-                    />
-                  )}
-                  <Box onClick={() => setCurrentJob(job)}>
-                    <JobItem isExpanded={isExpanded} job={job} />
-                  </Box>
+                <ListItem key={job._id} my={2} minW={`90%`} onClick={() => handleSelect(job)}>
+                  <JobItemList job={job} />
                 </ListItem>
               );
             })
           )}
         </List>
       </Container>
+      {selected && renderSelectedJobModal()}
     </Flex>
   );
 });

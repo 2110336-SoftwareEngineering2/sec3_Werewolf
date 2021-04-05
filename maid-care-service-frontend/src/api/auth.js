@@ -41,3 +41,10 @@ export const fetchCurrentUser = async () => {
   return auth.get('/user');
 };
 
+/**
+ * register maid
+ * @return Promise
+ */
+export const registerMaid = async (payload) => {
+  return auth.post('/register', payload);
+};
