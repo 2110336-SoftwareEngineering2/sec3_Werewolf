@@ -74,6 +74,7 @@ const InfoSidebar = observer(({ panTo, markers, setMarkers }) => {
       })
       .catch(error => {
         console.error(error);
+        toastWorkspaceFail();
         setError(error);
       });
   }
