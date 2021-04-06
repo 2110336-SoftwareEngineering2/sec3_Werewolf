@@ -14,7 +14,8 @@ import {
 import { useStores } from '../../../../hooks/use-stores';
 import { ConfirmContext, DiscardJobContext } from './context/ctx';
 
-const Actions = ({ job, state }) => {
+const Actions = ({ job }) => {
+  const { state } = job;
   return (
     <>
       {state === POSTED ? (
