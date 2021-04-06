@@ -11,9 +11,8 @@ import {
 import { useFormikContext } from 'formik';
 import { useRef, useState } from 'react';
 
-const WorkspaceButton = ({ isFormCorrect }) => {
+const WorkspaceButton = ({isOpen, setIsOpen, postWorkspace }) => {
   const { values } = useFormikContext();
-  const [isOpen, setIsOpen] = useState(false);
   const onClose = () => setIsOpen(false);
   const cancelRef = useRef();
 
@@ -27,8 +26,8 @@ const WorkspaceButton = ({ isFormCorrect }) => {
           mt="25px"
           mb="10px"
           bg="buttonGreen"
-          type="summit"
-          onClick={() => setIsOpen(isFormCorrect)}>
+          type="submit"
+          >
           Add to saved places
         </Button>
       </Center>
@@ -50,7 +49,13 @@ const WorkspaceButton = ({ isFormCorrect }) => {
               <Button ref={cancelRef} onClick={onClose}>
                 Cancel
               </Button>
-              <Button colorScheme="green" onClick={onClose} ml={3}>
+              <Button 
+              colorScheme="green" 
+              onClick={() => {
+                onClose();
+                postWorkspace( {description:`${values.houseNo} ${values.address1} ${values.address2} ${values.city}`});
+              }} 
+              ml={3}>
                 Confirm
               </Button>
             </AlertDialogFooter>

@@ -1,7 +1,7 @@
 import { FormControl, FormLabel } from '@chakra-ui/form-control';
 import { Box, VStack } from '@chakra-ui/layout';
 import { Select } from '@chakra-ui/select';
-import { Field, Form, Formik } from 'formik';
+import { Form, Formik } from 'formik';
 import { observer } from 'mobx-react-lite';
 import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
@@ -12,45 +12,81 @@ import FlexBox from '../../shared/FlexBox';
 import { TextInputField } from '../../shared/FormikField';
 import SearchLocation from './search-location';
 import WorkspaceButton from './workspace-btn';
+import { useToast } from '@chakra-ui/react';
 
 const InfoSidebar = observer(({ panTo, markers, setMarkers }) => {
   const history = useHistory();
   const [error, setError] = useState(false);
-  const [isFormCorrect, setFormCorrect] = useState(false);
   const { userStore } = useStores();
+  const [isOpen, setIsOpen] = useState(false);
 
   const user = userStore.userData;
+  const toast = useToast();
 
   const yup = Yup.object({
     houseNo: Yup.string().required('please fill your house No.'),
+    address1: Yup.string().required('please fill your address'),
     city: Yup.string().required('please fill your city.'),
     state: Yup.string().required('please select your state/province.'),
   });
 
-  const handleSubmit = (
-    { houseNo, address1, address2, city, state, country },
-    { setSubmitting }
-  ) => {
-    setSubmitting(true);
-    setFormCorrect(true);
+  const toastMarkersEmpty = () => {
+    toast({
+      title: 'Warning',
+      description: "Please drop a pin on the map.",
+      status: 'warning',
+      duration: 9000,
+      isClosable: true,
+    });
+  };
+
+  const toastWorkspaceSuccess = () => {
+    toast({
+      title: 'Success',
+      description: "The system has added your new workspace",
+      status: 'success',
+      duration: 9000,
+      isClosable: true,
+    });
+  };
+
+  const toastWorkspaceFail = () => {
+    toast({
+      title: 'System fail',
+      description: "Please try again",
+      status: 'error',
+      duration: 9000,
+      isClosable: true,
+    });
+  };
+
+  const postWorkspace = ( {description} ) => {
     workspace
       .post('/', {
         customerId: user._id,
-        description: `${houseNo} ${address1} ${address2} ${city} ${state} ${country}`,
+        description: description,
         latitude: markers[0].lat,
         longitude: markers[0].lng,
       })
       .then(response => {
         console.log(response);
-        setSubmitting(false);
+        toastWorkspaceSuccess();
       })
       .catch(error => {
         console.error(error);
-        setSubmitting(false);
         setError(error);
       });
-    /**End handle Submit logic here */
-    setSubmitting(false);
+  }
+
+
+  const handleSubmit = () => {
+    if (markers.length === 0){
+      toastMarkersEmpty();
+    }
+    else {
+      setIsOpen(true);
+    }
+
   };
 
   return (
@@ -81,7 +117,7 @@ const InfoSidebar = observer(({ panTo, markers, setMarkers }) => {
                 <FormLabel mb="0" fontWeight="bold">
                   State / Province
                 </FormLabel>
-                <Field as={Select} defaultValue="" name="state" mb="15px">
+                <TextInputField as={Select} defaultValue="" name="state" mb="15px">
                   <option value="">--------- เลือกจังหวัด ---------</option>
                   <option value="กรุงเทพมหานคร">กรุงเทพมหานคร</option>
                   <option value="กระบี่">กระบี่ </option>
@@ -161,7 +197,7 @@ const InfoSidebar = observer(({ panTo, markers, setMarkers }) => {
                   <option value="อุบลราชธานี">อุบลราชธานี</option>
                   <option value="อ่างทอง">อ่างทอง </option>
                   <option value="อื่นๆ">อื่นๆ</option>
-                </Field>
+                </TextInputField>
                 <TextInputField
                   mb="15px"
                   placeholder="Text Here"
@@ -170,7 +206,7 @@ const InfoSidebar = observer(({ panTo, markers, setMarkers }) => {
                   value="ประเทศไทย"
                 />
               </FormControl>
-              <WorkspaceButton isFormCorrect={isFormCorrect} />
+              <WorkspaceButton isOpen={isOpen} setIsOpen={setIsOpen} postWorkspace={postWorkspace}/>
             </Box>
           </Form>
         </Formik>
