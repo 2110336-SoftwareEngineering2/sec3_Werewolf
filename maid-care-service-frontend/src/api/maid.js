@@ -34,6 +34,5 @@ export const fetchMaidById = async (uid) => {
 };
 
 export const setAvailability = async (status) => {
-  return maid.put(`/availability/${status}`)
-}
-}
+  return maid.put(`/availability/${status}`);
+};
