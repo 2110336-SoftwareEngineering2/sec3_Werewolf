@@ -1,25 +1,16 @@
 import { Button } from '@chakra-ui/button';
 import { useDisclosure } from '@chakra-ui/hooks';
 import { Center, Container, Flex, Heading, HStack, List, ListItem, Text } from '@chakra-ui/layout';
-import { Modal, ModalCloseButton, ModalContent, ModalOverlay } from '@chakra-ui/modal';
 import { Spinner } from '@chakra-ui/spinner';
-import { toJS } from 'mobx';
 import { observer } from 'mobx-react-lite';
-import React, { createContext, memo, useEffect, useMemo, useState } from 'react';
-import {
-  CANCELED,
-  CONFIRMED,
-  DONE,
-  MATCHED,
-  POSTED,
-  REVIEWED,
-} from '../../../constants/post-state';
+import React, { memo, useEffect, useState } from 'react';
+import { CANCELED, DONE, REVIEWED } from '../../../constants/post-state';
 import { useStores } from '../../../hooks/use-stores';
-import { MaidDiscardJobModal } from '../../shared/modals/modals';
-
 import JobItemList from '../../shared/jobs/JobItemList';
 import JobItemModal from './components/JobItemModal';
 import Actions from './components/cta';
+import { useCurrentLocation } from '../../../hooks/use-location';
+import { updateLocation } from '../../../api';
 
 const JobsPage = observer(() => {
   const { userStore, jobStore } = useStores();
@@ -31,10 +22,20 @@ const JobsPage = observer(() => {
   const jobs = jobStore.jobs;
   const currentJob = jobStore.currentJob;
   const loading = jobStore.loading;
-  const error = jobStore.error;
 
   // Mobx User Store
   const curUser = userStore.userData;
+  const { location } = useCurrentLocation();
+
+  useEffect(() => {
+    if (!location) return;
+    const updateLocationInterval = setInterval(() => {
+      updateLocation(location)
+        .then(() => console.log('success'))
+        .catch((error) => console.error(error));
+    }, 10 * 60 * 1000); // 10 mins
+    return () => clearInterval(updateLocationInterval);
+  }, []);
 
   // Render Modal if already have a current job
   useEffect(() => {

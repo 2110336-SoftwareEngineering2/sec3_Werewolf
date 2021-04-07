@@ -1,4 +1,3 @@
-import React from 'react';
 import { ChakraProvider } from '@chakra-ui/react';
 import { Switch, Route, Redirect } from 'react-router-dom';
 import theme from './theme.js';
@@ -13,14 +12,14 @@ import Promotion from './components/pages/promotion/promotion.jsx';
 import ProfilePage from './components/pages/profilepage/profilepage.jsx';
 import Navbar from './components/layouts/Navbar.jsx';
 import JobsPage from './components/pages/jobs/jobs.jsx';
-import { Postjob } from './components/pages/postjob/postjob.jsx';
 import Post from './components/pages/post/post.jsx';
 import Review from './components/pages/review/review.jsx';
 import Verification from './components/pages/signup/verfification.jsx';
-import{ UploadImage} from './components/shared/imageUploader/upload_image_example.jsx';
-import {SingleUpload} from './components/shared/imageUploader/single_image_example';
+import { UploadImage } from './components/shared/imageUploader/upload_image_example.jsx';
+import { SingleUpload } from './components/shared/imageUploader/single_image_example';
+import { observer } from 'mobx-react-lite';
 
-export const App = () => {
+export const App = observer(() => {
   return (
     <ChakraProvider theme={theme}>
       <Navbar />
@@ -32,7 +31,7 @@ export const App = () => {
         <Route exact path="/login" component={LogIn} />
         <Route exact path="/profile/edit" component={EditProfile} />
         <Route exact path="/register" component={SignUp} />
-       
+
         <Route exact path="/auth/verify/:token" component={Verification} />
         <ProtectedRoute exact path="/post/create" component={Postjob} />
         <ProtectedRoute exact path="/review" component={Review} />
@@ -43,7 +42,7 @@ export const App = () => {
         <ProtectedRoute path="/promotion" component={Promotion} />
         <ProtectedRoute exact path="/profile" component={ProfilePage} />
         <ProtectedRoute exact path="/profile/edit" component={EditProfile} />
-        
+
         <ProtectedRoute exact path="/workspace" component={Workspace} />
         <ProtectedRoute exact path="/jobs" component={JobsPage} />
 
@@ -52,4 +51,4 @@ export const App = () => {
       </Switch>
     </ChakraProvider>
   );
-};
+});
