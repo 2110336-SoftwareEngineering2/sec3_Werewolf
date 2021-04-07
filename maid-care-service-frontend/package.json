@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@brainhubeu/react-carousel": "^1.19.26",
     "@chakra-ui/icons": "^1.0.6",
     "@chakra-ui/react": "^1.0.0",
     "@chakra-ui/theme-tools": "^1.0.4",

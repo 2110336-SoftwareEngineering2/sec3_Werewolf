@@ -19,13 +19,15 @@ import {
   ButtonGroup,
   ListItem,
   Icon,
+  Image,
 } from '@chakra-ui/react';
 import UserStatus from './../../jobs/components/UserStatus.jsx';
+import CarouselWithDots from './Carousel';
 import { review } from './../../../../api';
 
 //Review form contain RatingStar component and Textarea.
 const ReviewFormModal = ({ isOpen, onClose, job }) => {
-  const { _id: jobId, work, maidId } = job;
+  const { _id: jobId, work, maidId, photos } = job;
   var d = new Date();
   const [rating, setRating] = useState(0); // for pass as a argument to RatingStar component and show rating number in this page.
   const [reviewText, setReviewText] = useState('');
@@ -67,6 +69,10 @@ const ReviewFormModal = ({ isOpen, onClose, job }) => {
     });
   };
 
+  const dosomething = () => {
+    console.log(photos);
+  };
+
   const toastReviewFail = () => {
     toast({
       title: `System fail`,
@@ -97,17 +103,26 @@ const ReviewFormModal = ({ isOpen, onClose, job }) => {
               colEnd={-1}
               bg={`green.300`}
               borderRadius={`xl`}
-              zIndex={`toast`}></GridItem>
-
+              >
+              
+              <CarouselWithDots job={job} />
+              
+            </GridItem>
             <GridItem as={HStack} rowStart={2} rowSpan={1} colSpan={2} p={4}>
               <UserStatus uid={maidId} />
             </GridItem>
             <GridItem as={List} rowStart={3} rowSpan={3} colStart={0} colSpan={2} p={4}>
-            {work &&
+              {work &&
                 work.map(({ quantity, typeOfWork, unit }, idx) => (
                   <ListItem as={HStack} key={jobId + idx} mt="1vw">
                     <Icon
-                      as={typeOfWork === 'Dish Washing' ? FaRing : typeOfWork === 'House Cleaning' ? FaBroom : FaTshirt}
+                      as={
+                        typeOfWork === 'Dish Washing'
+                          ? FaRing
+                          : typeOfWork === 'House Cleaning'
+                          ? FaBroom
+                          : FaTshirt
+                      }
                       w={8}
                       h={8}
                       color={`gray.800`}
@@ -120,8 +135,8 @@ const ReviewFormModal = ({ isOpen, onClose, job }) => {
             </GridItem>
             <GridItem rowSpan={1} colStart={3} colEnd={7} p={4} alignItems={`baseline`}>
               <VStack alignItems="flex-start" w={`30vw`}>
-                  <Text>Rate this job</Text>
-                  <HStack >
+                <Text>Rate this job</Text>
+                <HStack>
                   <PutRatingStar rating={rating} setRating={setRating} />
                 </HStack>
               </VStack>
