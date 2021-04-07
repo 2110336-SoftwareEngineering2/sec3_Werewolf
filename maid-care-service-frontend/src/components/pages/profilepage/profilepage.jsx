@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { toJS } from 'mobx';
+import React, { useState, useEffect, useRef } from 'react';
+import { reaction, when } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import {
   Box,
@@ -13,33 +13,45 @@ import {
   Button,
   Link,
   Center,
-  Spacer
+  Spacer,
+  Input,
 } from '@chakra-ui/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {setAvailability} from '../../../api/maid';
-import { faStar, faStarHalf, faCheckCircle, faTimesCircle , faPencilAlt} from '@fortawesome/free-solid-svg-icons';
+import { setAvailability } from '../../../api/maid';
+import { Link as RouterLink } from 'react-router-dom';
+import {
+  faStar,
+  faStarHalf,
+  faCheckCircle,
+  faTimesCircle,
+  faPencilAlt,
+} from '@fortawesome/free-solid-svg-icons';
 
 import FlexBox from '../../shared/FlexBox';
 import MaidLogo from '../../../MaidLogo.svg';
 import ProfilePic from './Pic.svg';
 import { fetchMaidById } from '../../../api/maid';
 import { useStores } from '../../../hooks/use-stores';
+import { SingleImageStore } from '../../../store/Image';
+import { user } from '../../../api';
 
 export const ProfilePage = observer(() => {
   const { userStore } = useStores();
   const [userInfo, setUser] = useState(false); //general user info i.e. name
   const [maidInfo, setMaid] = useState(false); // maid info i.e. review score
   const [avail, setAvail] = useState(false);
+  const uploadRef = useRef();
+
+  const [imageStore] = useState(new SingleImageStore());
 
   useEffect(() => {
     if (userStore && userStore.userData) {
       const userID = userStore.userData._id;
-      setUser(toJS(userStore.userData));
+      setUser(userStore.userData);
       fetchMaidById(userID)
         .then((res) => {
           setMaid(res.data);
-          setAvail(maidInfo.availability);
-          console.log(maidInfo);
+          setAvail(res.data.availability);
         })
         .catch((err) => {
           console.log(err);
@@ -95,59 +107,111 @@ export const ProfilePage = observer(() => {
   function Skill({ title, can }) {
     return (
       <HStack spacing={2}>
-        {can == true ? (
-          <FontAwesomeIcon icon={faCheckCircle} color="#48BB78"/>
-        ) : ( <FontAwesomeIcon icon={faTimesCircle} color="#E53E3E"/> ) }        
+        {can ? (
+          <FontAwesomeIcon icon={faCheckCircle} color="#48BB78" />
+        ) : (
+          <FontAwesomeIcon icon={faTimesCircle} color="#E53E3E" />
+        )}
         <Text fontSize="lg"> {title} </Text>
-      </HStack>      
+      </HStack>
     );
   }
 
   const skillChart = () => {
     return (
       <Stack spacing={2.5}>
-        <Box fontSize="xl" fontWeight="bold">I can do:</Box>
-        <Skill title="Dish Washing" can={true}/>
-        <Skill title="Clothes Ironing" can={true}/>
-        <Skill title="Room Cleaning" can={false}/>
+        <Box fontSize="xl" fontWeight="bold">
+          I can do:
+        </Box>
+        <Skill title="Dish Washing" can={true} />
+        <Skill title="Clothes Ironing" can={true} />
+        <Skill title="Room Cleaning" can={false} />
       </Stack>
     );
+  };
+
+  const handleUploadClick = () => {
+    uploadRef.current.focus();
+    uploadRef.current.click();
+  };
+
+  const handleUpload = (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+    try {
+      imageStore.upload(file);
+      console.log('image uploading...');
+      reaction(
+        () => imageStore.isUploading,
+        async (value, prevValue, reaction) => {
+          console.log('reaction');
+          if (prevValue && !value) {
+            // setUser((prev) => ({ ...prev, profilePicture: imageStore.path }));
+            try {
+              await user.put('/update-profile', {
+                profilePicture: imageStore.path,
+              });
+              await userStore.getUserData();
+            } catch (error) {
+              console.error(error);
+            }
+          }
+        },
+        { delay: 1000 }
+      );
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
     <Flex bg="brandGreen" align="center" justify="center" minH="100vh" maxW="100vw">
       <FlexBox>
         <Stack spacing={4}>
-
           <Flex>
-          <Image
-            width="9rem"
-            height="2.5rem"
-            objectFit="contain"
-            src={MaidLogo}
-            alt="Grab MaidCare Logo"
-          />
-          <Spacer />
-          <Button bg="buttonGreen" color="white">
-            <Link href="/profile/edit">
-              <FontAwesomeIcon icon={faPencilAlt} /> Edit Profile
+            <Image
+              width="9rem"
+              height="2.5rem"
+              objectFit="contain"
+              src={MaidLogo}
+              alt="Grab MaidCare Logo"
+            />
+
+            <Spacer />
+            <Link as={RouterLink} to="/profile/edit">
+              <Button bg="buttonGreen" color="white">
+                <FontAwesomeIcon icon={faPencilAlt} /> Edit Profile
+              </Button>
             </Link>
-          </Button>
           </Flex>
 
           <Center>
-          <Text fontSize="2xl" fontWeight="bold" mb="5">
-            Maid Profile
-          </Text>
+            <Text fontSize="2xl" fontWeight="bold" mb="5">
+              Maid Profile
+            </Text>
           </Center>
 
           <Stack spacing={14} direction={['column', 'row']}>
             {/* // Left Stack for profile pic and rating */}
             <VStack spacing={4} justify="center">
-              <Image width="12rem" height="12rem" src={ProfilePic} />
+              <Box onClick={handleUploadClick} borderRadius={`50%`} overflow={`hidden`}>
+                {userInfo && userInfo.profilePicture ? (
+                  <Image width="12rem" height="12rem" src={userInfo.profilePicture} />
+                ) : (
+                  // Placeholder
+                  <Image width="12rem" height="12rem" src={ProfilePic} />
+                )}
+                <Input
+                  type="file"
+                  accept="image/*"
+                  ref={uploadRef}
+                  display="none"
+                  onChange={handleUpload}
+                />
+              </Box>
 
               {stars(maidInfo.avgRating)}
-              <Text>{maidInfo.avgRating ? maidInfo.avgRating + '/5 from 42 reviews' : null}</Text>
+              <Text>{maidInfo.avgRating && maidInfo.avgRating + '/5 '}</Text>
             </VStack>
             {/* // Right Stack for information */}
             <Stack spacing={4}>
@@ -168,7 +232,6 @@ export const ProfilePage = observer(() => {
               </Box>
 
               {skillChart()}
-              
             </Stack>
           </Stack>
         </Stack>

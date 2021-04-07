@@ -45,7 +45,7 @@ const UserStatus = ({ uid, user }) => {
     </>
   ) : (
     <>
-      <Avatar></Avatar>
+      <Avatar src={u.profilePicture}></Avatar>
       <Text fontSize={`lg`} fontWeight={`bold`}>
         {u.firstname} {u.lastname}
       </Text>

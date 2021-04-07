@@ -52,7 +52,7 @@ const Navbar = observer(() => {
         <Menu>
           <MenuButton>
             <HStack>
-              <Avatar size="sm" name={`${user.firstname}`} />
+              <Avatar size="sm" name={`${user.firstname}`} src={user.profilePicture || null} />
               <Text fontSize="lg" fontWeight="bold">
                 {`${user.firstname}`}
               </Text>
