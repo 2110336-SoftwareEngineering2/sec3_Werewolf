@@ -80,7 +80,7 @@ const Page5_maidInfo = ({ handleIncrement, maidId, jobId, setConfirm }) => {
   return (
     <HStack width="600px" height="300px">
       <VStack justifyContent="center" width="200px" height="100%">
-        <chakra.img src={profileImage} width="200px" />
+        <chakra.img src={ !userInfo ? profileImage : userInfo.profilePicture} width="200px" />
         <GetRatingStar
           rating={maidInfo == null ? 0 : maidInfo.avgRating == null ? 0 : maidInfo.avgRating}
         />
