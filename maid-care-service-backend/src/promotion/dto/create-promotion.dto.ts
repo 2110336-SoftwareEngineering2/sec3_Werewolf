@@ -15,7 +15,6 @@ export class CreatePromotionDto {
   code: string;
 
   @ApiProperty({ type: String })
-  @IsNotEmpty()
   description: string;
 
   @ApiProperty({ type: Number })
