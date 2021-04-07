@@ -18,6 +18,7 @@ import Verification from './components/pages/signup/verfification.jsx';
 import { UploadImage } from './components/shared/imageUploader/upload_image_example.jsx';
 import { SingleUpload } from './components/shared/imageUploader/single_image_example';
 import { observer } from 'mobx-react-lite';
+import { Postjob } from './components/pages/postjob/postjob';
 
 export const App = observer(() => {
   return (

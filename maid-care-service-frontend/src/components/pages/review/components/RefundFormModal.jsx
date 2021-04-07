@@ -24,7 +24,7 @@ import {
 import { refund } from './../../../../api';
 
 //Review form contain RatingStar component and Textarea.
-const RefundFormModal = ({ isOpen, onClose, job, handleConfirmRefund = () => {} }) => {
+const RefundFormModal = ({ isOpen, onClose, job }) => {
   const { _id: jobId, work, maidId } = job;
   const [refundFeedback, setRefundFeedback] = useState('');
   const [images] = useState(['']); // TODO: change to Mobx State
@@ -50,7 +50,7 @@ const RefundFormModal = ({ isOpen, onClose, job, handleConfirmRefund = () => {} 
     });
   };
 
-  const toastRefundFEmpty = () => {
+  const toastRefundEmpty = () => {
     toast({
       title: `System fail`,
       description: 'Feedback cannot be empty',
@@ -65,9 +65,9 @@ const RefundFormModal = ({ isOpen, onClose, job, handleConfirmRefund = () => {} 
 
   const handleRefundSubmit = () => {
     if (refundFeedback === '') {
-      toastRefundFEmpty();
+      toastRefundEmpty();
     } else {
-      handleConfirmRefund();
+      //handleConfirmRefund();
       refund
         .post('/', {
           jobId: jobId,
@@ -123,7 +123,7 @@ const RefundFormModal = ({ isOpen, onClose, job, handleConfirmRefund = () => {} 
                 onChange={handleChange}
                 placeholder="Text here...."
                 size="sm"
-                h={'16vw'}
+                h={'12vw'}
               />
             </GridItem>
             <GridItem rowStart={8} rowSpan={3} colStart={1} colEnd={-1} p={4}>

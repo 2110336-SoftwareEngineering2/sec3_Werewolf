@@ -16,7 +16,9 @@ import JobItemList from '../../shared/jobs/JobItemList';
 import JobItemModal from '../jobs/components/JobItemModal';
 import PostModal from '../review/components/PostModal';
 import ReviewFormModal from '../review/components/ReviewFormModal';
+import RefundFormModal from '../review/components/RefundFormModal';
 import { ReviewModalContext } from '../../shared/context/ReviewModalContext';
+import { RefundModalContext } from '../../shared/context/RefundModalContext';
 
 const PostPage = observer(() => {
   const { userStore } = useStores();
@@ -26,6 +28,7 @@ const PostPage = observer(() => {
   const [posts, setPosts] = useState([]);
   const [mode, setMode] = useState('allJobs');
   const { isOpen: isReviewOpen, onOpen: onReviewOpen, onClose: onReviewClose } = useDisclosure();
+  const { isOpen: isRefundOpen, onOpen: onRefundOpen, onClose: onRefundClose } = useDisclosure();
 
   // Mobx User Store
   const curUser = userStore.userData;
@@ -71,19 +74,18 @@ const PostPage = observer(() => {
   const renderSelectedJobModal = () => {
     return (
       <>
-        <ReviewModalContext.Provider value={{ isReviewOpen, onReviewOpen, onReviewClose }}>
-          <JobItemModal
-            job={selected}
-            isOpen={isOpen}
-            onClose={handleClose}
-            actions={CustomerAction}
-          />
-          <ReviewFormModal 
-            job={selected}
-            isOpen={isReviewOpen}
-            onClose={onReviewOpen}
-          />
-        </ReviewModalContext.Provider>
+        <RefundModalContext.Provider value={{ isRefundOpen, onRefundOpen, onRefundClose }}>
+          <ReviewModalContext.Provider value={{ isReviewOpen, onReviewOpen, onReviewClose }}>
+            <JobItemModal
+              job={selected}
+              isOpen={isOpen}
+              onClose={handleClose}
+              actions={CustomerAction}
+            />
+            <ReviewFormModal job={selected} isOpen={isReviewOpen} onClose={onReviewClose} />
+            <RefundFormModal job={selected} isOpen={isRefundOpen} onClose={onRefundClose} />
+          </ReviewModalContext.Provider>
+        </RefundModalContext.Provider>
       </>
     );
   };
