@@ -45,7 +45,9 @@ class JobsStore {
   }
 
   getCurrentJobFromJobList({ jobs }) {
-    const filteredJobs = jobs.filter((job) => ![POSTED, REVIEWED, CANCELED].includes(job.state));
+    const filteredJobs = jobs.filter(
+      (job) => ![POSTED, DONE, REVIEWED, CANCELED].includes(job.state)
+    );
     if (filteredJobs.length <= 0) return null;
     return filteredJobs[0];
   }
@@ -89,7 +91,7 @@ class JobsStore {
     this.error = false;
     return JobAPI.put(`/${jobId}/done`)
       .then((response) => {
-        this.currentJob = response.data;
+        this.currentJob = null;
         this.loading = false;
         this.fetchAllJobs();
       })

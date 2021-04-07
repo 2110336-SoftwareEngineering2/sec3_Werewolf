@@ -13,10 +13,13 @@ import {
   ModalHeader,
   ModalOverlay,
 } from '@chakra-ui/modal';
-import { Icon, Input, Portal, useToast } from '@chakra-ui/react';
-import { useRef, useState } from 'react';
-import { FaImages } from 'react-icons/fa';
-import { useStores } from '../../../hooks/use-stores';
+import { Icon, Image, Input } from '@chakra-ui/react';
+import { toJS, when } from 'mobx';
+import { observer } from 'mobx-react-lite';
+import { useEffect, useRef, useState } from 'react';
+import { FaImages, FaTimesCircle } from 'react-icons/fa';
+import { deleteImageURL, uploadImageURL } from '../../../api';
+import { MultiImageStore } from '../../../store/Image';
 
 export const DiscardJobModal = ({ job, isOpen, onOpen, onClose, onDiscard }) => {
   const cancelRef = useRef();
@@ -51,9 +54,19 @@ export const DiscardJobModal = ({ job, isOpen, onOpen, onClose, onDiscard }) => 
   );
 };
 
-export const ConfirmModal = ({ job, isOpen, onClose, onConfirm = () => {} }) => {
-  const [images] = useState([]); // TODO: change to Mobx State
+export const ConfirmModal = observer(({ job, isOpen, onClose, onConfirm = () => {} }) => {
+  const [imagesStore, setImagesStore] = useState(() => new MultiImageStore());
   const uploadBtnRef = useRef();
+
+  useEffect(() => {
+    return () => {
+      setImagesStore(null);
+    };
+  }, []);
+
+  const pathList = imagesStore.path_list;
+  const images = Object.keys(imagesStore.path_list);
+  const { _id: jobId } = job;
 
   const renderImages = () => {
     if (images.length > 0) {
@@ -65,12 +78,36 @@ export const ConfirmModal = ({ job, isOpen, onClose, onConfirm = () => {} }) => 
           justifyContent={`center`}
           alignItems={`center`}>
           {images.map((image, idx) => (
-            <GridItem key={idx}>
-              <Center>{/* <Image /> */}</Center>
+            <GridItem key={idx} position={`relative`}>
+              <Icon
+                as={FaTimesCircle}
+                color={`red`}
+                position={`absolute`}
+                top={-2}
+                right={-2}
+                onClick={() => handleDelete({ jobId, image })}
+              />
+              <Center
+                overflow={`hidden`}
+                borderRadius={`lg`}
+                w={40}
+                h={40}
+                border={`0.5rem solid`}
+                borderColor={`gray.200`}>
+                <Image src={pathList[image]} objectFit={`cover`}></Image>
+              </Center>
             </GridItem>
           ))}
           <GridItem>
-            <Icon as={FaImages} h={`30%`} minH={120} w={`30%`} minW={120} onClick={handleClick} />
+            <Center
+              overflow={`hidden`}
+              borderRadius={`lg`}
+              w={40}
+              h={40}
+              border={`0.5rem solid`}
+              borderColor={`gray.200`}>
+              <Icon as={FaImages} h={`30%`} minH={120} w={`30%`} minW={120} onClick={handleClick} />
+            </Center>
           </GridItem>
         </Grid>
       );
@@ -82,31 +119,63 @@ export const ConfirmModal = ({ job, isOpen, onClose, onConfirm = () => {} }) => 
     uploadBtnRef.current.click();
   };
 
-  const handleChange = (event) => {
+  const handleConfirm = async () => {
+    if (!window.confirm('Confirm?')) return;
+    await Promise.all(images.map((image) => uploadImageURL({ jobId, url: pathList[image] })));
+    onConfirm();
+  };
+
+  const handleClose = () => {
+    if (images.length >= 0 && window.confirm('Are you sure to discard actions?')) {
+      onClose();
+    }
+  };
+
+  const handleChange = async (event) => {
     const fileUpload = event.target.files[0];
-    console.log(fileUpload);
+    if (!fileUpload) return;
     // TODO: Upload file to Firebase FireStore
-    // 1. Upload To Firebase
+    try {
+      imagesStore.upload(fileUpload);
+    } catch (error) {
+      console.error(error);
+    }
     // 2. Get URL from Firebase, update state
     // 3. Get Image from Firebase to Display Preview
     // Done!
   };
 
+  const handleDelete = async ({ jobId, image }) => {
+    if (window.confirm(`Are you sure to delete ${image}?`)) {
+      try {
+        await imagesStore.delete(image);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  };
+
   return (
     <>
-      <Modal size={`xl`} isCentered isOpen={isOpen} onClose={onClose}>
+      <Modal
+        closeOnOverlayClick={false}
+        size={`xl`}
+        isCentered
+        isOpen={isOpen}
+        onClose={onClose}
+        scrollBehavior={`outside`}>
         <ModalOverlay />
-        <ModalContent as={VStack} h={`60hv`} minH={300} maxH={400}>
+        <ModalContent as={VStack} h={`60hv`} minH={300}>
           <ModalHeader fontSize={`4xl`}>Submit your work evidences</ModalHeader>
           <ModalBody as={VStack} p={0}>
             {renderImages()}
             <Input ref={uploadBtnRef} onChange={handleChange} type={`file`} visibility={`hidden`} />
           </ModalBody>
           <ModalFooter>
-            <Button variant={`outline`} colorScheme={`red`} onClick={onClose}>
+            <Button variant={`outline`} colorScheme={`red`} onClick={handleClose}>
               Go back
             </Button>
-            <Button colorScheme={`green`} onClick={onConfirm} ml={3}>
+            <Button colorScheme={`green`} onClick={handleConfirm} ml={3}>
               Submit
             </Button>
           </ModalFooter>
@@ -114,4 +183,4 @@ export const ConfirmModal = ({ job, isOpen, onClose, onConfirm = () => {} }) => 
       </Modal>
     </>
   );
-};
+});

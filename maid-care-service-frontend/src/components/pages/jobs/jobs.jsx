@@ -1,22 +1,31 @@
 import { Button } from '@chakra-ui/button';
 import { useDisclosure } from '@chakra-ui/hooks';
-import { Center, Container, Flex, Heading, HStack, List, ListItem } from '@chakra-ui/layout';
+import { Center, Container, Flex, Heading, HStack, List, ListItem, Text } from '@chakra-ui/layout';
 import { Modal, ModalCloseButton, ModalContent, ModalOverlay } from '@chakra-ui/modal';
 import { Spinner } from '@chakra-ui/spinner';
 import { toJS } from 'mobx';
 import { observer } from 'mobx-react-lite';
-import React, { createContext, useEffect, useMemo, useState } from 'react';
-import { CONFIRMED, DONE, MATCHED, POSTED } from '../../../constants/post-state';
+import React, { createContext, memo, useEffect, useMemo, useState } from 'react';
+import {
+  CANCELED,
+  CONFIRMED,
+  DONE,
+  MATCHED,
+  POSTED,
+  REVIEWED,
+} from '../../../constants/post-state';
 import { useStores } from '../../../hooks/use-stores';
 import { MaidDiscardJobModal } from '../../shared/modals/modals';
 
-import JobItemList from './components/JobItemList';
+import JobItemList from '../../shared/jobs/JobItemList';
 import JobItemModal from './components/JobItemModal';
+import Actions from './components/cta';
 
 const JobsPage = observer(() => {
   const { userStore, jobStore } = useStores();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [selected, setSelected] = useState();
+  const [mode, setMode] = useState('allJobs');
 
   // Mobx Job Store
   const jobs = jobStore.jobs;
@@ -40,7 +49,7 @@ const JobsPage = observer(() => {
   useEffect(() => {
     const fetchJobsInterval = setInterval(async () => {
       await jobStore.fetchAllJobs();
-    }, 10000);
+    }, 30000);
     return () => clearInterval(fetchJobsInterval);
   }, [jobStore]);
 
@@ -58,6 +67,14 @@ const JobsPage = observer(() => {
     onClose();
   };
 
+  const filterExceptCurrentJob = (job) => {
+    return job._id === currentJob._id;
+  };
+
+  const compareJobs = (x, y) => {
+    return new Date(x.expiryTime) > new Date(y.expiryTime);
+  };
+
   // Fetch user data
   useEffect(() => {
     if (curUser) jobStore.fetchAllJobs(curUser._id);
@@ -66,7 +83,7 @@ const JobsPage = observer(() => {
   const renderSelectedJobModal = () => {
     return (
       <>
-        <JobItemModal job={selected} isOpen={isOpen} onClose={handleClose} />
+        <JobItemModal job={selected} isOpen={isOpen} onClose={handleClose} actions={Actions} />
       </>
     );
   };
@@ -80,7 +97,34 @@ const JobsPage = observer(() => {
       justifyContent="flex-start"
       alignItems="center">
       <Container borderRadius={4} bgColor="gray.100" p={6} w={`70vw`} maxW={1200}>
-        <Heading>Jobs</Heading>
+        <HStack spacing={4} alignItems={`baseline`}>
+          <Heading>Jobs</Heading>
+          <Button
+            variant={`link`}
+            textDecoration={`underline`}
+            fontSize={`lg`}
+            color={mode === 'allJobs' && 'green.400'}
+            onClick={() => setMode('allJobs')}>
+            All Jobs
+          </Button>
+          <Button
+            disabled={!currentJob}
+            variant={`link`}
+            textDecoration={`underline`}
+            fontSize={`lg`}
+            color={mode === 'curJob' && 'green.400'}
+            onClick={() => setMode('curJob')}>
+            Current Job
+          </Button>
+          <Button
+            variant={`link`}
+            textDecoration={`underline`}
+            fontSize={`lg`}
+            color={mode === 'history' && 'green.400'}
+            onClick={() => setMode('history')}>
+            History
+          </Button>
+        </HStack>
         <HStack justifyContent="flex-end">
           <Button onClick={handleRefresh} bgColor="brandGreen" color="white">
             Refresh
@@ -91,14 +135,27 @@ const JobsPage = observer(() => {
             <Center>
               <Spinner size={`xl`} thickness={6} />
             </Center>
+          ) : jobs.length ? (
+            jobs
+              .filter((job) =>
+                mode === 'curJob'
+                  ? filterExceptCurrentJob(job)
+                  : mode === 'history'
+                  ? [DONE, CANCELED, REVIEWED].includes(job.state)
+                  : true
+              )
+              .sort((cur, next) =>
+                currentJob && cur._id === currentJob._id ? -1 : compareJobs(cur, next)
+              )
+              .map((job) => {
+                return (
+                  <ListItem key={job._id} my={2} minW={`90%`} onClick={() => handleSelect(job)}>
+                    <JobItemList job={job} />
+                  </ListItem>
+                );
+              })
           ) : (
-            jobs.map((job) => {
-              return (
-                <ListItem key={job._id} my={2} minW={`90%`} onClick={() => handleSelect(job)}>
-                  <JobItemList job={job} />
-                </ListItem>
-              );
-            })
+            <Text>There is no item.</Text>
           )}
         </List>
       </Container>
@@ -107,4 +164,4 @@ const JobsPage = observer(() => {
   );
 });
 
-export default JobsPage;
+export default memo(JobsPage);
