@@ -142,14 +142,14 @@ export const ProfilePage = observer(() => {
           </Center>
 
           <Stack spacing={14} direction={['column', 'row']}>
-            // Left Stack for profile pic and rating
+            {/* // Left Stack for profile pic and rating */}
             <VStack spacing={4} justify="center">
               <Image width="12rem" height="12rem" src={ProfilePic} />
 
               {stars(maidInfo.avgRating)}
               <Text>{maidInfo.avgRating ? maidInfo.avgRating + '/5 from 42 reviews' : null}</Text>
             </VStack>
-            // Right Stack for information
+            {/* // Right Stack for information */}
             <Stack spacing={4}>
               <HStack justifyContent="space-between" width="100%">
                 <Box fontSize="xl">{userInfo.firstname + ' ' + userInfo.lastname}</Box>

@@ -1,61 +1,44 @@
 import { Button } from '@chakra-ui/button';
 import { useDisclosure } from '@chakra-ui/hooks';
 import { Center, Container, Flex, Heading, HStack, List, ListItem, Text } from '@chakra-ui/layout';
-import { Modal, ModalCloseButton, ModalContent, ModalOverlay } from '@chakra-ui/modal';
 import { Spinner } from '@chakra-ui/spinner';
-import { toJS } from 'mobx';
 import { observer } from 'mobx-react-lite';
-import React, { createContext, memo, useEffect, useMemo, useState } from 'react';
-import {
-  CANCELED,
-  CONFIRMED,
-  DONE,
-  MATCHED,
-  POSTED,
-  REVIEWED,
-} from '../../../constants/post-state';
+import React, { memo, useEffect, useState } from 'react';
+import { fetchCustomerAllJobs } from '../../../api';
+import { CANCELED, DONE, REVIEWED } from '../../../constants/post-state';
 import { useStores } from '../../../hooks/use-stores';
-import { MaidDiscardJobModal } from '../../shared/modals/modals';
+import CustomerAction from '../../shared/jobs/CustomerAction';
 
 import JobItemList from '../../shared/jobs/JobItemList';
-import JobItemModal from './components/JobItemModal';
-import Actions from './components/cta';
+import JobItemModal from '../jobs/components/JobItemModal';
+import PostModal from '../review/components/PostModal';
 
-const JobsPage = observer(() => {
-  const { userStore, jobStore } = useStores();
+const PostPage = observer(() => {
+  const { userStore } = useStores();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [loading, setLoading] = useState(false);
   const [selected, setSelected] = useState();
+  const [posts, setPosts] = useState([]);
   const [mode, setMode] = useState('allJobs');
-
-  // Mobx Job Store
-  const jobs = jobStore.jobs;
-  const currentJob = jobStore.currentJob;
-  const loading = jobStore.loading;
-  const error = jobStore.error;
 
   // Mobx User Store
   const curUser = userStore.userData;
 
-  // Render Modal if already have a current job
-  useEffect(() => {
-    if (currentJob === null) {
-      setSelected(null);
-    } else {
-      setSelected(currentJob);
+  const fetchAllPost = async () => {
+    setLoading(true);
+    try {
+      const { data: posts } = await fetchCustomerAllJobs();
+      setPosts(posts);
+    } catch (error) {
+      setPosts([]);
+    } finally {
+      setLoading(false);
     }
-  }, [currentJob]);
-
-  // Fetch every 5 seconds
-  useEffect(() => {
-    const fetchJobsInterval = setInterval(async () => {
-      await jobStore.fetchAllJobs();
-    }, 30000);
-    return () => clearInterval(fetchJobsInterval);
-  }, [jobStore]);
-
-  const handleRefresh = () => {
-    jobStore.fetchAllJobs();
   };
+
+  useEffect(() => {
+    fetchAllPost();
+  }, []);
 
   const handleSelect = (job) => {
     setSelected(job);
@@ -67,23 +50,21 @@ const JobsPage = observer(() => {
     onClose();
   };
 
-  const filterExceptCurrentJob = (job) => {
-    return job._id === currentJob._id;
-  };
+  const handleRefresh = () => fetchAllPost();
 
   const compareJobs = (x, y) => {
     return new Date(x.expiryTime) > new Date(y.expiryTime);
   };
 
-  // Fetch user data
-  useEffect(() => {
-    if (curUser) jobStore.fetchAllJobs(curUser._id);
-  }, [curUser, jobStore]);
-
   const renderSelectedJobModal = () => {
     return (
       <>
-        <JobItemModal job={selected} isOpen={isOpen} onClose={handleClose} actions={Actions} />
+        <JobItemModal
+          job={selected}
+          isOpen={isOpen}
+          onClose={handleClose}
+          actions={CustomerAction}
+        />
       </>
     );
   };
@@ -98,23 +79,14 @@ const JobsPage = observer(() => {
       alignItems="center">
       <Container borderRadius={4} bgColor="gray.100" p={6} w={`70vw`} maxW={1200}>
         <HStack spacing={4} alignItems={`baseline`}>
-          <Heading>Jobs</Heading>
+          <Heading>Post</Heading>
           <Button
             variant={`link`}
             textDecoration={`underline`}
             fontSize={`lg`}
             color={mode === 'allJobs' && 'green.400'}
             onClick={() => setMode('allJobs')}>
-            All Jobs
-          </Button>
-          <Button
-            disabled={!currentJob}
-            variant={`link`}
-            textDecoration={`underline`}
-            fontSize={`lg`}
-            color={mode === 'curJob' && 'green.400'}
-            onClick={() => setMode('curJob')}>
-            Current Job
+            All Posts
           </Button>
           <Button
             variant={`link`}
@@ -126,7 +98,7 @@ const JobsPage = observer(() => {
           </Button>
         </HStack>
         <HStack justifyContent="flex-end">
-          <Button onClick={handleRefresh} bgColor="brandGreen" color="white">
+          <Button onClick={() => handleRefresh()} bgColor="brandGreen" color="white">
             Refresh
           </Button>
         </HStack>
@@ -135,18 +107,12 @@ const JobsPage = observer(() => {
             <Center>
               <Spinner size={`xl`} thickness={6} />
             </Center>
-          ) : jobs.length ? (
-            jobs
+          ) : posts.length ? (
+            posts
               .filter((job) =>
-                mode === 'curJob'
-                  ? filterExceptCurrentJob(job)
-                  : mode === 'history'
-                  ? [DONE, CANCELED, REVIEWED].includes(job.state)
-                  : true
+                mode === 'history' ? [DONE, REVIEWED, CANCELED].includes(job.state) : true
               )
-              .sort((cur, next) =>
-                currentJob && cur._id === currentJob._id ? -1 : compareJobs(cur, next)
-              )
+              .sort((lhs, rhs) => compareJobs(lhs, rhs))
               .map((job) => {
                 return (
                   <ListItem key={job._id} my={2} minW={`90%`} onClick={() => handleSelect(job)}>
@@ -164,4 +130,4 @@ const JobsPage = observer(() => {
   );
 });
 
-export default memo(JobsPage);
+export default memo(PostPage);

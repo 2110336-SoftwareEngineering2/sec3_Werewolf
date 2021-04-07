@@ -1,15 +1,17 @@
 import axios from 'axios';
 
-// User API
-export const maid = axios.create({
-  baseURL: '/api/maids',
+// Workspace api
+export const refund = axios.create({
+  baseURL: '/api/refund',
   headers: {
     'Content-Type': 'application/json',
+    Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
+    secret: process.env.REACT_APP_SECRET,
   },
 });
 
-maid.interceptors.request.use(
-  (config) => {
+refund.interceptors.request.use(
+  config => {
     const token = localStorage.getItem('token');
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;
@@ -18,21 +20,8 @@ maid.interceptors.request.use(
     console.log('interceptor conf', config);
     return config;
   },
-  (error) => {
+  error => {
     console.log('intercaptor err', error);
     throw error;
   }
 );
-
-/**
- *
- * @param {string} uid user id
- * @returns {Promise} Promise response user data
- */
-export const fetchMaidById = async (uid) => {
-  return maid.get(`/${uid}`);
-};
-
-export const setAvailability = async (status) => {
-  return maid.put(`/availability/${status}`);
-};

@@ -29,3 +29,13 @@ form{
   width: 103px;
   height: 48px;
 }
+
+.overlay-parent{
+  position: relative;
+}
+
+.overlay-child{
+  position: absolute;
+  top: -0.5rem;
+  right: -0.25rem;
+}
