@@ -95,18 +95,19 @@ const ReviewFormModal = ({ isOpen, onClose, job }) => {
         <ModalContent overflow={'hidden'} borderRadius={`xl`}>
           <ModalCloseButton zIndex={`tooltip`} />
 
-          <Grid h={`75vh`} templateRows={`14rem repeat(5, 1fr)`} templateColumns={`repeat(8, 1fr)`}>
+          <Grid h={`75vh`} templateRows={`17rem repeat(5, 1fr)`} templateColumns={`repeat(8, 1fr)`}>
             <GridItem
               as={Box}
               rowSpan={1}
               colStart={1}
               colEnd={-1}
-              bg={`green.300`}
-              borderRadius={`xl`}
-              >
-              
-              <CarouselWithDots job={job} />
-              
+              bg={`white`}
+              border="5px"
+              borderColor="green"
+              borderRadius={`xl`}>
+              <Box border="1px" height="100%" alignSelf="stretch">
+                <CarouselWithDots job={job} />
+              </Box>
             </GridItem>
             <GridItem as={HStack} rowStart={2} rowSpan={1} colSpan={2} p={4}>
               <UserStatus uid={maidId} />
