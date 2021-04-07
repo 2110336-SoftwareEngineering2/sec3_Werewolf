@@ -63,8 +63,6 @@ export class JobService {
           work.typeOfWork + ' is not valid type of work',
         );
       }
-      if (!work.description)
-        throw new BadRequestException('description should not be empty');
       if (isNaN(Number(work.quantity)))
         throw new BadRequestException('quantity must be a number');
     });
@@ -288,7 +286,7 @@ export class JobService {
       throw new NotFoundException("can't find job");
     }
     const updateReviewDto = {
-      rating: 0,
+      rating: 1,
       jobId: jobId,
       maidId: maidId,
       reviewDescription: 'This job was canceled by maid',
