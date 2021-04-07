@@ -10,7 +10,7 @@ import { useStores } from '../../../hooks/use-stores';
 import { observer } from 'mobx-react-lite';
 
 const JobItem = observer(({ job }) => {
-  const { customerId, maidId, workplaceId } = job;
+  const { customerId, maidId, workplaceId, work, jobId } = job;
   const { userStore } = useStores();
 
   const curUser = userStore.userData;
@@ -67,13 +67,15 @@ const JobItem = observer(({ job }) => {
               </HStack>
             </VStack>
             <Box>
-              <Text as="h5" fontWeight="bold">
+            <Text as={`h6`} fontSize={`lg`} fontWeight={`bold`}>
                 Note
               </Text>
-              <Text as="p" noOfLines={2}>
-                Lorem ipsum dolor sit amet consectetur, adipisicing elit. Laborum, ullam! Lorem
-                ipsum dolor.
-              </Text>
+              {work &&
+                work.map(({ typeOfWork, description }, idx) => (
+                  <Text key={jobId + description + idx}>
+                    {typeOfWork} - {description}
+                  </Text>
+                ))}
             </Box>
           </VStack>
           <Status job={job} />
