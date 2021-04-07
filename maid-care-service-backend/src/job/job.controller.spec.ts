@@ -56,7 +56,7 @@ describe('JobController', () => {
     },
     {
       typeOfWork: 'Dish Washing',
-      description: 'Washing the dish',
+      description: '',
       quantity: 20,
     },
     {

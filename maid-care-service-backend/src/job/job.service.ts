@@ -63,8 +63,6 @@ export class JobService {
           work.typeOfWork + ' is not valid type of work',
         );
       }
-      if (!work.description)
-        throw new BadRequestException('description should not be empty');
       if (isNaN(Number(work.quantity)))
         throw new BadRequestException('quantity must be a number');
     });
