@@ -21,17 +21,17 @@ const Page2Page3_calculatePrice = observer(({ steps, isPromoAvailable, setPromoA
         work: [
           {
             typeOfWork: 'Dish Washing',
-            description: 'None',
+            description: values.descriptionOfDishes,
             quantity: parseInt(n_dishes()),
           },
           {
             typeOfWork: 'House Cleaning',
-            description: 'None',
+            description: values.descriptionOfRooms,
             quantity: parseInt(n_rooms()),
           },
           {
             typeOfWork: 'Laundry',
-            description: 'None',
+            description: values.descriptionOfClothes,
             quantity: parseInt(n_clothes()),
           },
         ],

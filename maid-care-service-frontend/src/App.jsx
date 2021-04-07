@@ -18,6 +18,7 @@ import Verification from './components/pages/signup/verfification.jsx';
 import { UploadImage } from './components/shared/imageUploader/upload_image_example.jsx';
 import { SingleUpload } from './components/shared/imageUploader/single_image_example';
 import { observer } from 'mobx-react-lite';
+import { Postjob } from './components/pages/postjob/postjob';
 
 export const App = observer(() => {
   return (
@@ -33,6 +34,7 @@ export const App = observer(() => {
         <Route exact path="/register" component={SignUp} />
 
         <Route exact path="/auth/verify/:token" component={Verification} />
+        <ProtectedRoute exact path="/post/create" component={Postjob} />
         <ProtectedRoute exact path="/review" component={Review} />
         <ProtectedRoute exact path="/workspace" component={Workspace} />
         <ProtectedRoute permission={['admin']} path="/promotion" component={Promotion} />

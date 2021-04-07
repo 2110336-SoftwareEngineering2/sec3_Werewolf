@@ -6,7 +6,7 @@ const Page6_hireConfirm = ({ isConfirm }) => {
   const history = useHistory();
 
   const routeChange = () => {
-    let path = `/post/create`;
+    let path = `/post`;
     history.push(path);
   };
 
