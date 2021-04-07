@@ -1,7 +1,7 @@
-import { action, makeObservable, observable } from 'mobx';
+import { action, makeObservable, observable, when } from 'mobx';
 
 import firebase from 'firebase/app';
-import storage from '../firebase.js'; 
+import storage from '../firebase.js';
 
 var storageRef = storage.ref();
 
@@ -19,7 +19,7 @@ class MultiImageStore {
   }
 
   // upload action
-  upload(file) {
+  async upload(file) {
     var uploadTask = storageRef.child('images/' + file.name).put(file);
 
     // Listen for state changes, errors, and completion of the upload.
@@ -66,7 +66,7 @@ class MultiImageStore {
     );
   }
 
-  delete(filename) {
+  async delete(filename) {
     var imgRef = storageRef.child(`images/${filename}`);
 
     imgRef
@@ -146,16 +146,16 @@ class SingleImageStore {
         this.filename = file.name;
 
         //delete old img from firebase
-        if(oldName){
-            console.log('deleteing', oldName)
-            this.delete(oldName);
+        if (oldName) {
+          console.log('deleteing', oldName);
+          this.delete(oldName);
         }
       }
     );
   }
 
   delete(filename) {
-    var imgRef = storageRef.child(`images/${filename}`)
+    var imgRef = storageRef.child(`images/${filename}`);
 
     imgRef
       .delete()

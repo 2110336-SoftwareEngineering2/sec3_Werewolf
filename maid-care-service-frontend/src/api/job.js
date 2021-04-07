@@ -25,3 +25,17 @@ export const createJob = async ({ workpalceId, work, promtionCode = null }) => {
     promtionCode,
   });
 };
+
+export const uploadImageURL = async ({ jobId, url }) => {
+  return job.post('/photo', {
+    jobId,
+    url,
+  });
+};
+
+export const deleteImageURL = async ({ jobId, url }) => {
+  return job.delete(`/photo/${url}`, {
+    jobId,
+    url,
+  });
+};
