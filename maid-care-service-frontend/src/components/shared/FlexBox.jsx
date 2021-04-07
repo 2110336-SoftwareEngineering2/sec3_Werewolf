@@ -5,7 +5,9 @@ const FlexBox = ({ children }) => (
   <Flex
     py="8"
     px={{ base: '8', md: '12' }}
-    minWidth={{ base: '50vw', md: '30vw' }}
+    my="6"
+    mx="3"
+    minWidth={{ base: '80vw', md: '30vw' }}
     height="fit-content"
     bg="boxWhite"
     borderRadius="24px"
