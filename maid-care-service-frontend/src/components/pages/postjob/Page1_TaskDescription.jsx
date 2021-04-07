@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-
 import { useFormikContext, Field } from 'formik';
 import { Link as RouterLink } from 'react-router-dom';
 import { workspace } from '../../../api';
 import { observer } from 'mobx-react-lite';
 import { Link, HStack, FormControl, FormLabel, Select, Text } from '@chakra-ui/react';
 import { TextInputField } from '../../shared/FormikField';
+import PopoverForm from './components/WorkDescrtiptionPopover';
 
 const Page1_TaskDescription = observer(() => {
   const { values } = useFormikContext();
@@ -18,11 +18,11 @@ const Page1_TaskDescription = observer(() => {
       .get('/', {
         timeout: 5000,
       })
-      .then(response => {
+      .then((response) => {
         setMyWorkspaces(response.data);
         console.log('get workspace/ : ', response.data);
       })
-      .catch(error => {
+      .catch((error) => {
         console.error(error);
       });
   };
@@ -36,18 +36,20 @@ const Page1_TaskDescription = observer(() => {
   return (
     <>
       <FormControl mb="20px" id="house-no" width={{ sm: '270px', md: '368px' }}>
-        <FormLabel mb="0" fontWeight="bold" fontSize="lg">Location</FormLabel>
-        <Field as={Select} id="selectButton" name="workplaceId" mb="5px">
+        <FormLabel mb="0" fontWeight="bold" fontSize="lg">
+          Location
+        </FormLabel>
+        <TextInputField as={Select} id="selectButton" name="workplaceId" mb="5px">
           <option value="">Select your workplace location</option>
-          {myWorkspaces.map(myWorkspace => {
+          {myWorkspaces.map((myWorkspace) => {
             return (
               <option key={myWorkspace._id} value={myWorkspace._id}>
                 {myWorkspace.description}
               </option>
             );
           })}
-        </Field>
-        <Link color="green.400" as={RouterLink} to="/workspace" mt="20px">
+        </TextInputField>
+        <Link color="green.400" as={RouterLink} to="/workspace" mt={`1vw`}>
           Add new workspace
         </Link>
       </FormControl>
@@ -57,37 +59,61 @@ const Page1_TaskDescription = observer(() => {
           <Field type="checkbox" name="isDishes" />
           <Text>Dish Washing</Text>
         </HStack>
-        <TextInputField
-          label=""
-          name="amountOfDishes"
-          type="number"
-          placeholder="Amount of dishes (e.g. 20)"
-          isDisabled={!values.isDishes}
-        />
+        <HStack>
+          <TextInputField
+            label=""
+            name="amountOfDishes"
+            type="number"
+            placeholder="Amount of dishes (e.g. 20)"
+            isDisabled={!values.isDishes}
+          />
+          <PopoverForm
+            label="Description for Dish Washing"
+            name="descriptionOfDishes"
+            placeholder="Text Here...."
+            isDisabled={!values.isDishes}
+          />
+        </HStack>
       </FormControl>
       <FormControl id="rooms" width={{ sm: '270px', md: '368px' }}>
         <HStack>
           <Field type="checkbox" name="isRooms" />
           <Text>Room cleaning</Text>
         </HStack>
-        <TextInputField
-          label=""
-          name="areaOfRooms"
-          placeholder="Amount of the room in square meter (e.g. 100)"
-          isDisabled={!values.isRooms}
-        />
+        <HStack>
+          <TextInputField
+            label=""
+            name="areaOfRooms"
+            placeholder="Amount of the room in square meter (e.g. 100)"
+            isDisabled={!values.isRooms}
+          />
+          <PopoverForm
+            label="Description for Room Cleaning"
+            name="descriptionOfRooms"
+            placeholder="Text Here...."
+            isDisabled={!values.isRooms}
+          />
+        </HStack>
       </FormControl>
       <FormControl id="clothes" width={{ sm: '270px', md: '368px' }}>
         <HStack>
           <Field type="checkbox" name="isClothes" />
           <Text>Clothes Ironing</Text>
         </HStack>
-        <TextInputField
-          label=""
-          name="amountOfClothes"
-          placeholder="Amount of clothes (e.g. 10)"
-          isDisabled={!values.isClothes}
-        />
+        <HStack>
+          <TextInputField
+            label=""
+            name="amountOfClothes"
+            placeholder="Amount of clothes (e.g. 10)"
+            isDisabled={!values.isClothes}
+          />
+          <PopoverForm
+            label="Description for Clothes Ironing"
+            name="descriptionOfClothes"
+            placeholder="Text Here...."
+            isDisabled={!values.isClothes}
+          />
+        </HStack>
       </FormControl>
     </>
   );

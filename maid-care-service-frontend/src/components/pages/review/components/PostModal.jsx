@@ -122,7 +122,7 @@ const PostModal = ({ isOpen, onClose, job, fetchJobById }) => {
                 padding="1vw"
                 overflow="scroll"
                 >
-                <Text>{review === null ? 'อยากบอกอะไรเมต ไหมจ๊ะ? อิอิ . . . . . .' : review}</Text>
+                <Text color="gray.600" >{review === null ? 'อยากบอกอะไรเมต ไหมจ๊ะ? อิอิ . . . . . .' : review}</Text>
               </Box>
             </GridItem>
             <GridItem rowStart={5} rowSpan={1} colStart={3} colEnd={-1} p={4}>

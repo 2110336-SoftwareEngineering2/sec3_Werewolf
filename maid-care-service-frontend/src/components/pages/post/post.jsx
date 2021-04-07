@@ -4,14 +4,21 @@ import { Center, Container, Flex, Heading, HStack, List, ListItem, Text } from '
 import { Spinner } from '@chakra-ui/spinner';
 import { observer } from 'mobx-react-lite';
 import React, { memo, useEffect, useState } from 'react';
+import { Icon, Box } from '@chakra-ui/react';
 import { fetchCustomerAllJobs } from '../../../api';
 import { CANCELED, DONE, REVIEWED } from '../../../constants/post-state';
 import { useStores } from '../../../hooks/use-stores';
+import { FaPlusCircle } from 'react-icons/fa';
 import CustomerAction from '../../shared/jobs/CustomerAction';
+import { useHistory } from 'react-router-dom';
 
 import JobItemList from '../../shared/jobs/JobItemList';
 import JobItemModal from '../jobs/components/JobItemModal';
 import PostModal from '../review/components/PostModal';
+import ReviewFormModal from '../review/components/ReviewFormModal';
+import RefundFormModal from '../review/components/RefundFormModal';
+import { ReviewModalContext } from '../../shared/context/ReviewModalContext';
+import { RefundModalContext } from '../../shared/context/RefundModalContext';
 
 const PostPage = observer(() => {
   const { userStore } = useStores();
@@ -20,9 +27,17 @@ const PostPage = observer(() => {
   const [selected, setSelected] = useState();
   const [posts, setPosts] = useState([]);
   const [mode, setMode] = useState('allJobs');
+  const { isOpen: isReviewOpen, onOpen: onReviewOpen, onClose: onReviewClose } = useDisclosure();
+  const { isOpen: isRefundOpen, onOpen: onRefundOpen, onClose: onRefundClose } = useDisclosure();
 
   // Mobx User Store
   const curUser = userStore.userData;
+  const history = useHistory();
+
+  const routeChange = () => {
+    let path = `/post/create`;
+    history.push(path);
+  };
 
   const fetchAllPost = async () => {
     setLoading(true);
@@ -59,12 +74,18 @@ const PostPage = observer(() => {
   const renderSelectedJobModal = () => {
     return (
       <>
-        <JobItemModal
-          job={selected}
-          isOpen={isOpen}
-          onClose={handleClose}
-          actions={CustomerAction}
-        />
+        <RefundModalContext.Provider value={{ isRefundOpen, onRefundOpen, onRefundClose }}>
+          <ReviewModalContext.Provider value={{ isReviewOpen, onReviewOpen, onReviewClose }}>
+            <JobItemModal
+              job={selected}
+              isOpen={isOpen}
+              onClose={handleClose}
+              actions={CustomerAction}
+            />
+            <ReviewFormModal job={selected} isOpen={isReviewOpen} onClose={onReviewClose} />
+            <RefundFormModal job={selected} isOpen={isRefundOpen} onClose={onRefundClose} />
+          </ReviewModalContext.Provider>
+        </RefundModalContext.Provider>
       </>
     );
   };
@@ -98,6 +119,9 @@ const PostPage = observer(() => {
           </Button>
         </HStack>
         <HStack justifyContent="flex-end">
+          <Box onClick={routeChange} cursor="pointer">
+            <Icon as={FaPlusCircle} w={12} h={12} color={`green.500`} />
+          </Box>
           <Button onClick={() => handleRefresh()} bgColor="brandGreen" color="white">
             Refresh
           </Button>

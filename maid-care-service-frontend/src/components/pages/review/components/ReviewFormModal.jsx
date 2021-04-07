@@ -19,13 +19,15 @@ import {
   ButtonGroup,
   ListItem,
   Icon,
+  Image,
 } from '@chakra-ui/react';
 import UserStatus from './../../jobs/components/UserStatus.jsx';
+import CarouselWithDots from './Carousel';
 import { review } from './../../../../api';
 
 //Review form contain RatingStar component and Textarea.
-const ReviewFormModal = ({ isOpen, onClose, job, setOpenRefund, handleConfirmReview = () => {} }) => {
-  const { _id: jobId, work, maidId } = job;
+const ReviewFormModal = ({ isOpen, onClose, job }) => {
+  const { _id: jobId, work, maidId, photos } = job;
   var d = new Date();
   const [rating, setRating] = useState(0); // for pass as a argument to RatingStar component and show rating number in this page.
   const [reviewText, setReviewText] = useState('');
@@ -49,7 +51,7 @@ const ReviewFormModal = ({ isOpen, onClose, job, setOpenRefund, handleConfirmRev
         console.log('put review/', response);
         setReviewText(response.data);
         toastReviewSuccess();
-        handleConfirmReview();
+        //handleConfirmReview();
       })
       .catch((error) => {
         console.error(error);
@@ -65,6 +67,10 @@ const ReviewFormModal = ({ isOpen, onClose, job, setOpenRefund, handleConfirmRev
       duration: 9000,
       isClosable: true,
     });
+  };
+
+  const dosomething = () => {
+    console.log(photos);
   };
 
   const toastReviewFail = () => {
@@ -89,25 +95,35 @@ const ReviewFormModal = ({ isOpen, onClose, job, setOpenRefund, handleConfirmRev
         <ModalContent overflow={'hidden'} borderRadius={`xl`}>
           <ModalCloseButton zIndex={`tooltip`} />
 
-          <Grid h={`75vh`} templateRows={`14rem repeat(5, 1fr)`} templateColumns={`repeat(8, 1fr)`}>
+          <Grid h={`75vh`} templateRows={`17rem repeat(5, 1fr)`} templateColumns={`repeat(8, 1fr)`}>
             <GridItem
               as={Box}
               rowSpan={1}
               colStart={1}
               colEnd={-1}
-              bg={`green.300`}
-              borderRadius={`xl`}
-              zIndex={`toast`}></GridItem>
-
+              bg={`white`}
+              border="5px"
+              borderColor="green"
+              borderRadius={`xl`}>
+              <Box border="1px" height="100%" alignSelf="stretch">
+                <CarouselWithDots job={job} />
+              </Box>
+            </GridItem>
             <GridItem as={HStack} rowStart={2} rowSpan={1} colSpan={2} p={4}>
               <UserStatus uid={maidId} />
             </GridItem>
             <GridItem as={List} rowStart={3} rowSpan={3} colStart={0} colSpan={2} p={4}>
-            {work &&
+              {work &&
                 work.map(({ quantity, typeOfWork, unit }, idx) => (
                   <ListItem as={HStack} key={jobId + idx} mt="1vw">
                     <Icon
-                      as={typeOfWork === 'Dish Washing' ? FaRing : typeOfWork === 'House Cleaning' ? FaBroom : FaTshirt}
+                      as={
+                        typeOfWork === 'Dish Washing'
+                          ? FaRing
+                          : typeOfWork === 'House Cleaning'
+                          ? FaBroom
+                          : FaTshirt
+                      }
                       w={8}
                       h={8}
                       color={`gray.800`}
@@ -120,8 +136,8 @@ const ReviewFormModal = ({ isOpen, onClose, job, setOpenRefund, handleConfirmRev
             </GridItem>
             <GridItem rowSpan={1} colStart={3} colEnd={7} p={4} alignItems={`baseline`}>
               <VStack alignItems="flex-start" w={`30vw`}>
-                  <Text>Rate this job</Text>
-                  <HStack >
+                <Text>Rate this job</Text>
+                <HStack>
                   <PutRatingStar rating={rating} setRating={setRating} />
                 </HStack>
               </VStack>
@@ -149,16 +165,6 @@ const ReviewFormModal = ({ isOpen, onClose, job, setOpenRefund, handleConfirmRev
               colStart={1}
               colEnd={-1}
               p={4}>
-                <Button
-                  bg="white"
-                  color="buttonGreen"
-                  borderColor="green"
-                  border="1px"
-                  onClick={() => {
-                    setOpenRefund(true);
-                  }}>
-                  Request for Refund
-                </Button>
               <Button
                 bg="buttonGreen"
                 color="white"

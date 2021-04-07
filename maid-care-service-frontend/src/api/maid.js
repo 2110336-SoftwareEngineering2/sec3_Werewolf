@@ -36,3 +36,7 @@ export const fetchMaidById = async (uid) => {
 export const setAvailability = async (status) => {
   return maid.put(`/availability/${status}`);
 };
+
+export const updateLocation = async ({ latitude, longitude }) => {
+  return maid.put('/update-location', { latitude, longitude });
+};

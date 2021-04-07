@@ -25,17 +25,10 @@ const Page4_maidInfo = ({
     if (values.isDishes) {
       works = [
         ...works,
-        { typeOfWork: 'Dish Washing', description: 'None', quantity: parseInt(n_dishes()) },
-      ];
-    }
-
-    if (values.isClothes) {
-      works = [
-        ...works,
         {
-          typeOfWork: 'Laundry',
-          description: 'None',
-          quantity: parseInt(n_clothes()),
+          typeOfWork: 'Dish Washing',
+          description: values.descriptionOfDishes,
+          quantity: parseInt(n_dishes()),
         },
       ];
     }
@@ -45,8 +38,19 @@ const Page4_maidInfo = ({
         ...works,
         {
           typeOfWork: 'House Cleaning',
-          description: 'None',
+          description: values.descriptionOfRooms,
           quantity: parseInt(n_rooms()),
+        },
+      ];
+    }
+
+    if (values.isClothes) {
+      works = [
+        ...works,
+        {
+          typeOfWork: 'Laundry',
+          description: values.descriptionOfClothes,
+          quantity: parseInt(n_clothes()),
         },
       ];
     }

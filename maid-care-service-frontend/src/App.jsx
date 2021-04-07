@@ -17,7 +17,7 @@ import Review from './components/pages/review/review.jsx';
 import Verification from './components/pages/signup/verfification.jsx';
 import Profile from './components/pages/profilepage/profile.jsx';
 
-export const App = () => {
+export const App = observer(() => {
   return (
     <ChakraProvider theme={theme}>
       <Navbar />
@@ -52,4 +52,4 @@ export const App = () => {
       </Switch>
     </ChakraProvider>
   );
-};
+});

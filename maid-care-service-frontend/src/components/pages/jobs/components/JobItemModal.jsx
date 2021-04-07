@@ -215,13 +215,7 @@ const JobItemModal = ({ job, isOpen, onClose, actions: Actions }) => {
                   pt={1}
                   overflow={`auto`}>
                   <Text h={`full`}>
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis aliquid
-                    aspernatur aperiam necessitatibus ducimus earum tenetur accusantium labore
-                    libero deleniti, ab provident quasi at voluptatum asperiores sint. Suscipit,
-                    aliquid eos? Lorem ipsum, dolor sit amet consectetur adipisicing elit. Harum
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Esse eveniet placeat
-                    voluptate quasi sed culpa asperiores rem quia distinctio minima amet, expedita
-                    itaque maxime. Ducimus hic quidem veritatis delectus suscipit nesciunt aliquam
+                    {review === null ? "" : review}
                   </Text>
                 </GridItem>
               </>
