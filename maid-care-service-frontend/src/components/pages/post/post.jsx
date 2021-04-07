@@ -4,10 +4,13 @@ import { Center, Container, Flex, Heading, HStack, List, ListItem, Text } from '
 import { Spinner } from '@chakra-ui/spinner';
 import { observer } from 'mobx-react-lite';
 import React, { memo, useEffect, useState } from 'react';
+import { Icon, Box } from '@chakra-ui/react';
 import { fetchCustomerAllJobs } from '../../../api';
 import { CANCELED, DONE, REVIEWED } from '../../../constants/post-state';
 import { useStores } from '../../../hooks/use-stores';
+import { FaPlusCircle } from 'react-icons/fa';
 import CustomerAction from '../../shared/jobs/CustomerAction';
+import { useHistory } from 'react-router-dom';
 
 import JobItemList from '../../shared/jobs/JobItemList';
 import JobItemModal from '../jobs/components/JobItemModal';
@@ -23,6 +26,12 @@ const PostPage = observer(() => {
 
   // Mobx User Store
   const curUser = userStore.userData;
+  const history = useHistory();
+
+  const routeChange = () => {
+    let path = `/post/create`;
+    history.push(path);
+  };
 
   const fetchAllPost = async () => {
     setLoading(true);
@@ -98,6 +107,7 @@ const PostPage = observer(() => {
           </Button>
         </HStack>
         <HStack justifyContent="flex-end">
+          <Box onClick={routeChange} cursor="pointer"><Icon as={FaPlusCircle} w={12} h={12} color={`green.500`}/></Box>
           <Button onClick={() => handleRefresh()} bgColor="brandGreen" color="white">
             Refresh
           </Button>
