@@ -47,7 +47,7 @@ const PopoverForm = ( {label, name, isDisabled, placeholder} ) => {
         onOpen={onOpen}
         onClose={onClose}
         placement="right"
-        closeOnBlur={false}>
+        closeOnBlur={true}>
         <PopoverTrigger border="1px">
           <IconButton isDisabled={isDisabled} size="md" icon={<EditIcon />} />
         </PopoverTrigger>

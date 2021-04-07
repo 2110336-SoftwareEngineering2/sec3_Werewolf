@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { maid, user, job } from '../../../api';
 import profileImage from './Image/profileImage.png';
 import { VStack, Text, HStack, Box, chakra, ButtonGroup } from '@chakra-ui/react';
-import StarRating from './components/StarRating.jsx';
+import { GetRatingStar } from '../../shared/RatingStar';
 import AlertButton from './components/AlertButton.jsx';
 import Timer from './components/Timer.jsx';
 
@@ -17,11 +17,11 @@ const Page5_maidInfo = ({ handleIncrement, maidId, jobId, setConfirm }) => {
       .get(`/${maidId}`, {
         timeout: 5000,
       })
-      .then(response => {
+      .then((response) => {
         console.log('get user/{uid} : ', response);
         setUserInfo(response.data);
       })
-      .catch(error => {
+      .catch((error) => {
         console.error(error);
       });
   };
@@ -31,11 +31,11 @@ const Page5_maidInfo = ({ handleIncrement, maidId, jobId, setConfirm }) => {
       .get(`/${maidId}`, {
         timeout: 5000,
       })
-      .then(response => {
+      .then((response) => {
         console.log('get maid/{uid} : ', response);
         setMaidInfo(response.data);
       })
-      .catch(error => {
+      .catch((error) => {
         console.error(error);
       });
   };
@@ -43,12 +43,12 @@ const Page5_maidInfo = ({ handleIncrement, maidId, jobId, setConfirm }) => {
   const customerConfirm_API = () => {
     job
       .put(`/${jobId}/customer-confirm`)
-      .then(response => {
+      .then((response) => {
         console.log('put job/{jobId}/customer-confirm : ', response);
         handleIncrement();
         setConfirm('true');
       })
-      .catch(error => {
+      .catch((error) => {
         console.error(error);
         setConfirm('fail');
       });
@@ -57,12 +57,12 @@ const Page5_maidInfo = ({ handleIncrement, maidId, jobId, setConfirm }) => {
   const customerCancel_API = () => {
     job
       .put(`/${jobId}/customer-cancel`)
-      .then(response => {
+      .then((response) => {
         console.log('put job/{jobId}/customer-cancle: ', response);
         handleIncrement();
         setConfirm('false');
       })
-      .catch(error => {
+      .catch((error) => {
         console.error(error);
         setConfirm('fail');
       });
@@ -81,13 +81,10 @@ const Page5_maidInfo = ({ handleIncrement, maidId, jobId, setConfirm }) => {
     <HStack width="600px" height="300px">
       <VStack justifyContent="center" width="200px" height="100%">
         <chakra.img src={profileImage} width="200px" />
-        <StarRating
+        <GetRatingStar
           rating={maidInfo == null ? 0 : maidInfo.avgRating == null ? 0 : maidInfo.avgRating}
         />
-        <Text>
-          {maidInfo == null ? 0 : maidInfo.avgRating == null ? 0 : maidInfo.avgRating}/5 from{' '}
-          {maidInfo == null ? 0 : maidInfo.totalReviews} reviews
-        </Text>
+        <Text>Rating from {maidInfo == null ? 0 : maidInfo.totalReviews} reviews</Text>
       </VStack>
       <Box width="400px" height="100%">
         <Text mb="20px" fontWeight="bold">

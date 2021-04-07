@@ -53,7 +53,7 @@ const WorkspaceButton = ({isOpen, setIsOpen, postWorkspace }) => {
               colorScheme="green" 
               onClick={() => {
                 onClose();
-                postWorkspace( {description:`${values.houseNo} ${values.address1} ${values.address2} ${values.city}`});
+                postWorkspace( {description:`${values.houseNo} ${values.address1} ${values.address2} ${values.city} ${values.state} ประเทศไทย`});
               }} 
               ml={3}>
                 Confirm
