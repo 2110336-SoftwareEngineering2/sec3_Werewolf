@@ -30,6 +30,7 @@ export const App = () => {
         <Route exact path="/profile/edit" component={EditProfile} />
         <Route exact path="/register" component={SignUp} />
         <Route exact path="/auth/verify/:token" component={Verification} />
+        <ProtectedRoute exact path="/post/create" component={Postjob} />
         <ProtectedRoute exact path="/review" component={Review} />
         <ProtectedRoute exact path="/workspace" component={Workspace} />
         <ProtectedRoute permission={['admin']} path="/promotion" component={Promotion} />
