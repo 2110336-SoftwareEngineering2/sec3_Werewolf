@@ -662,7 +662,7 @@ describe('JobController', () => {
         jobId,
       );
       expect(canceledJob.state).toBe(JobState.canceled);
-      expect(canceledJob.rating).toBe(0);
+      expect(canceledJob.rating).toBe(1);
       expect(canceledJob.review).toBe('This job was canceled by maid');
 
       // get job
@@ -670,14 +670,14 @@ describe('JobController', () => {
       expect(canceledJob.state).toBe(JobState.canceled);
       expect(canceledJob.maidId).toBe(nearestMaidReq.user._id);
       expect(canceledJob.finishTime).toBeNull();
-      expect(canceledJob.rating).toBe(0);
+      expect(canceledJob.rating).toBe(1);
       expect(canceledJob.review).toBe('This job was canceled by maid');
 
       // maid rating should be updated
       nearestMaid = await maidsController.getMaid(nearestMaidReq.user._id);
       expect(nearestMaid.availability).toBeTruthy();
       expect(nearestMaid.avgRating).toBe(
-        (totalReviews * oldRating) / (totalReviews + 1),
+        (totalReviews * oldRating + 1) / (totalReviews + 1),
       );
       expect(nearestMaid.totalReviews).toBe(totalReviews + 1);
     });

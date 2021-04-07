@@ -286,7 +286,7 @@ export class JobService {
       throw new NotFoundException("can't find job");
     }
     const updateReviewDto = {
-      rating: 0,
+      rating: 1,
       jobId: jobId,
       maidId: maidId,
       reviewDescription: 'This job was canceled by maid',
