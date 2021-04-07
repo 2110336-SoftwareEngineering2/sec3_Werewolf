@@ -15,6 +15,8 @@ import { useHistory } from 'react-router-dom';
 import JobItemList from '../../shared/jobs/JobItemList';
 import JobItemModal from '../jobs/components/JobItemModal';
 import PostModal from '../review/components/PostModal';
+import ReviewFormModal from '../review/components/ReviewFormModal';
+import { ReviewModalContext } from '../../shared/context/ReviewModalContext';
 
 const PostPage = observer(() => {
   const { userStore } = useStores();
@@ -23,6 +25,7 @@ const PostPage = observer(() => {
   const [selected, setSelected] = useState();
   const [posts, setPosts] = useState([]);
   const [mode, setMode] = useState('allJobs');
+  const { isOpen: isReviewOpen, onOpen: onReviewOpen, onClose: onReviewClose } = useDisclosure();
 
   // Mobx User Store
   const curUser = userStore.userData;
@@ -68,12 +71,19 @@ const PostPage = observer(() => {
   const renderSelectedJobModal = () => {
     return (
       <>
-        <JobItemModal
-          job={selected}
-          isOpen={isOpen}
-          onClose={handleClose}
-          actions={CustomerAction}
-        />
+        <ReviewModalContext.Provider value={{ isReviewOpen, onReviewOpen, onReviewClose }}>
+          <JobItemModal
+            job={selected}
+            isOpen={isOpen}
+            onClose={handleClose}
+            actions={CustomerAction}
+          />
+          <ReviewFormModal 
+            job={selected}
+            isOpen={isReviewOpen}
+            onClose={onReviewOpen}
+          />
+        </ReviewModalContext.Provider>
       </>
     );
   };
@@ -107,7 +117,9 @@ const PostPage = observer(() => {
           </Button>
         </HStack>
         <HStack justifyContent="flex-end">
-          <Box onClick={routeChange} cursor="pointer"><Icon as={FaPlusCircle} w={12} h={12} color={`green.500`}/></Box>
+          <Box onClick={routeChange} cursor="pointer">
+            <Icon as={FaPlusCircle} w={12} h={12} color={`green.500`} />
+          </Box>
           <Button onClick={() => handleRefresh()} bgColor="brandGreen" color="white">
             Refresh
           </Button>

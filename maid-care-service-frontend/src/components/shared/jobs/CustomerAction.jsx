@@ -1,15 +1,17 @@
 import { Button } from '@chakra-ui/button';
 import { useModalContext } from '@chakra-ui/modal';
-import React from 'react';
+import React, { useContext } from 'react';
 import { DONE, REVIEWED } from '../../../constants/post-state';
+import { ReviewModalContext } from '../context/ReviewModalContext';
 
 const CustomerAction = ({ job }) => {
   const { _id: jobId, state } = job;
   const { onClose } = useModalContext();
+  const { onReviewOpen }  = useContext(ReviewModalContext) ;
 
   return state === DONE ? ( // wait for reviewed
     <>
-      <Button colorScheme={`green`} onClick={() => {}}>
+      <Button colorScheme={`green`} onClick={onReviewOpen}>
         Write Your Review
       </Button>
     </>
