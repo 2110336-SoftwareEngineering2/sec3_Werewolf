@@ -28,14 +28,14 @@ const TextInput = React.forwardRef((props, ref) => {
   return (
     <FormControl>
       <FormLabel htmlFor={props.id}>{props.label}</FormLabel>
-      <Field as={Textarea} ref={ref} id={props.id} {...props} />
+      <Field as={Textarea} ref={ref} id={props.id} {...props}/>
     </FormControl>
   );
 });
 
 // 3. Create the Popover
 // Ensure you set `closeOnBlur` prop to false so it doesn't close on outside click
-const PopoverForm = ( {label, name, isDisabled} ) => {
+const PopoverForm = ( {label, name, isDisabled, placeholder} ) => {
   const { onOpen, onClose, isOpen } = useDisclosure();
   const firstFieldRef = React.useRef(null);
 
@@ -56,7 +56,7 @@ const PopoverForm = ( {label, name, isDisabled} ) => {
             <PopoverArrow />
             <PopoverCloseButton />
             <Stack spacing={4}>
-              <TextInput label={label} id={name} name={name} defaultValue="" />
+              <TextInput label={label} id={name} name={name} placeholder={placeholder}/>
             </Stack>
           </FocusLock>
         </PopoverContent>

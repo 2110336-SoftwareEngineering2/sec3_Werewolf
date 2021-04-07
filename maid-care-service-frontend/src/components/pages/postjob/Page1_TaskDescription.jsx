@@ -70,6 +70,7 @@ const Page1_TaskDescription = observer(() => {
           <PopoverForm
             label="Description for Dish Washing"
             name="descriptionOfDishes"
+            placeholder="Text Here...."
             isDisabled={!values.isDishes}
           />
         </HStack>
@@ -89,6 +90,7 @@ const Page1_TaskDescription = observer(() => {
           <PopoverForm
             label="Description for Room Cleaning"
             name="descriptionOfRooms"
+            placeholder="Text Here...."
             isDisabled={!values.isRooms}
           />
         </HStack>
@@ -108,6 +110,7 @@ const Page1_TaskDescription = observer(() => {
           <PopoverForm
             label="Description for Clothes Ironing"
             name="descriptionOfClothes"
+            placeholder="Text Here...."
             isDisabled={!values.isClothes}
           />
         </HStack>
