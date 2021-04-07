@@ -1,5 +1,4 @@
 import { observable, action, makeObservable, when } from 'mobx';
-import axiosRetry from 'axios-retry';
 import { login, fetchCurrentUser } from '../api';
 
 class UserStore {
