@@ -49,8 +49,8 @@ const ReviewFormModal = ({ isOpen, onClose, job }) => {
       })
       .then((response) => {
         console.log('put review/', response);
-        setReviewText(response.data);
         toastReviewSuccess();
+        onClose();
         //handleConfirmReview();
       })
       .catch((error) => {
