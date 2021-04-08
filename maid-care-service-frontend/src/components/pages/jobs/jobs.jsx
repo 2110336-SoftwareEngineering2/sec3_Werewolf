@@ -3,7 +3,7 @@ import { useDisclosure } from '@chakra-ui/hooks';
 import { Center, Container, Flex, Heading, HStack, List, ListItem, Text } from '@chakra-ui/layout';
 import { Spinner } from '@chakra-ui/spinner';
 import { observer } from 'mobx-react-lite';
-import React, { memo, useEffect, useState } from 'react';
+import React, { memo, useCallback, useEffect, useState } from 'react';
 import { CANCELED, DONE, REVIEWED } from '../../../constants/post-state';
 import { useStores } from '../../../hooks/use-stores';
 import JobItemList from '../../shared/jobs/JobItemList';
@@ -25,17 +25,32 @@ const JobsPage = observer(() => {
 
   // Mobx User Store
   const curUser = userStore.userData;
-  const { location } = useCurrentLocation();
+
+  const updateMaidLocation = useCallback(() => {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const location = position.coords;
+        updateLocation(location)
+          .then(() => console.log('success'))
+          .catch((error) => console.error(error));
+      },
+      (error) => {
+        console.error(error);
+      },
+      {}
+    );
+  }, []);
 
   useEffect(() => {
-    if (!location) return;
+    if (!navigator.geolocation) {
+      console.error('Geolocation is not supported!');
+      return;
+    }
     const updateLocationInterval = setInterval(() => {
-      updateLocation(location)
-        .then(() => console.log('success'))
-        .catch((error) => console.error(error));
-    }, 10 * 60 * 1000); // 10 mins
+      updateMaidLocation();
+    }, 60 * 1000); // 10 mins
     return () => clearInterval(updateLocationInterval);
-  }, []);
+  }, [updateMaidLocation]);
 
   // Render Modal if already have a current job
   useEffect(() => {
