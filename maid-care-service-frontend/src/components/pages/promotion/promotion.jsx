@@ -18,7 +18,7 @@ const Promotion = () => {
               <Button
                 bgColor="brandGreen"
                 color="white"
-                onClick={() => history.push('/promotion/create')}>
+                onClick={() => history.push(`${path}/create`)}>
                 Create Promotion
               </Button>
             </HStack>

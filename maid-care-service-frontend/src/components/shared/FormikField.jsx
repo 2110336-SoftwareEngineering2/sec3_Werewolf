@@ -46,7 +46,9 @@ const TextareaFeild = ({ label, helperText, ...props }) => {
         <Text fontWeight="bold">{label}</Text>
       </FormLabel>
       <Textarea {...field} {...props} />
-      {meta.touched && meta.error && <FormErrorMessage>{meta.error}</FormErrorMessage>}
+      {meta.touched && meta.error && (
+        <FormErrorMessage data-testid={`error-${field.name}`}>{meta.error}</FormErrorMessage>
+      )}
       {helperText && <FormHelperText>{helperText}</FormHelperText>}
     </FormControl>
   );
