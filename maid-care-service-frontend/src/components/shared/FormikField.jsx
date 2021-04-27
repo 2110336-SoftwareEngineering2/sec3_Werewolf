@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { useField,Field, } from 'formik';
+import { useField, Field } from 'formik';
 import {
   FormControl,
   FormErrorMessage,
@@ -13,7 +13,7 @@ import {
   Text,
   Textarea,
   Checkbox,
-  Flex
+  Flex,
 } from '@chakra-ui/react';
 
 const TextInputField = ({ label, left, right, helperText, ...props }) => {
@@ -29,7 +29,9 @@ const TextInputField = ({ label, left, right, helperText, ...props }) => {
         <Input id={field.name} {...field} {...props} type={props.type} />
         {right && <InputRightElement width={16}>{right}</InputRightElement>}
       </InputGroup>
-      {meta.touched && meta.error && <FormErrorMessage>{meta.error}</FormErrorMessage>}
+      {meta.touched && meta.error && (
+        <FormErrorMessage data-testid={`error-${field.name}`}>{meta.error}</FormErrorMessage>
+      )}
       {helperText && <FormHelperText>{helperText}</FormHelperText>}
     </FormControl>
   );
@@ -80,15 +82,16 @@ const DatetimeField = ({ label, direction = ['column', 'row'], helperText, ...pr
   );
 };
 
-const CheckField = ({label,...props}) => {
-  const [field,meta] = useField(props)
-  return(
+const CheckField = ({ label, ...props }) => {
+  const [field, meta] = useField(props);
+  return (
     <FormControl>
-    <Checkbox id={field.name} {...field} {...props} type="checkbox">{label}</Checkbox>
+      <Checkbox id={field.name} {...field} {...props} type="checkbox">
+        {label}
+      </Checkbox>
     </FormControl>
-    
-  )
-}
+  );
+};
 
 const PhotosField = ({ label, children, helperText, ...props }) => {
   const [field, meta] = useField(props);
@@ -109,4 +112,4 @@ const PhotosField = ({ label, children, helperText, ...props }) => {
   );
 };
 
-export { TextInputField, TextareaFeild, DateField, DatetimeField,CheckField, PhotosField   };
+export { TextInputField, TextareaFeild, DateField, DatetimeField, CheckField, PhotosField };

@@ -56,13 +56,13 @@ const PromotionForm = observer(({ mode = FORM_MODE.CREATE }) => {
         availableDate: startDate,
         expiredDate: endDate,
       })
-      .then(response => {
+      .then((response) => {
         console.log(response);
         setSubmitting(false);
 
         history.replace('/promotion'); // Go to promotion page
       })
-      .catch(error => {
+      .catch((error) => {
         console.error(error);
         setSubmitting(false);
         setError(error);
