@@ -15,7 +15,7 @@ import JobsPage from './components/pages/jobs/jobs.jsx';
 import Post from './components/pages/post/post.jsx';
 import Review from './components/pages/review/review.jsx';
 import Verification from './components/pages/signup/verfification.jsx';
-import Profile from './components/pages/profilepage/profile.jsx';
+import Profile from './components/pages/profile/profile.jsx';
 import { Postjob } from './components/pages/postjob/postjob.jsx';
 
 export const App = () => {

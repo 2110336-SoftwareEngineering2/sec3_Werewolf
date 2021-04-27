@@ -161,7 +161,7 @@ const JobsPage = observer(() => {
                   : true
               )
               .sort((cur, next) =>
-                currentJob && cur._id === currentJob._id ? -1 : compareJobs(cur, next)
+                currentJob && cur._id === currentJob._id ? -1 : !compareJobs(cur, next)
               )
               .map((job) => {
                 return (

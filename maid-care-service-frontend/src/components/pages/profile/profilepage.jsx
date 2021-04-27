@@ -37,12 +37,11 @@ import { user } from '../../../api';
 
 export const ProfilePage = observer(() => {
   const { userStore } = useStores();
+  const [imageStore] = useState(new SingleImageStore());
   const [userInfo, setUser] = useState(false); //general user info i.e. name
   const [maidInfo, setMaid] = useState(false); // maid info i.e. review score
   const [avail, setAvail] = useState(false);
   const uploadRef = useRef();
-
-  const [imageStore] = useState(new SingleImageStore());
 
   useEffect(() => {
     if (userStore && userStore.userData) {
@@ -104,7 +103,7 @@ export const ProfilePage = observer(() => {
       });
   };
 
-  function Skill({ title, can }) {
+  const Skill = ({ title, can }) => {
     return (
       <HStack spacing={2}>
         {can ? (
@@ -115,7 +114,7 @@ export const ProfilePage = observer(() => {
         <Text fontSize="lg"> {title} </Text>
       </HStack>
     );
-  }
+  };
 
   const skillChart = () => {
     return (
