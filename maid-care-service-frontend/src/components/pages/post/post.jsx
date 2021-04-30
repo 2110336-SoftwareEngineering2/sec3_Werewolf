@@ -136,7 +136,7 @@ const PostPage = observer(() => {
               .filter((job) =>
                 mode === 'history' ? [DONE, REVIEWED, CANCELED].includes(job.state) : true
               )
-              .sort((lhs, rhs) => compareJobs(lhs, rhs))
+              .sort((lhs, rhs) => !compareJobs(lhs, rhs))
               .map((job) => {
                 return (
                   <ListItem key={job._id} my={2} minW={`90%`} onClick={() => handleSelect(job)}>

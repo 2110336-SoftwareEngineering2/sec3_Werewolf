@@ -7,8 +7,6 @@ import { DateField, TextInputField } from '../../shared/FormikField.jsx';
 import { observer } from 'mobx-react-lite';
 import { useStores } from '../../../hooks/use-stores.js';
 import { useEffect, useState } from 'react';
-import moment from 'moment';
-import { toJS } from 'mobx';
 import { user } from '../../../api/user.js';
 
 const EditProfileForm = observer(

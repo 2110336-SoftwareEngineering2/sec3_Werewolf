@@ -15,7 +15,8 @@ import JobsPage from './components/pages/jobs/jobs.jsx';
 import Post from './components/pages/post/post.jsx';
 import Review from './components/pages/review/review.jsx';
 import Verification from './components/pages/signup/verfification.jsx';
-import Profile from './components/pages/profilepage/profile.jsx';
+import Profile from './components/pages/profile/profile.jsx';
+import { Postjob } from './components/pages/postjob/postjob.jsx';
 
 export const App = () => {
   return (
@@ -34,7 +35,8 @@ export const App = () => {
         <ProtectedRoute exact path="/workspace" component={Workspace} />
         <ProtectedRoute permission={['admin']} path="/promotion" component={Promotion} />
         <ProtectedRoute exact path="/home" component={Home} />
-        <ProtectedRoute path="/post" component={Post} />
+        <ProtectedRoute exact path="/post" component={Post} />
+        <ProtectedRoute exact path="/post/create" component={Postjob} />
         <ProtectedRoute path="/promotion" component={Promotion} />
         <ProtectedRoute exact path="/profile" component={Profile} />
         <ProtectedRoute exact path="/profile/edit" component={EditProfile} />
