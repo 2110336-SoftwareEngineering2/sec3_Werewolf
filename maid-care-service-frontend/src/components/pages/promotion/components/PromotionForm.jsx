@@ -13,10 +13,10 @@ import { promotion } from '../../../../api';
 
 const DATETIME_LOCAL_FORMAT = `yyyy-MM-DDTHH:mm`;
 
-const PromotionForm = observer(({ mode = FORM_MODE.CREATE }) => {
+const PromotionForm = observer(({ mode = FORM_MODE.CREATE, onSubmit }) => {
   const history = useHistory();
 
-  const [error, setError] = useState(false);
+  const [, setError] = useState(false);
 
   const today = moment(new Date()).format(DATETIME_LOCAL_FORMAT);
   const promotionSchema = Yup.object().shape(
@@ -24,9 +24,9 @@ const PromotionForm = observer(({ mode = FORM_MODE.CREATE }) => {
       code: Yup.string().required('This field is required'),
       description: Yup.string().optional().ensure(),
       discountRate: Yup.number()
+        .required('This field is required')
         .min(0, 'Rate cannot be less than 0%')
-        .max(100, 'Rate cannot be more than 100%')
-        .required(),
+        .max(100, 'Rate cannot be more than 100%'),
       startDate: Yup.date('Invalid Date Format')
         .required('Select Available Date')
         .min(today, 'Available date connot be before today'),
@@ -36,7 +36,7 @@ const PromotionForm = observer(({ mode = FORM_MODE.CREATE }) => {
         .when(
           'startDate',
           (startDate, schema) =>
-            startDate && schema.min(startDate, 'Expored date cannot be before Available date')
+            startDate && schema.min(startDate, 'Expired date cannot be before Available date')
         ),
     },
     [['startDate', 'endDate']]
@@ -59,6 +59,7 @@ const PromotionForm = observer(({ mode = FORM_MODE.CREATE }) => {
       .then((response) => {
         console.log(response);
         setSubmitting(false);
+        resetForm();
 
         history.replace('/promotion'); // Go to promotion page
       })
@@ -77,6 +78,7 @@ const PromotionForm = observer(({ mode = FORM_MODE.CREATE }) => {
 
   return (
     <Formik
+      data-testid="promotion-formik"
       initialValues={{
         code: '',
         description: '',
@@ -84,10 +86,13 @@ const PromotionForm = observer(({ mode = FORM_MODE.CREATE }) => {
         startDate: today,
         endDate: today,
       }}
-      onSubmit={handleSubmit}
+      // onSubmit={handleSubmit}
+      onSubmit={(values) => {
+        console.log(values);
+      }}
       validationSchema={promotionSchema}>
       {({ isSubmitting, dirty }) => (
-        <Form style={{ width: '100%' }}>
+        <Form style={{ width: '100%' }} data-testid="promotion-form">
           <Prompt when={dirty} message="Are you sure to discard?"></Prompt>
           <TextInputField
             label="Promotion Code"
@@ -104,12 +109,12 @@ const PromotionForm = observer(({ mode = FORM_MODE.CREATE }) => {
           <Stack direction={['column', 'column', 'row']}>
             <DatetimeField
               name="startDate"
-              label="Available date"
+              label="Available Date"
               helperText="Start date of the promotion"
             />
             <DatetimeField
               name="endDate"
-              label="Expire date"
+              label="Expired Date"
               helperText="End date of the promotion."
             />
           </Stack>

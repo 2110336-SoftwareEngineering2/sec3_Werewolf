@@ -42,10 +42,10 @@ const TextareaFeild = ({ label, helperText, ...props }) => {
 
   return (
     <FormControl isInvalid={meta.touched && meta.error}>
-      <FormLabel>
+      <FormLabel htmlFor={field.name}>
         <Text fontWeight="bold">{label}</Text>
       </FormLabel>
-      <Textarea {...field} {...props} />
+      <Textarea id={field.name} {...field} {...props} />
       {meta.touched && meta.error && (
         <FormErrorMessage data-testid={`error-${field.name}`}>{meta.error}</FormErrorMessage>
       )}
@@ -58,11 +58,13 @@ const DateField = ({ label, helperText, ...props }) => {
   const [field, meta] = useField(props);
   return (
     <FormControl isInvalid={meta.touched && meta.error}>
-      <FormLabel>
+      <FormLabel htmlFor={field.name}>
         <Text fontWeight="bold">{label}</Text>
       </FormLabel>
       <Input id={field.name} {...field} {...props} type="date" />
-      {meta.touched && meta.error && <FormErrorMessage>{meta.error}</FormErrorMessage>}
+      {meta.touched && meta.error && (
+        <FormErrorMessage data-testid={`error-${field.name}`}>{meta.error}</FormErrorMessage>
+      )}
       {helperText && <FormHelperText>{helperText}</FormHelperText>}
     </FormControl>
   );
@@ -73,12 +75,14 @@ const DatetimeField = ({ label, direction = ['column', 'row'], helperText, ...pr
   return (
     <FormControl isInvalid={meta.touched && meta.error}>
       <Stack direction={direction}>
-        <FormLabel>
+        <FormLabel htmlFor={field.name}>
           <Text fontWeight="bold">{label}</Text>
         </FormLabel>
         <Input id={field.name} {...field} {...props} type="datetime-local" />
       </Stack>
-      {meta.touched && meta.error && <FormErrorMessage>{meta.error}</FormErrorMessage>}
+      {meta.touched && meta.error && (
+        <FormErrorMessage data-testid={`error-${field.name}`}>{meta.error}</FormErrorMessage>
+      )}
       {helperText && <FormHelperText>{helperText}</FormHelperText>}
     </FormControl>
   );
@@ -102,13 +106,15 @@ const PhotosField = ({ label, children, helperText, ...props }) => {
   return (
     <FormControl isInvalid={meta.touched && meta.error}>
       {label && (
-        <FormLabel>
+        <FormLabel htmlFor={field.name}>
           <Text fontWeight="bold">{label}</Text>
         </FormLabel>
       )}
       <Input id={field.name} {...field} {...props} ref={inputRef} display="none" type="file" />
       {children({ inputRef })}
-      {meta.touched && meta.error && <FormErrorMessage>{meta.error}</FormErrorMessage>}
+      {meta.touched && meta.error && (
+        <FormErrorMessage data-testid={`error-${field.name}`}>{meta.error}</FormErrorMessage>
+      )}
       {helperText && <FormHelperText>{helperText}</FormHelperText>}
     </FormControl>
   );
