@@ -4,6 +4,8 @@ import { WorkType } from '../workType';
 
 export class UpdateMaidDto {
   @ApiProperty({ type: String })
+  @IsOptional()
+  @IsString()
   note: string;
 
   @ApiProperty({

@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { UsersModule } from 'src/users/users.module';
-import { WorkspacesModule } from 'src/workspaces/workspaces.module';
+import { UsersModule } from '../users/users.module';
+import { WorkspacesModule } from '../workspaces/workspaces.module';
 import { JobModule } from '../job/job.module';
 import { MaidsModule } from '../maids/maids.module';
 import { ReviewController } from './review.controller';

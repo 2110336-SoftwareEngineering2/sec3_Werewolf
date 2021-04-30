@@ -87,7 +87,7 @@ describe('RefundController', () => {
       password: 'password',
       firstname: 'Miko',
       lastname: 'Sakura',
-      birthdate: new Date(),
+      birthdate: new Date('2002-03-05'),
       citizenId: '1100123456789',
       bankAccountNumber: '1234567890',
       role: 'customer',

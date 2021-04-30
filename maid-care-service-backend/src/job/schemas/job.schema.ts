@@ -7,7 +7,7 @@ export const JobSchema = new mongoose.Schema({
   work: [
     {
       typeOfWork: String,
-      description: String,
+      description: { type: String, default: '' },
       quantity: Number,
       unit: { type: String, default: null },
       cost: { type: Number, default: 0 },
