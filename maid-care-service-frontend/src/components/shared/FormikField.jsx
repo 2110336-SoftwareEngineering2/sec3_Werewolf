@@ -13,7 +13,6 @@ import {
   Text,
   Textarea,
   Checkbox,
-  Flex,
 } from '@chakra-ui/react';
 
 const TextInputField = ({ label, left, right, helperText, ...props }) => {
