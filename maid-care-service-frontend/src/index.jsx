@@ -10,6 +10,10 @@ import { StoreProvider } from './store/context.js';
 
 import './App.css';
 
+if (process.env.NODE_ENV === 'production') {
+  console.log = function () {};
+}
+
 ReactDOM.render(
   <React.StrictMode>
     <ColorModeScript />

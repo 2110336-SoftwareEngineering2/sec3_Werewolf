@@ -34,6 +34,7 @@ import { fetchMaidById } from '../../../api/maid';
 import { useStores } from '../../../hooks/use-stores';
 import { SingleImageStore } from '../../../store/Image';
 import { user } from '../../../api';
+import { DISH_WASHING, HOUSE_CLEANING, LAUNDRY } from '../../../constants/type-of-work';
 
 export const ProfilePage = observer(() => {
   const { userStore } = useStores();
@@ -117,14 +118,15 @@ export const ProfilePage = observer(() => {
   };
 
   const skillChart = () => {
+    const work = maidInfo?.work || [];
     return (
       <Stack spacing={2.5}>
         <Box fontSize="xl" fontWeight="bold">
           I can do:
         </Box>
-        <Skill title="Dish Washing" can={true} />
-        <Skill title="Clothes Ironing" can={true} />
-        <Skill title="Room Cleaning" can={false} />
+        {<Skill title="Dish Washing" can={work.includes(DISH_WASHING)} />}
+        {<Skill title="Laundry" can={work.includes(LAUNDRY)} />}
+        {<Skill title="Room Cleaning" can={work.includes(HOUSE_CLEANING)} />}
       </Stack>
     );
   };
