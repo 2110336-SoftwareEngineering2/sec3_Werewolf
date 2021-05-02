@@ -2,11 +2,11 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   IsNotEmpty,
-  IsNumber,
   Min,
   Max,
   IsDateString,
   IsOptional,
+  IsString,
 } from 'class-validator';
 
 export class CreatePromotionDto {
@@ -15,11 +15,12 @@ export class CreatePromotionDto {
   code: string;
 
   @ApiProperty({ type: String })
+  @IsOptional()
+  @IsString()
   description: string;
 
   @ApiProperty({ type: Number })
   @Type(() => Number)
-  @IsNumber()
   @Min(0)
   @Max(100)
   discountRate: number;

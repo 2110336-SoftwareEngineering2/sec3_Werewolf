@@ -140,7 +140,7 @@ describe('JobController', () => {
       password: 'password',
       firstname: 'Pekora',
       lastname: 'Usada',
-      birthdate: new Date(),
+      birthdate: new Date('1909-01-12'),
       citizenId: '1100123456789',
       bankAccountNumber: '1234567890',
       role: 'customer',
@@ -154,7 +154,7 @@ describe('JobController', () => {
       password: 'password',
       firstname: 'Kiara',
       lastname: 'Takanashi',
-      birthdate: new Date(),
+      birthdate: new Date('1997-06-06'),
       citizenId: '1100123456789',
       bankAccountNumber: '1234567890',
       role: 'maid',
@@ -542,7 +542,7 @@ describe('JobController', () => {
   });
 
   describe('rejectJob', () => {
-    it('all maid reject the job', async () => {
+    it('every maids reject the job', async () => {
       const createJobDto = {
         workplaceId: workspaceId,
         work: testWork,
@@ -572,7 +572,7 @@ describe('JobController', () => {
       }
     });
 
-    it('all maid ignore the job', async () => {
+    it('every maids ignore the job', async () => {
       const createJobDto = {
         workplaceId: workspaceId,
         work: testWork,
@@ -598,7 +598,7 @@ describe('JobController', () => {
     });
   });
 
-  describe('maidCancelJob', () => {
+  describe('maidCancel', () => {
     let jobId: string;
     let nearestMaidReq: any;
 
@@ -680,6 +680,64 @@ describe('JobController', () => {
         (totalReviews * oldRating + 1) / (totalReviews + 1),
       );
       expect(nearestMaid.totalReviews).toBe(totalReviews + 1);
+    });
+  });
+
+  describe('customerCancel', () => {
+    let jobId: string;
+    let nearestMaidReq: any;
+
+    it('maid accept job', async () => {
+      const createJobDto = {
+        workplaceId: workspaceId,
+        work: testWork,
+        promotionCode: null,
+      };
+      // create new job
+      let job = await jobController.createJob(customerReq, createJobDto);
+      jobId = job._id;
+      expect(job.state).toStrictEqual(JobState.creating);
+
+      // find maid
+      job = await jobController.findMaid(customerReq, jobId);
+      expect(job.state).toBe(JobState.posted);
+
+      // maid see job
+      while (job.maidId === null) {
+        job = await jobController.findJob(jobId);
+      }
+      nearestMaidReq = {
+        user: { _id: job.maidId, role: 'maid' },
+      };
+      expect(
+        await jobController.findByMaid(nearestMaidReq.user._id),
+      ).not.toStrictEqual([]);
+
+      // maid accept
+      expect(job.acceptedTime).toBeNull();
+      job = await jobController.accept(nearestMaidReq, jobId);
+      expect(job.state).toBe(JobState.matched);
+      expect(job.acceptedTime).not.toBeNull();
+
+      // maid availability must be false
+      const nearestMaid = await maidsController.getMaid(
+        nearestMaidReq.user._id,
+      );
+      expect(nearestMaid.availability).toBeFalsy();
+    });
+
+    it('customer cancel the job', async () => {
+      // customer cancel
+      let canceledJob = await jobController.cancel(customerReq, jobId);
+      expect(canceledJob.state).toBe(JobState.canceled);
+      expect(canceledJob.review).toBeNull();
+
+      // get job
+      canceledJob = await jobController.findJob(jobId);
+      expect(canceledJob.state).toBe(JobState.canceled);
+      expect(canceledJob.maidId).toBe(nearestMaidReq.user._id);
+      expect(canceledJob.finishTime).toBeNull();
+      expect(canceledJob.review).toBeNull();
     });
   });
 

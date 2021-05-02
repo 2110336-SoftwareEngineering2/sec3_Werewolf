@@ -24,7 +24,7 @@ describe('MaidsController', () => {
   let maidReq: any;
   let maidDto: any;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     const maidModule: TestingModule = await Test.createTestingModule({
       imports: [DatabaseModule],
       controllers: [MaidsController],
@@ -55,7 +55,7 @@ describe('MaidsController', () => {
       password: 'password',
       firstname: 'Aqua',
       lastname: 'Minato',
-      birthdate: new Date(),
+      birthdate: new Date('1997-12-01'),
       citizenId: '1100123456789',
       bankAccountNumber: '1234567890',
       role: 'maid',
@@ -71,6 +71,23 @@ describe('MaidsController', () => {
       note: '',
       totalReviews: 0,
       work: work,
+    });
+  });
+
+  describe('getMaid', () => {
+    it('get maid', async () => {
+      const maid = await maidController.getMaid(maidReq.user._id);
+      maid.work = Array.from(maid.work);
+      expect(maid).toStrictEqual(maidDto);
+    });
+
+    it('get invalid maid', async () => {
+      try {
+        await maidController.getMaid('invalidId');
+        expect(true).toBeFalsy();
+      } catch (error) {
+        expect(error.status).toBe(404);
+      }
     });
   });
 
@@ -118,25 +135,14 @@ describe('MaidsController', () => {
       expect(maid).toStrictEqual(maidDto);
     });
 
-    it('get the maid', async () => {
+    it('get updated maid', async () => {
       const maid = await maidController.getMaid(maidReq.user._id);
       maid.work = Array.from(maid.work);
       expect(maid).toStrictEqual(maidDto);
     });
   });
 
-  describe('invalidMaid', () => {
-    it('get invalid maid', async () => {
-      try {
-        await maidController.getMaid('invalidId');
-        expect(true).toBeFalsy();
-      } catch (error) {
-        expect(error.status).toBe(404);
-      }
-    });
-  });
-
-  afterAll(async () => {
+  afterEach(async () => {
     // delete the testing user
     await usersController.deleteUser(maidReq, maidReq.user._id);
     mongoose.connection.close();

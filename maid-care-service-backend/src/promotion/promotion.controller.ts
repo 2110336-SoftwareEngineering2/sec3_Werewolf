@@ -9,6 +9,7 @@ import {
   UseGuards,
   NotFoundException,
   ConflictException,
+  BadRequestException,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -46,6 +47,31 @@ export class PromotionController {
     @Request() req,
     @Body() createPromotionDto: CreatePromotionDto,
   ) {
+    const today = new Date(
+      new Date().getFullYear(),
+      new Date().getMonth(),
+      new Date().getDate(),
+    );
+
+    if (
+      createPromotionDto.availableDate &&
+      createPromotionDto.expiredDate &&
+      createPromotionDto.availableDate > createPromotionDto.expiredDate
+    )
+      throw new BadRequestException('Available Date come after Expired Date');
+
+    if (
+      createPromotionDto.availableDate &&
+      new Date(createPromotionDto.availableDate) < today
+    )
+      throw new BadRequestException('Available Date come before today');
+
+    if (
+      createPromotionDto.expiredDate &&
+      new Date(createPromotionDto.expiredDate) < today
+    )
+      throw new BadRequestException('Expired Date come before today');
+
     try {
       const promotion = await this.promotionService.createPromotion(
         req.user._id,

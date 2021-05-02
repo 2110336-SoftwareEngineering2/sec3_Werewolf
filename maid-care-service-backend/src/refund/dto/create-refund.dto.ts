@@ -7,7 +7,7 @@ export class CreateRefundDto {
   readonly jobId: string;
 
   @ApiProperty({ type: String })
-  @IsNotEmpty()
+  @IsString()
   readonly description: string;
 
   @ApiProperty({ type: [String] })

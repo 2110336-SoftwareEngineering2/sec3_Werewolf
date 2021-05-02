@@ -48,24 +48,22 @@ export class JobService {
     customerId: string,
     createJobDto: CreateJobDto,
   ): Promise<Job> {
-    // validate workspace
+    // check workspace
     const workspace = await this.workspacesService.findOne(
       createJobDto.workplaceId,
     );
     if (!workspace)
       throw new BadRequestException(
-        createJobDto.workplaceId + ' is not valid id',
+        createJobDto.workplaceId + ' is not valid workplace',
       );
-    // validate work
-    createJobDto.work.forEach((work) => {
-      if (!this.maidsService.isValidTypeOfWork(work.typeOfWork)) {
-        throw new BadRequestException(
-          work.typeOfWork + ' is not valid type of work',
-        );
-      }
-      if (isNaN(Number(work.quantity)))
-        throw new BadRequestException('quantity must be a number');
-    });
+
+    if (createJobDto.promotionCode) {
+      const promotion = await this.promotionService.findPromotion(
+        createJobDto.promotionCode,
+      );
+      if (!promotion) throw new NotFoundException('Promotion not valid');
+    }
+
     // create new job
     const createdJob = new this.jobModel(createJobDto);
     createdJob.customerId = customerId;
@@ -117,7 +115,7 @@ export class JobService {
     if (nearestMaid) {
       job.maidId = nearestMaid._id;
       job.requestedMaid.push(nearestMaid._id);
-      //expired in 60 seconds
+      // expired in 60 seconds
       const cerrentTime = new Date();
       const expiredIn = 60000;
       job.expiryTime = new Date(cerrentTime.getTime() + expiredIn);
@@ -126,8 +124,8 @@ export class JobService {
         this.reject(job);
       };
       await this.addTimeout(job, expiredIn, callback);
-      //push notification to maid
-      console.log('send request to maid ' + nearestMaid._id);
+      // push notification to maid
+      // console.log('send request to maid ' + nearestMaid._id);
       await this.notificationService.sendNotification(
         nearestMaid._id,
         'new job',
@@ -136,8 +134,8 @@ export class JobService {
     } else {
       job.maidId = null;
       await job.save();
-      //push notification to customer
-      console.log('can not find any maid');
+      // push notification to customer
+      // console.log('can not find any maid');
       await this.notificationService.sendNotification(
         job.customerId,
         'can not find any maid',
@@ -159,7 +157,7 @@ export class JobService {
     job.state = JobState.matched;
     job.acceptedTime = new Date();
     // send nofication to customer
-    console.log('maid found');
+    // console.log('maid found');
     await this.notificationService.sendNotification(
       job.customerId,
       'maid found',
@@ -185,8 +183,8 @@ export class JobService {
     await this.deleteTimeout(job);
     job.state = JobState.canceled;
     this.maidsService.setAvailability(job.maidId, true);
-    //push notification to maid
-    console.log('customer cancel job');
+    // push notification to maid
+    // console.log('customer cancel job');
     await this.notificationService.sendNotification(
       job.maidId,
       'customer cancel job',
@@ -198,7 +196,7 @@ export class JobService {
     job.state = JobState.done;
     job.finishTime = new Date();
     // send nofication to customer
-    console.log('job done');
+    // console.log('job done');
     await this.notificationService.sendNotification(job.customerId, 'job done');
     return await job.save();
   }

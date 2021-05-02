@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, IsDateString } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsDateString,
+  IsString,
+  IsNumberString,
+} from 'class-validator';
 import { WorkType } from '../../maids/workType';
 
 export class CreateUserDto {
@@ -9,14 +15,17 @@ export class CreateUserDto {
 
   @ApiProperty({ type: String })
   @IsNotEmpty()
+  @IsString()
   password: string;
 
   @ApiProperty({ type: String })
   @IsNotEmpty()
+  @IsString()
   readonly firstname: string;
 
   @ApiProperty({ type: String })
   @IsNotEmpty()
+  @IsString()
   readonly lastname: string;
 
   @ApiProperty({ type: Date })
@@ -25,10 +34,12 @@ export class CreateUserDto {
 
   @ApiProperty({ type: String })
   @IsNotEmpty()
+  @IsNumberString()
   readonly citizenId: string;
 
   @ApiProperty({ type: String })
   @IsNotEmpty()
+  @IsNumberString()
   readonly bankAccountNumber: string;
 
   @ApiProperty({ enum: ['customer', 'maid', 'admin'] })

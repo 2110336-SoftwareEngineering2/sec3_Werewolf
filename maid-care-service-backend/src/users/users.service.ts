@@ -53,19 +53,6 @@ export class UsersService {
   }
 
   async register(createUserDto: CreateUserDto): Promise<User> {
-    // validate role
-    if (!this.isValidRole(createUserDto.role))
-      throw new BadRequestException(
-        createUserDto.role +
-          ' is not valid role. Role must be customer, maid or admin',
-      );
-    // validate works
-    if (createUserDto.role === 'maid' && createUserDto.work) {
-      createUserDto.work.forEach((work) => {
-        if (!this.maidsService.isValidTypeOfWork(work))
-          throw new BadRequestException(work + ' is not valid type of work');
-      });
-    }
     try {
       // create new user
       const user = await this.createNewUser(createUserDto);
@@ -82,6 +69,16 @@ export class UsersService {
     } catch (error) {
       throw error;
     }
+  }
+
+  async validateWork(createUserDto: CreateUserDto): Promise<boolean> {
+    if (createUserDto.role === 'maid' && createUserDto.work) {
+      createUserDto.work.forEach((work) => {
+        if (!this.maidsService.isValidTypeOfWork(work))
+          throw new BadRequestException(work + ' is not valid type of work');
+      });
+    }
+    return true;
   }
 
   async updateProfile(id: string, newProfile: ProfileDto): Promise<User> {

@@ -57,7 +57,7 @@ describe('WorkspacesController', () => {
       password: 'password',
       firstname: 'Amelia',
       lastname: 'Watson',
-      birthdate: new Date(),
+      birthdate: new Date('1992-01-06'),
       citizenId: '1100123456789',
       bankAccountNumber: '1234567890',
       role: 'customer',

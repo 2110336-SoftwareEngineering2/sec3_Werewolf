@@ -7,6 +7,7 @@ import {
   Put,
   NotFoundException,
   UseGuards,
+  BadRequestException,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -46,6 +47,13 @@ export class MaidsController {
   @Roles('maid')
   @ApiBearerAuth('acess-token')
   async updateMaid(@Request() req, @Body() updateMaidDto: UpdateMaidDto) {
+    // validate work
+    if (updateMaidDto.work) {
+      updateMaidDto.work.forEach((work) => {
+        if (!this.maidsService.isValidTypeOfWork(work))
+          throw new BadRequestException(work + ' is not valid type of work');
+      });
+    }
     try {
       await this.maidsService.updateWork(req.user._id, updateMaidDto.work);
       const maid = await this.maidsService.updateNote(

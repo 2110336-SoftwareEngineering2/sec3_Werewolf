@@ -8,6 +8,7 @@ import {
   UseGuards,
   UnprocessableEntityException,
   NotFoundException,
+  BadRequestException,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -71,6 +72,15 @@ export class AuthController {
   })
   @ApiResponse({ status: 409, description: 'user already registered' })
   async register(@Body() createUserDto: CreateUserDto) {
+    // validate role
+    if (!this.usersService.isValidRole(createUserDto.role))
+      throw new BadRequestException(
+        createUserDto.role +
+          ' is not valid role. Role must be customer, maid or admin',
+      );
+
+    await this.usersService.validateWork(createUserDto);
+
     createUserDto.email = createUserDto.email.toLowerCase();
     try {
       const user = await this.usersService.register(createUserDto);

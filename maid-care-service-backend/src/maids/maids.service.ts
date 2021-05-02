@@ -1,7 +1,6 @@
 import {
   Injectable,
   Inject,
-  BadRequestException,
   NotFoundException,
   ForbiddenException,
 } from '@nestjs/common';
@@ -37,14 +36,8 @@ export class MaidsService {
   async updateWork(id: string, works: string[]): Promise<Maid> {
     const maidFromDb = await this.findMaid(id);
     if (!maidFromDb) throw new NotFoundException('invalid maid');
-    // update works
+
     if (works) {
-      // validate work
-      works.forEach((work) => {
-        if (!this.isValidTypeOfWork(work))
-          throw new BadRequestException(work + ' is not valid type of work');
-        //maidFromDb.work.push(work);
-      });
       // clear old work
       while (maidFromDb.work.length > 0) {
         maidFromDb.work.pop();

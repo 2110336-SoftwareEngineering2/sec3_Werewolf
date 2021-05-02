@@ -10,6 +10,7 @@ import {
   UseGuards,
   NotFoundException,
   ConflictException,
+  BadRequestException,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -47,6 +48,17 @@ export class JobController {
   @Roles('customer')
   @ApiBearerAuth('acess-token')
   async createJob(@Request() req, @Body() createJobDto: CreateJobDto) {
+    // validate work
+    createJobDto.work.forEach((work) => {
+      if (!this.maidsService.isValidTypeOfWork(work.typeOfWork)) {
+        throw new BadRequestException(
+          work.typeOfWork + ' is not valid type of work',
+        );
+      }
+      if (!work.quantity || isNaN(Number(work.quantity)) || work.quantity < 0)
+        throw new BadRequestException('quantity must be positive number');
+    });
+
     const job = await this.jobService.createJob(req.user._id, createJobDto);
     return new JobDto(job);
   }
@@ -92,6 +104,17 @@ export class JobController {
     description: 'promotion already expired or not start yet',
   })
   async calculateCost(@Body() createJobDto: CreateJobDto) {
+    // validate work
+    createJobDto.work.forEach((work) => {
+      if (!this.maidsService.isValidTypeOfWork(work.typeOfWork)) {
+        throw new BadRequestException(
+          work.typeOfWork + ' is not valid type of work',
+        );
+      }
+      if (isNaN(Number(work.quantity)) || work.quantity < 0)
+        throw new BadRequestException('quantity must be positive number');
+    });
+
     const job = new CostDto(createJobDto);
     job.cost = await this.jobService.calculateSumCost(createJobDto);
     if (createJobDto.promotionCode) {
