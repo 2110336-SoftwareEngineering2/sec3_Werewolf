@@ -12,7 +12,7 @@ const DATETIME_LOCAL_FORMAT = `yyyy-MM-DDTHH:mm`;
 let promotion = null;
 beforeEach(() => {
   // mock today date
-  MockDate.set('2020-04-23');
+  MockDate.set('2020-04-22');
   jest.mock('../../../../api');
   promotion = require('../../../../api').promotion;
 });
@@ -66,7 +66,7 @@ describe('valid case', () => {
       fireEvent.click(submitButton);
     });
 
-    waitForElementToBeRemoved(wrapper.queryAllByTestId(/^error/i), () => {
+    await waitFor(() => {
       expect(wrapper.queryByTestId('error-code')).toBeNull();
       expect(wrapper.queryByTestId('error-description')).toBeNull();
       expect(wrapper.queryByTestId('error-discountRate')).toBeNull();
@@ -121,18 +121,18 @@ describe('valid case', () => {
       fireEvent.click(submitButton);
     });
 
-    waitForElementToBeRemoved(wrapper.queryAllByTestId(/^error/i), () => {
+    await waitFor(() => {
       // handleSubmit is called
       expect(handleSubmitMock).toHaveBeenCalledTimes(1);
       expect(handleSubmitMock).toHaveBeenCalledWith(
         {
           code: CODE,
           description: DESC,
-          discountRate: DISC_RATE,
+          discountRate: DISC_RATE.toString(),
           startDate: START_DATE,
           endDate: END_DATE,
         },
-        expect.any()
+        expect.anything()
       );
     });
   });
