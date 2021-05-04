@@ -124,6 +124,16 @@ describe('valid case', () => {
     waitForElementToBeRemoved(wrapper.queryAllByTestId(/^error/i), () => {
       // handleSubmit is called
       expect(handleSubmitMock).toHaveBeenCalledTimes(1);
+      expect(handleSubmitMock).toHaveBeenCalledWith(
+        {
+          code: CODE,
+          description: DESC,
+          discountRate: DISC_RATE,
+          startDate: START_DATE,
+          endDate: END_DATE,
+        },
+        expect.any()
+      );
     });
   });
 });
@@ -267,8 +277,10 @@ describe('invalid case discount rate field', () => {
       fireEvent.click(submitButton);
     });
 
-    expect(wrapper.queryByTestId('error-discountRate')).toBeInTheDocument();
-    expect(wrapper.queryByTestId('error-discountRate').innerHTML).toBe('This field is required');
+    await waitFor(() => {
+      expect(wrapper.queryByTestId('error-discountRate')).toBeInTheDocument();
+      expect(wrapper.queryByTestId('error-discountRate').innerHTML).toBe('This field is required');
+    });
   });
 
   it('[TC3-4] should fail due to exceed values of rate', async () => {

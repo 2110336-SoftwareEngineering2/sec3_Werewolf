@@ -16,7 +16,7 @@ const RateField = ({ label, helperText, direction = ['row'], ...props }) => {
   return (
     <FormControl isInvalid={meta.touched && meta.error}>
       <Stack direction={direction} alignItems="center">
-        <FormLabel htmlFor="startDate">
+        <FormLabel htmlFor={field.name}>
           <Text fontWeight="bold">{label}</Text>
         </FormLabel>
         <NumberInput
