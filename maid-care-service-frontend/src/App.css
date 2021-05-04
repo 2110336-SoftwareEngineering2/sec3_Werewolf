@@ -20,8 +20,22 @@ body {
   border-color: '#E2E8F0';
 }
 
+form{
+  width: 100%;
+}
+
 .button {
   color: white;
   width: 103px;
   height: 48px;
+}
+
+.overlay-parent{
+  position: relative;
+}
+
+.overlay-child{
+  position: absolute;
+  top: -0.5rem;
+  right: -0.25rem;
 }

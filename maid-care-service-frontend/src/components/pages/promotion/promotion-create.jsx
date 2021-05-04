@@ -1,8 +1,41 @@
 import React from 'react';
 import { Flex, Text } from '@chakra-ui/react';
+import { promotion } from '../../../api';
+import { useHistory } from 'react-router-dom';
+
 import PromotionForm from './components/PromotionForm';
 
 const PromotionCreate = () => {
+  const history = useHistory();
+
+  const handleSubmit = (
+    { code, description, discountRate, startDate, endDate },
+    { setSubmitting, resetForm }
+  ) => {
+    setSubmitting(true);
+    /**Start handle Submit logic here */
+    promotion
+      .post('/', {
+        code: code,
+        description: description,
+        discountRate: discountRate,
+        availableDate: startDate,
+        expiredDate: endDate,
+      })
+      .then((response) => {
+        console.log(response);
+        setSubmitting(false);
+        resetForm();
+
+        history.replace('/promotion'); // Go to promotion page
+      })
+      .catch((error) => {
+        console.error(error);
+        setSubmitting(false);
+      });
+    /**End handle Submit logic here */
+    setSubmitting(false);
+  };
   return (
     <Flex height="100%" justifyContent="center" alignItems="center">
       <Flex
@@ -20,7 +53,7 @@ const PromotionCreate = () => {
         <Text mb="2" align="center" fontSize={32} fontWeight="extrabold">
           Promotion Publish
         </Text>
-        <PromotionForm />
+        <PromotionForm onSubmit={handleSubmit} />
       </Flex>
     </Flex>
   );

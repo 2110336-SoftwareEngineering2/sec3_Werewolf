@@ -3,17 +3,26 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@brainhubeu/react-carousel": "^1.19.26",
     "@chakra-ui/icons": "^1.0.6",
     "@chakra-ui/react": "^1.0.0",
     "@chakra-ui/theme-tools": "^1.0.4",
     "@emotion/react": "^11.0.0",
     "@emotion/styled": "^11.0.0",
+    "@fortawesome/fontawesome-svg-core": "^1.2.35",
+    "@fortawesome/free-solid-svg-icons": "^5.15.3",
+    "@fortawesome/react-fontawesome": "^0.1.14",
+    "@reach/combobox": "^0.13.0",
     "@react-google-maps/api": "^2.1.1",
     "@testing-library/jest-dom": "^5.9.0",
     "@testing-library/react": "^10.2.1",
     "@testing-library/user-event": "^12.0.2",
     "axios": "^0.21.1",
     "axios-retry": "^3.1.9",
+    "filepond": "^4.26.1",
+    "filepond-plugin-image-exif-orientation": "^1.0.11",
+    "filepond-plugin-image-preview": "^4.6.6",
+    "firebase": "^8.3.2",
     "formik": "^2.2.6",
     "framer-motion": ">=3.0.0",
     "http-proxy-middleware": "^1.0.6",
@@ -23,6 +32,7 @@
     "moment": "^2.29.1",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
+    "react-filepond": "^7.1.1",
     "react-icons": "^3.0.0",
     "react-places-autocomplete": "^7.3.0",
     "react-router-dom": "^5.2.0",
@@ -53,6 +63,8 @@
     ]
   },
   "devDependencies": {
-    "@babel/plugin-proposal-decorators": "^7.12.1"
+    "@babel/plugin-proposal-decorators": "^7.12.1",
+    "mockdate": "^3.0.5",
+    "react-test-renderer": "^17.0.2"
   }
 }

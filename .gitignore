@@ -64,3 +64,6 @@ maid-care-service-backend/!.vscode/settings.json
 maid-care-service-backend/!.vscode/tasks.json
 maid-care-service-backend/!.vscode/launch.json
 maid-care-service-backend/!.vscode/extensions.json
+*.lock
+*.lock
+*.lock

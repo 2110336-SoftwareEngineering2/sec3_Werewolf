@@ -1,5 +1,15 @@
-import { Container, Flex, HStack, Link, Stack, Text, VStack } from '@chakra-ui/layout';
-import { Link as RouterLink, useHistory } from 'react-router-dom';
+import {
+  Container,
+  Flex,
+  HStack,
+  Link,
+  LinkBox,
+  LinkOverlay,
+  Stack,
+  Text,
+  VStack,
+} from '@chakra-ui/layout';
+import { Link as RouterLink } from 'react-router-dom';
 import React, { useRef } from 'react';
 import logo from '../../assets/images/grab-white.png';
 import {
@@ -18,6 +28,7 @@ import { Avatar } from '@chakra-ui/avatar';
 import { observer } from 'mobx-react-lite';
 import { useStores } from '../../hooks/use-stores';
 import { Menu, MenuButton, MenuDivider, MenuGroup, MenuItem, MenuList } from '@chakra-ui/menu';
+import { useHistory } from 'react-router-dom';
 
 const Navbar = observer(() => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -41,7 +52,7 @@ const Navbar = observer(() => {
         <Menu>
           <MenuButton>
             <HStack>
-              <Avatar size="sm" name={`${user.firstname}`} />
+              <Avatar size="sm" name={`${user.firstname}`} src={user.profilePicture || null} />
               <Text fontSize="lg" fontWeight="bold">
                 {`${user.firstname}`}
               </Text>
@@ -77,7 +88,7 @@ const Navbar = observer(() => {
     if (isAuthenticated && user) {
       switch (user.role) {
         case 'customer':
-          links = [...links, { name: 'Post', to: '/post/create' }];
+          links = [...links, { name: 'Post', to: '/post' }];
           break;
         case 'maid':
           links = [...links, { name: 'Works', to: '/jobs' }];
@@ -90,7 +101,7 @@ const Navbar = observer(() => {
       }
     }
 
-    return links.map(route => (
+    return links.map((route) => (
       <Link key={route.name} as={RouterLink} to={route.to} mr={2}>
         <Text fontSize="lg" fontWeight="bold">
           {route.name}

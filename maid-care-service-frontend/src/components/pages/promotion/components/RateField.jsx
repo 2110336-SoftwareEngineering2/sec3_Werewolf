@@ -11,20 +11,27 @@ import {
 import { useField } from 'formik';
 
 const RateField = ({ label, helperText, direction = ['row'], ...props }) => {
-  const [field, meta] = useField(props);
+  const [field, meta, helpers] = useField(props);
 
   return (
     <FormControl isInvalid={meta.touched && meta.error}>
       <Stack direction={direction} alignItems="center">
-        <FormLabel htmlFor="startDate">
+        <FormLabel htmlFor={field.name}>
           <Text fontWeight="bold">{label}</Text>
         </FormLabel>
-        <NumberInput {...field} max={100} min={0} clampValueOnBlur={true}>
-          <NumberInputField {...field} placeholder={80} />
+        <NumberInput
+          id={field.name}
+          defaultValue={20}
+          {...field}
+          onChange={(val) => helpers.setValue(val)}
+          clampValueOnBlur={false}>
+          <NumberInputField />
         </NumberInput>
-        <Text ml={2}>% (percent)</Text>
+        <Text ml={2}>%</Text>
       </Stack>
-      {meta.touched && meta.error && <FormErrorMessage>{meta.error}</FormErrorMessage>}
+      {meta.touched && meta.error && (
+        <FormErrorMessage data-testid={`error-${field.name}`}>{meta.error}</FormErrorMessage>
+      )}
     </FormControl>
   );
 };

@@ -5,10 +5,24 @@ export const job = axios.create({
   baseURL: '/api/job',
   headers: {
     'Content-Type': 'application/json',
-    Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
-    secret: process.env.REACT_APP_SECRET || 'secret',
   },
 });
+
+job.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers['Authorization'] = `Bearer ${token}`;
+      config.headers['secret'] = process.env.REACT_APP_SECRET;
+    }
+    console.log('interceptor conf', config);
+    return config;
+  },
+  (error) => {
+    console.log('intercaptor err', error);
+    throw error;
+  }
+);
 
 export const fetchJobById = async (id) => {
   return job.get(`/${id}`);
@@ -23,5 +37,19 @@ export const createJob = async ({ workpalceId, work, promtionCode = null }) => {
     workpalceId,
     work,
     promtionCode,
+  });
+};
+
+export const uploadImageURL = async ({ jobId, url }) => {
+  return job.post('/photo', {
+    jobId,
+    url,
+  });
+};
+
+export const deleteImageURL = async ({ jobId, url }) => {
+  return job.delete(`/photo/${url}`, {
+    jobId,
+    url,
   });
 };
