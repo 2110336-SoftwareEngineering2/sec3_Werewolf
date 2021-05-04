@@ -387,7 +387,7 @@ describe('invalid case datetime fields', () => {
     const CODE = 'GSIMPTQ125';
     const DESC = 'description';
     const DISC_RATE = '';
-    const START_DATE = moment('2020-04-22').format(DATETIME_LOCAL_FORMAT);
+    const START_DATE = moment('2020-04-21').format(DATETIME_LOCAL_FORMAT);
     const END_DATE = moment('2020-06-20').format(DATETIME_LOCAL_FORMAT);
     const handleSubmit = jest.fn();
 
