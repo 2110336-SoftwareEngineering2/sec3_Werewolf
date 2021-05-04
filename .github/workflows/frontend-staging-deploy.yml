@@ -1,0 +1,77 @@
+name: Frontend Staging Deploy
+
+on:
+
+  push:
+    branches: [ frontend ]
+
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: maid-care-service-frontend
+
+jobs:
+
+  deploy:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      
+      - uses: sarisia/actions-status-discord@v1
+        if: success()
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          noprefix: true
+          title: "Merge!! to Frontend"
+          description: "Deploying Staging Website"
+          color: 0x6f42c1
+          username: Werewolf GitHub Actions
+
+      - name: Checkout 
+        uses: actions/checkout@v2
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v2.1.4
+        with: 
+          node-version: 14.x
+            
+      - name: Build the site
+        run: |
+          yarn install --production 
+          yarn build
+      
+      - name: Install Netlify
+        run: sudo npm install -g netlify-cli --unsafe-perm=true
+        
+      - name: Netlify Actions
+        uses: nwtgck/actions-netlify@v1.1.11
+        with:
+          production-branch: 'main'
+          publish-dir: './maid-care-service-frontend/build/'
+          deploy-message: "Deploy Staging ${{ github.event.head_commit.message }}"
+          alias: 'staging'
+        env:
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NODE_ENV: "staging"
+          REACT_APP_SECRET: ${{ secrets.SECRET }}
+          REACT_APP_API_URL: ${{ secrets.SERVER_URL }}
+          REACT_APP_GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
+          
+      - uses: sarisia/actions-status-discord@v1
+        if: success()
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          title: "Deploy Staging on Netlify"
+          color: 0x28a745
+          username: Werewolf GitHub Actions
+      
+      - uses: sarisia/actions-status-discord@v1
+        if: failure()
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          title: "Deploy Staging on Netlify"
+          color: 0xd73a49
+          username: Werewolf GitHub Actions
