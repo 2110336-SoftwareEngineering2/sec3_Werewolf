@@ -69,8 +69,8 @@ export class AuthService {
         html:
           'Hello! <br><br> Thanks for your registration<br><br>' +
           '<a href=' +
-          // process.env.FRONTEND_URL +
-          process.env.SERVER_URL +
+          process.env.FRONTEND_URL +
+          // process.env.SERVER_URL +
           '/auth/verify/' +
           model.token +
           '>Click here to activate your account</a>',
