@@ -76,6 +76,7 @@ jobs:
           envkey_GCP_SA_KEY: ${{ secrets.GCP_SA_KEY_BASE64 }}
           envkey_MONGO_URL: ${{ secrets.MONGO_URL }}
           envkey_SERVER_URL: ${{ secrets.SERVER_URL }}
+          envkey_FRONTEND_URL: ${{ secrets.FRONTEND_URL }}
           envkey_MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
           envkey_MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
           envkey_SECRET: ${{ secrets.SECRET }}
