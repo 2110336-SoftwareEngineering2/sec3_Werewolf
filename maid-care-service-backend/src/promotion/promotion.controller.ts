@@ -47,21 +47,6 @@ export class PromotionController {
     @Request() req,
     @Body() createPromotionDto: CreatePromotionDto,
   ) {
-    if (createPromotionDto.availableDate) {
-      createPromotionDto.availableDate = new Date(
-        createPromotionDto.availableDate,
-      );
-      createPromotionDto.availableDate.setHours(
-        createPromotionDto.availableDate.getHours() + 7,
-      );
-    }
-
-    if (createPromotionDto.expiredDate)
-      createPromotionDto.expiredDate = new Date(createPromotionDto.expiredDate);
-    createPromotionDto.expiredDate.setHours(
-      createPromotionDto.expiredDate.getHours() + 7,
-    );
-
     const today = new Date(
       new Date().getFullYear(),
       new Date().getMonth(),
