@@ -1,0 +1,72 @@
+version: "3"
+
+services:
+  maid-web:
+    build: maid-care-service-frontend
+    container_name: maid-care-service-web
+    networks:
+      - sub-net
+    env_file:
+      - maid-care-service-frontend/.env.production
+    ports:
+      - "8080:80"
+    environment:
+      - PORT=80
+      - REACT_APP_API_URL=http://maid-api
+    depends_on:
+      - mongo-db
+  maid-api:
+    build: maid-care-service-backend
+    container_name: maid-care-service-api
+    networks:
+      - sub-net
+    env_file:
+      - maid-care-service-backend/.env.production
+    links:
+      - mongo-db:mongo-db
+    environment:
+      - PORT=3000
+      - MONGO_URL=mongodb://mongo-db:27017/maid-db
+      - FRONTEND_URL=http://maid-web
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongo-db
+  mongo-db:
+    image: mongo:4
+    container_name: maid-care-service-database
+    networks:
+      - sub-net
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_db:/data/db
+
+  mongo-db-seed:
+    build: database-seed
+    links:
+      - mongo-db:mongo-db
+    networks:
+      - sub-net
+    depends_on:
+      - mongo-db
+
+  reverse-proxy:
+    build: reverse-proxy
+    container_name: "maid-reverse-proxy"
+    image: reverse-proxy
+    networks:
+      - sub-net
+    ports:
+      - "80:80"
+    depends_on:
+      - maid-web
+      - maid-api
+      - mongo-db
+
+networks:
+  sub-net:
+
+volumes:
+  mongo_db:

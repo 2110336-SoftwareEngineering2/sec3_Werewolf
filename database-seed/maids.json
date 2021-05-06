@@ -1,0 +1,12 @@
+[
+	{
+		"_id": { "$oid": "6093410617b1a30013172421" },
+		"cerrentLocation": { "latitude": null, "longitude": null },
+		"note": "",
+		"work": [],
+		"availability": false,
+		"avgRating": null,
+		"totalReviews": 0,
+		"__v": 0
+	}
+]

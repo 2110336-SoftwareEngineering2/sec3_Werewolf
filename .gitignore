@@ -3,7 +3,9 @@ maid-care-service-backend/node_modules
 maid-care-service-backend/dist/
 
 maid-care-service-frontend/.env
+!maid-care-service-frontend/.env.example
 maid-care-service-backend/.env
+!maid-care-service-backend/.env.exmaple
 
 
 # Frontend Gitignore
@@ -14,6 +16,10 @@ maid-care-service-frontend/.pnp.js
 
 # testing
 maid-care-service-frontend/coverage
+
+# firebase
+maid-care-service-frontend/firebase-config.js
+maid-care-service-frontend/firebase-config.json
 
 # production
 maid-care-service-frontend/build

@@ -1,0 +1,44 @@
+[
+	{
+		"_id": { "$oid": "609340c517b1a3001317241f" },
+		"profilePicture": "https://firebasestorage.googleapis.com/v0/b/maidcare-da56d.appspot.com/o/images%2Fartworks-zPTIvfbySo94zngX-Ql1l8A-t500x500.jpeg?alt=media&token=289b83b5-b873-43c4-b083-cf9761eeeb96",
+		"valid": true,
+		"email": "user@example.com",
+		"password": "$2b$10$.vk4GaSLTLT.7YftWk/DoO8vvEIn9L1k4V81Aa0MKtJT8rbAM97J.",
+		"firstname": "TestCustomer",
+		"lastname": "TestSurname",
+		"birthdate": { "$date": "1999-05-06T01:02:24.165Z" },
+		"citizenId": "1234567891023",
+		"bankAccountNumber": "7862835401",
+		"role": "customer",
+		"__v": 0
+	},
+	{
+		"_id": { "$oid": "6093410617b1a30013172421" },
+		"profilePicture": null,
+		"valid": true,
+		"email": "maid@example.com",
+		"password": "$2b$10$Xl3Z.5b69xb64gRXcBR.FuiXYo9fuxYrKV1ZwcK5m2d2tcUDejm.m",
+		"firstname": "TestMaid",
+		"lastname": "TestSurname",
+		"birthdate": { "$date": "1999-07-06T01:02:24.165Z" },
+		"citizenId": "1238427891023",
+		"bankAccountNumber": "0062835401",
+		"role": "maid",
+		"__v": 0
+	},
+	{
+		"_id": { "$oid": "6093412817b1a30013172423" },
+		"profilePicture": null,
+		"valid": true,
+		"email": "admin@example.com",
+		"password": "$2b$10$yuIiuHMWWdY91kvduZ7ineCeC6lPV5278uFWJwU5sk2.zXqvIHSei",
+		"firstname": "TestAdmin",
+		"lastname": "TestSurname",
+		"birthdate": { "$date": { "$numberLong": "-1561762655835" } },
+		"citizenId": "2138427891024",
+		"bankAccountNumber": "0063335401",
+		"role": "admin",
+		"__v": 0
+	}
+]
